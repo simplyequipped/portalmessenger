@@ -90,7 +90,7 @@ if [ -d ~/Desktop ] && [ ! -f ~/Desktop/NomadNet.desktop ]
 then
 	touch ~/Desktop/NomadNet.desktop
 	echo "[Desktop Entry]" >> ~/Desktop/NomadNet.desktop
-	echo "Name=NomadNet" >> ~/Desktop/NomadNet.desktop
+	echo "Name=Nomad Net" >> ~/Desktop/NomadNet.desktop
 	echo "Comment=Launch NomadNet" >> ~/Desktop/NomadNet.desktop
 	echo "Icon=/usr/share/pixmaps/openbox.xpm" >> ~/Desktop/NomadNet.desktop
 	echo "Exec=nomadnet" >> ~/Desktop/NomadNet.desktop
