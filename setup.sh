@@ -63,7 +63,7 @@ do
 done	
 
 # install tncattach
-if [ -d ~/dev/tncattach ]
+if [ -d ~/dev/tncattach ] && [ ! -f ~/dev/tncattach/tncattach ]
 then
 	cd ~/dev/tncattach
 	make && sudo make install
