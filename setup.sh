@@ -1,6 +1,10 @@
 #!/bin/bash
 # Install and configure software for running a Portal node
+# MIT license
+# Simply Equipped LLC
 # Last updated: 10/11/2021
+# 
+# See unsigned.io or markqvist on GitHub for more information on Reticulum, RNode, OpenModem, LXMF, NomadNet, and tncattach
 
 
 # define package and repository lists
