@@ -14,19 +14,6 @@ Out-of-the-box features:
 - Offline firmware repositories for Reticulum-based devices
 - Offline source code repositories for Reticulum-based packages
 
-### How to use Portal
-
-Configure Reticulum connected devices such as RNode and OpenModem, as well as UDP or TCP interfaces:
-```
-nano ~/.reticulum/config
-```
-See the [Reticulum documentation](https://markqvist.github.io/Reticulum/manual/interfaces.html) for more information.
-
-After installation, access the terminal-based networking application (user's guide is included in the application):
-```
-nomadnet
-```
-
 ### Install
 
 Clone this repo and run the setup script to install the necessary software:
@@ -43,6 +30,19 @@ bash setup.sh
 ```
 
 Enter your sudo user password if prompted. Elevated permissions are only required when installing or compiling packages.
+
+### How to use Portal
+
+Configure Reticulum connected devices such as RNode and OpenModem, as well as UDP or TCP interfaces:
+```
+nano ~/.reticulum/config
+```
+See the [Reticulum documentation](https://markqvist.github.io/Reticulum/manual/interfaces.html) for more information.
+
+After installation, access the terminal-based networking application (user's guide is included in the application):
+```
+nomadnet
+```
 
 ### Recognition
 
