@@ -1,10 +1,6 @@
 #!/bin/bash
 # Install and configure software for running a Portal node
-# MIT license
-# Simply Equipped LLC
 # Last updated: 10/11/2021
-# 
-# See unsigned.io or markqvist on GitHub for more information on Reticulum, RNode, OpenModem, LXMF, NomadNet, and tncattach
 
 
 # define package and repository lists
@@ -12,6 +8,13 @@ APT_PACKAGES=("openssl" "python3" "python3-pip" "python3-gi" "python3-gi-cairo" 
 PY_PACKAGES=("rns" "lxmf" "nomadnet" "rnodeconf" "pyserial" "requests" "psutil" "pywebview")
 GIT_REPOS=("openmodemconfigutil" "tncattach" "RNode_Firmware" "OpenModem" "LoRaMon" "LXMF" "NomadNet" "Reticulum")
 
+# set development directory
+$DEV=/home/pi/dev
+
+if [ ! -d $DEV ]
+then
+    mkdir $DEV
+fi
 
 # update pip3 if already installed
 if [ "$(apt list python3-pip --installed -qq 2>/dev/null | wc -l)" -gt "0" ]
@@ -51,26 +54,42 @@ fi
 
 for repo in "${GIT_REPOS[@]}"
 do
-	echo ~/dev/$repo
-	if [ ! -d ~/dev/$repo ]
+	if [ ! -d $DEV/$repo ]
 	then
-		cd ~/dev
+		cd $DEV
 		git clone https://github.com/markqvist/$repo.git
 	else
-		cd ~/dev/$repo
+		cd $DEV/$repo
 		git pull
 	fi
 done	
 
 # install tncattach
-if [ -d ~/dev/tncattach ] && [ ! -f ~/dev/tncattach/tncattach ]
+if [ -d $DEV/tncattach ]
 then
-	cd ~/dev/tncattach
+	cd $DEV/tncattach
 	make && sudo make install
 fi
 
+# pull modified pyfldigi repo
+if [ ! -d $DEV/pyfldigi ]
+then
+	cd $DEV
+	#TODO move custom pyfldigi repo
+	git clone https://github.com/otisbyron/pyfldigi.git
+else
+	cd $DEV/pyfldigi
+	git pull
+fi
+
+# build and install pyfldigi
+if [ ! -d $DEV/pyfldigi/build ]
+then
+    sudo python3 $DEV/pyfldigi/setup.py install
+fi
+
 # create script to launch openmodem config utility
-if [ ! -f ~/.local/bin/openmodemconf ] && [ -d ~/dev/openmodemconfigutil ]
+if [ ! -f ~/.local/bin/openmodemconf ] && [ -d $DEV/openmodemconfigutil ]
 then
 	cd ~/.local/bin
 	touch openmodemconf
@@ -90,7 +109,7 @@ if [ -d ~/Desktop ] && [ ! -f ~/Desktop/NomadNet.desktop ]
 then
 	touch ~/Desktop/NomadNet.desktop
 	echo "[Desktop Entry]" >> ~/Desktop/NomadNet.desktop
-	echo "Name=Nomad Net" >> ~/Desktop/NomadNet.desktop
+	echo "Name=NomadNet" >> ~/Desktop/NomadNet.desktop
 	echo "Comment=Launch NomadNet" >> ~/Desktop/NomadNet.desktop
 	echo "Icon=/usr/share/pixmaps/openbox.xpm" >> ~/Desktop/NomadNet.desktop
 	echo "Exec=nomadnet" >> ~/Desktop/NomadNet.desktop
@@ -107,7 +126,7 @@ then
 	echo "Name=Reticulum Config" >> ~/Desktop/ReticulumConfig.desktop
 	echo "Comment=Edit Reticulum config file" >> ~/Desktop/ReticulumConfig.desktop
 	echo "Icon=/usr/share/pixmaps/openbox.xpm" >> ~/Desktop/ReticulumConfig.desktop
-	echo "Exec=gedit ~/.reticulum/config || vim ~/.reticulum/config" >> ~/Desktop/ReticulumConfig.desktop
+	echo "Exec=nano ~/.reticulum/config" >> ~/Desktop/ReticulumConfig.desktop
 	echo "Type=Application" >> ~/Desktop/ReticulumConfig.desktop
 	echo "Encoding=UTF-8" >> ~/Desktop/ReticulumConfig.desktop
 	echo "Terminal=true" >> ~/Desktop/ReticulumConfig.desktop
