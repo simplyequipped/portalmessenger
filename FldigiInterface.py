@@ -4,7 +4,7 @@ import serial
 import threading
 import time
 import RNS
-from RNS.Interface import Interface
+from RNS.Interfaces.Interface import Interface
 import pyfldigi
 
 # Notes:
@@ -97,7 +97,7 @@ class FldigiInterface(Interface):
     modem    = None
 
     #TODO remove headless parameter
-    def __init__(self, owner, name="xmlrpc", host, port, headless):
+    def __init__(self, owner, name, host, port, headless, outgoing = True):
         self.rxb = 0
         self.txb = 0
         
@@ -106,12 +106,13 @@ class FldigiInterface(Interface):
         self.name     = name
         self.host     = host
         self.port     = port
+        self.OUT      = outgoing
         self.timeout  = 100
         self.online   = False
 
         try:
             #TODO remove headless parameter
-            self.modem = Fldigi(self.host, self.port, headless) 
+            self.modem = Fldigi(self.host, self.port, headless)
         except Exception as e:
             RNS.log("Could not connect to fldigi for interface " + str(self), RNS.LOG_ERROR)
             raise e
@@ -123,7 +124,7 @@ class FldigiInterface(Interface):
             thread.setDaemon(True)
             thread.start()
             self.online = True
-            RNS.log("fldigi " + self.name + " is now running")
+            RNS.log(str(self) + " is now running")
         else:
             raise IOError("Could not start fldigi")
 
