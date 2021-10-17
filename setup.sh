@@ -9,7 +9,7 @@ PY_PACKAGES=("rns" "lxmf" "nomadnet" "rnodeconf" "pyserial" "requests" "psutil" 
 GIT_REPOS=("openmodemconfigutil" "tncattach" "RNode_Firmware" "OpenModem" "LoRaMon" "LXMF" "NomadNet" "Reticulum")
 
 # set development directory
-$DEV=/home/pi/dev
+DEV=/home/pi/dev
 
 if [ ! -d $DEV ]
 then
