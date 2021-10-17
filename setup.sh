@@ -4,7 +4,7 @@
 
 
 # define package and repository lists
-APT_PACKAGES=("openssl" "python3" "python3-pip" "python3-gi" "python3-gi-cairo" "gir1.2-gtk-3.0" "gir1.2-webkit2-4.0")
+APT_PACKAGES=("openssl" "python3" "python3-pip" "python3-gi" "python3-gi-cairo" "gir1.2-gtk-3.0" "gir1.2-webkit2-4.0" "xvfb")
 PY_PACKAGES=("rns" "lxmf" "nomadnet" "rnodeconf" "pyserial" "requests" "psutil" "pywebview")
 GIT_REPOS=("openmodemconfigutil" "tncattach" "RNode_Firmware" "OpenModem" "LoRaMon" "LXMF" "NomadNet" "Reticulum")
 
