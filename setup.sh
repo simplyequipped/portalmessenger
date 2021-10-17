@@ -82,10 +82,11 @@ else
 	git pull
 fi
 
-# build and install pyfldigi
-if [ ! -d $DEV/pyfldigi/build ]
+# symlink pyfldigi package
+SITE_DIR=$(python3 -m site --user-site)
+if [ ! -f $SITE_DIR/pyfldigi ]
 then
-    sudo python3 $DEV/pyfldigi/setup.py install
+    ln -s $DEV/pyfldigi $SITE_DIR/pyfldigi
 fi
 
 # create script to launch openmodem config utility
