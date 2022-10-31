@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>QDX Error</title>
+<style>
+body {
+	font-size: medium;
+	font-family: Helvetica, sans-serif;
+}
+div#msg {
+	color: #9e9e9e;
+	padding-left: 20px;
+}
+label {
+	padding-right: 10px
+}
+</style>
+</head>
+<body>
+
+	<h2>QDX Error</h2><br>
+	<div>An error occured while attempting to connect to the QDX device:</div>
+	<div id="msg">{{ msg }}</div><br>
+	<div>Enter a serial port to connect to:</div><br>
+	<form action="/" method="get">
+		<label for="port">Serial Port</label>
+		<input type="text" id="port" name="port"/>
+		<input type="submit" value="Submit"/>
+	</form>
+	<br>
+	<div>Or try discovering a connected device again:</div><br>
+	<button id="discover">Discover</button>
+
+<script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+<script>
+$("button#discover").click(function(){
+	window.location.href = window.location.href.split("?")[0];
+});
+</script>
+</body>
+</html>

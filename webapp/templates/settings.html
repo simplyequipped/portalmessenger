@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>QDX Settings</title>
+<style>
+body {
+	font-size: medium;
+	font-family: Helvetica, sans-serif;
+}
+td {
+	padding: 3px 10px;
+}
+.msg {
+	color: #0a8f08;
+}
+tr.title td {
+	font-size: large;
+	font-weight: bold;
+}
+input, select {
+	width: 75px;
+	box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+
+	<h2>QDX Settings</h2><br>
+	<form>
+		<table>
+		<tr class="title">
+			<td>Setting</td>
+			<td>Value</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>State</td>
+			<td><span id="state">{{ settings['TQ']['map']['0'] }}</span></td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>Port</td>
+			<td>{{ port }}</td>
+			<td>&nbsp;</td>
+		</tr>
+		{% for cmd, data in settings.items() %}
+		<tr>
+			<td><label for="{{ cmd }}">{{ data['label'] }}</label></td>
+			{% if data['map'] is none %}
+			<td><input type="text" id="{{ cmd }}" name="{{ cmd }}" value="{{ data['value'] }}">&nbsp;&nbsp;{{ data['unit'] }}</td>
+			{% elif data['map'] is mapping %}
+			<td>
+				<select id="{{ cmd }}" name="{{ cmd }}">
+					{% for opt, value in data['map'].items() %}
+						{% if opt == data['value'] ~ '' %}
+						<option value="{{ opt }}" selected>{{ value }}</option>
+						{% else %}
+						<option value="{{ opt }}">{{ value }}</option>
+						{% endif %}
+					{% endfor %}
+				</select>
+			</td>
+			{% endif %}
+			<td><span class="msg" id="{{ cmd }}_msg"></span></td>
+		</tr>
+		{% endfor %}
+		</table>
+	</form>
+	
+	<br>
+	<div id="msg"></div>
+
+
+
+
+<script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+<script>
+function heartbeat(){
+	$("#state").load("/heartbeat")
+}
+
+$(document).ready(function(){
+	setInterval("heartbeat()", 1000)
+});
+
+$("input").change(function(event){
+	var data = {};
+	data[event.target.id] = $(this).val()
+
+	$.post("/set",
+		data,
+		function(data, status){
+			$("#" + event.target.id).val(data);
+			$("#" + event.target.id + "_msg").html("Updated");
+			$("#" + event.target.id + "_msg").stop().fadeTo(0, 1);
+			$("#" + event.target.id + "_msg").fadeOut(3000);
+		},
+		"json"
+	);
+});
+
+$("select").change(function(event){
+	var data = {};
+	data[event.target.id] = $("#" + event.target.id).children("option:selected").val();
+	
+	$.post("/set",
+		data,
+		function(data, status){
+			$("#" + event.target.id).val(data);
+			$("#" + event.target.id + "_msg").html("Updated");
+			$("#" + event.target.id + "_msg").stop().fadeTo(0, 1);
+			$("#" + event.target.id + "_msg").fadeOut(3000);
+		},
+		"json"
+	);
+
+	setTimeout(function(){
+		window.location.href = window.location.protocol + "//" + window.location.host + "/"
+	}, 3000);
+});
+</script>
+</body>
+</html>

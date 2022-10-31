@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>QDX Settings</title>
+<style>
+body {
+	font-size: medium;
+	font-family: Helvetica, sans-serif;
+}
+td {
+	padding: 3px 10px;
+}
+.msg {
+	color: #0a8f08;
+}
+tr.title td {
+	font-size: large;
+	font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+	<h2>QDX Settings</h2><br>
+		{% for cmd, data in settings.items() %}
+		<div>{{ cmd }}</div>
+		<div>{{ data['map'] }}</div>
+		<br>
+		{% endfor %} 
+	
+	<br>
+
+
+
+<script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+<script>
+$("input").change(function(event){
+	var data = {};
+	data[event.target.id] = $(this).val()
+
+	$.post("/set",
+		data,
+		function(data, status){
+			$("#" + event.target.id).val(data);
+			$("#" + event.target.id + "_msg").html("Updated");
+			$("#" + event.target.id + "_msg").stop().fadeTo(0, 1);
+			$("#" + event.target.id + "_msg").fadeOut(3000);
+		},
+		"json"
+	);
+});
+</script>
+</body>
+</html>

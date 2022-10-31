@@ -77,16 +77,16 @@ body {
 }
 
 .presence-indicator {
-	display: inline-block;
+    float: left;
 	height: 22px;
 	width: 22px;
 	border-radius: 50%;
-	margin-top: 7px;
 	margin: 0px 10px 0px 0px;
+    position: relative;
+    top: 2px;
 }
 
-.chat-bubble.presence-indicator {
-	margin: 15px;
+.conversation .presence-indicator {
 }
 
 .presence-active {
@@ -110,7 +110,7 @@ body {
 	display: inline-block;
 	font-size: 14px;
 	float: right;
-	padding-top: 8px;
+	padding-top: 4px;
 }
 
 /*https://jsfiddle.net/ajiths4u/u9dzyvct/*/
@@ -216,7 +216,7 @@ body {
 }
 
 #chat-text {
-	width: 84%;
+	width: 79%;
 	padding: 5px;
 	font-size: 18px;
 }

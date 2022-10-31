@@ -4,43 +4,32 @@
         <title>Portal Messenger</title>
 		<link rel="stylesheet" type="text/css" href="../static/style.css" />
 		<script src="../static/jquery.min.js"></script>
+		<script src="../static/socket.io.min.js"></script>
+		<script src="../static/common.js"></script>
+		<script src="../static/chat.js"></script>
 		<script>
-			function scrollChat() {
-				scrollDiv = $(".chat-messages");
-				scrollDiv.scrollTop(scrollDiv.prop("scrollHeight"));
-			}
-			
-			function urlParam(name){
-				var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-				return decodeURIComponent(results[1]) || 0;
-			}
 		</script>
     </head>
     <body>
 	    <div class="header">
 			PORTAL MESSENGER
-		    <a href="settings.html"><span class="icon icon-settings">&nbsp;</span></a>
-		    <a href="conversations.html"><span class="icon icon-list">&nbsp;</span></a>
+		    <a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>
+		    <a href="/conversations"><span class="icon icon-list">&nbsp;</span></a>
 		</div>
 		<div class="details">
-			<div class="presence-indicator">&nbsp;</div>
+			<div class="presence-indicator presence-unknown">&nbsp;</div>
 			<div class="chat-name">&nbsp;</div>
-			<div class="last-heard">Last heard 1 minute ago</div>
+			<div class="last-heard">&nbsp;</div>
 		</div>
 		<div class="viewport">
-			<div class="content chat-messages">
-				<div class="chat-msg-out"><div class="chat-bubble">
-					<div class="chat-msg">Hey there neighbor</div>
-					<div class="chat-time">7:40pm</div>
-				</div></div>
-				<div class="chat-msg-in"><div class="chat-bubble">
-					<div class="chat-msg">Howdy. How are you all doing? Blah blah blah.</div>
-					<div class="chat-time">7:43pm</div>
-				</div></div>
-				<div class="chat-msg-out"><div class="chat-bubble">
-					<div class="chat-msg">We're doing just fine here, how about you all?</div>
-					<div class="chat-time">7:44pm</div>
-				</div><div class="chat-status">Sending...</div></div>
+            <div class="content chat-messages">
+
+                <!-- hidden original for cloning -->
+				<div class="original-hidden"><div class="chat-bubble">
+					<div class="chat-msg">&nbsp;</div>
+					<div class="chat-time">&nbsp;</div>
+				</div><div class="chat-status">&nbsp;</div></div>
+
 			</div>
 		</div>
 		<div class="footer">
@@ -52,8 +41,19 @@
 
     </body>
 	<script>
-		$(".chat-name").html(urlParam('username'));
-		$(".presence-indicator").addClass("presence-" + urlParam('presence'));
-		scrollChat();
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function() {
+            socket.emit('log', {msg: 'Connected to socket'});
+            socket.emit('init chat');
+        });
+
+        socket.on('init chat', function(user_data) {
+            initChat(user_data);
+        });
+
+        socket.on('rx msg', function(msg) {
+            newChatMessage(msg);
+        });
 	</script>
 </html>

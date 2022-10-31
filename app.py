@@ -1,103 +1,147 @@
 import json
 import secrets
+import random
+import time
 
 import pyjs8call
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, session
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex()
+app.secret_key = secrets.token_hex()
 socketio = SocketIO(app)
 
-#TODO once user logs in, set callsign to username via config and then start js8call app
-#TODO username (callsign) must contain at least (1) number, max length of 9 characters
 #TODO stop js8call app when socketio closed
-
-#TODO
-def simulate_response(data)
-    #TODO
-    msg = pyjs8call.Message()
-    msg.type = pyjs8call.Message.RX_DIRECTED
-    msg.value = data['msg']
-    msg.params['FROM'] = data['user']
-    msg = msg.data()
-    js8call.js8call._rx_queue.append(msg)
-
 
 
 @app.route('/')
-def index():
-    global js8call
-    callsign = js8call.config.get('Configuration', 'MyCall')
-    return render_template('index.html', username=callsign)
+@app.route('/conversations', methods=['GET', 'POST'])
+@app.route('/conversations.html', methods=['GET', 'POST'])
+def conversations():
+    if request.method == 'POST':
+        session['username'] = request.form.get('user')
+        return ''
+    else:
+        return render_template('conversations.html')
+
+@app.route('/chat')
+@app.route('/chat.html')
+def chat():
+    return render_template('chat.html')
+
+@app.route('/settings')
+@app.route('/settings.html')
+def settings():
+    return render_template('settings.html')
+
+@socketio.on('user')
+def set_user(data):
+    #session['username'] = data['user']
+    #print(session['username'])
+    pass
+
+@socketio.on('init chat')
+def init_chat():
+    user_data = {}
+    username = session.get('username')
+    last_heard_timestamp = get_user_last_heard_timestamp(username)
+
+    user_data['username'] = username
+    user_data['history'] = get_user_chat_history(username)
+    user_data['heard'] = get_last_heard_text(last_heard_timestamp)
+    user_data['presence'] = get_user_presence(last_heard_timestamp)
+
+    socketio.emit('init chat', user_data)
+
+#TODO
+def get_last_heard_text(timestamp):
+    #TODO parse timestamp to local time
+    return '1 minute'
+
+#TODO
+def get_user_last_heard_timestamp(username):
+    return '8:57pm'
+
+#TODO
+def get_user_presence(timestamp):
+    #TODO calculate presence based on timestamp
+    return random.choice(['active', 'inactive', 'unknown'])
+
+#TODO
+def get_user_chat_history(username):
+    history = []
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'incoming',
+        'time': '8:56pm',
+        'text': 'Hello there, how are you?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'outgoing',
+        'time': '8:57pm',
+        'text': 'Hey! Good, how about you?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'incoming',
+        'time': '8:57pm',
+        'text': 'Glad to hear it. What\'s new?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'outgoing',
+        'time': '8:58pm',
+        'text': 'Not much new here',
+        'tx_status': 'Sending...'
+    }
+    history.append(chat)
+
+    return history
+
+
+
 
 @socketio.on('tx msg')
-def tx_msg(data, methods=['GET', 'POST']):
-    global js8call
-    #print('\tsend msg: ' + str(data['user']) + ' > ' + str(data['msg']))
-    js8call.send_directed_message(data['user'], data['msg'])
-    #TODO
-    #simulate_response(data)
+def tx_msg(data):
+    js8call.send_directed_message(session.get('username'), data['msg'])
     
-#TODO determine how a directed response is received, process accordingly
 def rx_msg(msg):
-    message = {'from': msg['from'], 'msg': msg['value']}
-    #TODO
-    print(message)
-    socketio.emit('rx msg', message)
+    chat_msg = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'incoming',
+        'time': time.strftime('%X%p', time.localtime(msg['time']).lower(),
+        'text': msg['value'],
+        'tx_status': None
+    }
+
+    socketio.emit('rx msg', chat_msg)
+
+
 
 @socketio.on('log')
-def log(data, methods=['GET', 'POST']):
+def log(data):
     print('\tlog: ' + str(data['msg']))
-
-@socketio.on('login')
-def login(data, methods=['GET', 'POST']):
-    if any(char.isdigit() for char in data['username']):
-        valid_username = True
-    else:
-        valid_username = False
-        error = 'Username must contain at least 1 digit [0-9]'
-
-    if len(data['username']) <= 9:
-        valid_username = True
-    else:
-        valid_username = False
-        error = 'Username max length is 9 characters'
-
-    if valid_username:
-        #TODO
-        print('Valid username: ' + data['username'])
-
-        result = {'login': True}
-        socketio.emit('login attempt', result)
-
-        global js8call
-        js8call.config.set('Configuration', 'MyCall', data['username'].upper())
-        js8call.start()
-    else:
-        #TODO
-        print('Invalid username: ' + data['username'])
-        print('Error: ' + error)
-
-        result = {'login': False, 'error': error}
-        socketio.emit('login attempt', result)
-
-#@socketio.on('disconnect')
-#def stop():
-#    global js8call
-#    js8call.stop()
-
 
 
 # initialize js8call client
 js8call = pyjs8call.Client()
 if 'Portal' not in js8call.config.get_profile_list():
-    js8call.config.create_profile('Portal')
+    js8call.config.create_new_profile('Portal')
 
 js8call.set_config_profile('Portal')
 js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
-
+js8call.start()
 
 
 if __name__ == 'main':
