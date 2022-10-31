@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Portal Messenger</title>
+		<link rel="stylesheet" type="text/css" href="../static/style.css" />
+		<script src="../static/jquery.min.js"></script>
+    </head>
+    <body>
+	    <div class="header">
+		    PORTAL MESSENGER
+		    <a href="javascript:history.back()"><span class="icon icon-back">&nbsp;</span></a>
+	    </div>
+		<div class="details">
+			<div class="details-name">Settings</div>
+		</div>
+		<div class="viewport">
+			<div class="content">
+				<br/>
+				<div class="setting-row"><label for="callsign">Callsign</label><input type="text" id="callsign" value="KC3KVT"></div>
+				<div class="setting-row"><label for="grid">Grid Square</label><input type="text" id="grid" value="FM19"></div>
+				<div class="setting-row"><label for="speed">Rx/Tx Speed</label><select type="text" id="speed">
+					<option value="slow">Slow</option>
+					<option value="normal">Normal</option>
+					<option value="fast">Fast</option>
+					<option value="turbo">Turbo</option>
+				</select></div>
+			</div>
+		</div>
+		<div class="footer">
+			<form id="settings-form">
+				<button type="button" id="send-button">Save Settings</button>
+			</form>
+		</div>
+
+    </body>
+	<script>
+		scrollChat();
+	</script>
+</html>

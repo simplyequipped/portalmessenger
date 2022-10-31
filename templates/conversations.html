@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Portal Messenger</title>
+		<link rel="stylesheet" type="text/css" href="../static/style.css" />
+		<script src="../static/jquery.min.js"></script>
+    </head>
+    <body>
+	    <div class="header">
+			PORTAL MESSENGER
+		    <a href="settings.html"><span class="icon icon-settings">&nbsp;</span></a>
+		</div>
+		<div class="details">
+			<div class="details-name">Conversations</div>
+		</div>
+		<div class="viewport">
+			<div class="content">
+				<!-- hidden element for cloning -->
+				<div class="conversation original-hidden">
+					<div class="presence-indicator">&nbsp;</div>
+					<div class="chat-name">&nbsp;</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="footer">&nbsp;</div>
+
+    </body>
+	<script>
+		function newConversation(username, presence) {
+			newConv = $(".original-hidden").clone();
+			newConv.attr("name", username)
+			newConv.find(".presence-indicator").addClass("presence-" + presence);
+			newConv.find(".chat-name").html(username);
+			newConv.click(conversationClick)
+			newConv.removeClass("original-hidden");
+			newConv.appendTo(".content");
+		}
+
+		function findConversation(username) {
+			return $(".conversation[name='" + username + "']");
+		}
+
+		function getPresence(username) {
+			conv = findConversation(username)
+			if ( conv.find('.presence-indicator').hasClass("presence-active") ) {
+				return "active";
+			}
+			else if ( conv.find(".presence-indicator").hasClass("presence-inactive") ) {
+				return "inactive";
+			}
+			else if ( conv.find(".presence-indicator").hasClass("presence-unknown") ) {
+				return "unknown";
+			}
+			else {
+				return "none";
+			}
+
+		}
+
+		function setPresence(username, presence) {
+			conv = findConversation(username);
+			currentPresence = getPresence(username);
+
+			if ( getPresence(username) !== "none" ) {
+				conv.find('.presence-indicator').removeClass("presence-" + currentPresence);
+			}
+
+			conv.find('.presence-indicator').addClass("presence-" + presence);
+		}
+
+		function conversationClick() {
+			var username = $(this).attr("name");
+			var presence = getPresence(username);
+			window.location = "chat.html?username=" + encodeURIComponent(username) + "&presence=" + encodeURIComponent(presence);
+		}
+
+		newConversation("Timothy Smith", "active");
+		newConversation("Someone Else", "unknown");
+		newConversation("Jane Doe", "inactive");
+		
+		findConversation("Timothy Smith").addClass("unread");
+
+	</script>
+</html>
