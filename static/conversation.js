@@ -1,12 +1,11 @@
 
-		function newConversation(username, presence) {
+		function newConversation(username) {
 			newConv = $(".original-hidden").clone();
 			newConv.attr("name", username)
 			newConv.find(".chat-name").html(username);
 			newConv.click(conversationClick)
 			newConv.removeClass("original-hidden");
 			newConv.appendTo(".content");
-			setPresence(username, presence);
 		}
 
 		function findConversation(username) {
@@ -32,22 +31,43 @@
 
 		function setPresence(username, presence) {
 			conv = findConversation(username);
+			presenceElement = conv.find('.presence-indicator');
 			currentPresence = getPresence(username);
 
 			if ( getPresence(username) !== "none" ) {
-				conv.find('.presence-indicator').removeClass("presence-" + currentPresence);
+				presenceElement.removeClass("presence-" + currentPresence);
 			}
 
-			conv.find('.presence-indicator').addClass("presence-" + presence);
+			presenceElement.addClass("presence-" + presence);
+		}
+
+		function setLastHeard(username, last_heard) {
+			findConversation(username).find('.last-heard').html(last_heard);
+		}
+
+		function markRead(username) {
+			conv = findConversation(username);
+			chatNameElement = conv.find('.chat-name');
+
+			if ( chatNameElement.hasClass('unread') ) {
+				chatNameElement.removeClass('unread');
+			}
+		}
+
+		function markUnread(username) {
+			conv = findConversation(username);
+			chatNameElement = conv.find('.chat-name');
+
+			if ( !chatNameElement.hasClass('unread') ) {
+				chatNameElement.addClass('unread');
+			}
 		}
 
 		function conversationClick() {
 		    var username = $(this).attr("name");
-            console.log(username)
-            
-            $.post('/conversations', {user: username});
-            //socket.emit('user', {user: username});
-            window.location = "/chat";
+            $.post('/conversations', {user: username}, function() {
+            	window.location = "/chat";
+			});
 		}
 
 

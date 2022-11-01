@@ -2,14 +2,7 @@
         function newChatMessage(msg) {
             newMsg = $(".original-hidden").clone();
             newMsg.attr('id', msg.id)
-
-            if ( msg.type == 'incoming' ) {
-                newMsg.addClass('chat-msg-in');
-            }
-            else if ( msg.type == 'outgoing' ) {
-                newMsg.addClass('chat-msg-out');
-            }
-
+            newMsg.addClass('chat-msg-' + msg.type);
             newMsg.find('.chat-time').html(msg.time);
             newMsg.find('.chat-msg').html(msg.text);
 
@@ -25,8 +18,11 @@
             scrollChat();
         }
 
-        function updateTxStatus(id, new_status) {
-            $('#'+ id).find('chat-status').html(new_status);
+        function setTxStatus(id, tx_status) {
+			if ( $('#' + id).find('chat-status').length == 0 ) {
+				$('.original-hidden').find('chat-status').clone().appendTo('#' + id)
+			}
+            $('#'+ id).find('chat-status').html(tx_status);
         }
 
         function removeTxStatus(id) {

@@ -17,12 +17,21 @@
 		    <a href="/conversations"><span class="icon icon-list">&nbsp;</span></a>
 		</div>
 		<div class="details">
-			<div class="presence-indicator presence-unknown">&nbsp;</div>
-			<div class="chat-name">&nbsp;</div>
-			<div class="last-heard">&nbsp;</div>
+			<div class="presence-indicator presence-{{ chat_data['presence'] }}">&nbsp;</div>
+			<div class="chat-name">{{ chat_data['username'] }}</div>
+			<div class="last-heard">Last heard {{ chat_data['last_heard'] }} ago</div>
 		</div>
 		<div class="viewport">
             <div class="content chat-messages">
+
+			{% for msg in chat_data['history'] %}
+
+				<div id="{{ msg.id }}" class="chat-msg-{{ msg.type }}"><div class="chat-bubble">
+					<div class="chat-msg">{{ msg.text }}</div>
+					<div class="chat-time">{{ msg.time }}</div>
+				</div></div>
+
+			{% endfor %}
 
                 <!-- hidden original for cloning -->
 				<div class="original-hidden"><div class="chat-bubble">
@@ -35,7 +44,7 @@
 		<div class="footer">
 			<form id="chat-text-form">
 				<input type="text" id="chat-text" placeholder="Type a message here..." autofocus/>
-				<button type="button" id="chat-send-button">Send</button>
+				<button type="submit" id="chat-send-button">Send</button>
 			</form>
 		</div>
 
@@ -48,12 +57,21 @@
             socket.emit('init chat');
         });
 
-        socket.on('init chat', function(user_data) {
-            initChat(user_data);
-        });
+        //socket.on('init chat', function( user_data ) {
+        //    initChat(user_data);
+        //});
 
-        socket.on('rx msg', function(msg) {
+        socket.on('msg', function( msg ) {
             newChatMessage(msg);
         });
+
+		$('#chat-text-form').submit(function( event ){
+			event.preventDefault();
+			msg_text = $('#chat-text').val();
+			$('#chat-text').val("");
+			socket.emit('msg', {msg: msg_text})
+
+		});
+
 	</script>
 </html>

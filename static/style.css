@@ -134,14 +134,14 @@ body {
 	bottom: 0px;
 }
 
-.chat-msg-in {
+.chat-msg-rx {
 	width: fit-content;
 	max-width: 75%;
 	margin-top: 15px;
 	margin-bottom: 15px;
 }
 
-.chat-msg-out {
+.chat-msg-tx {
 	width: fit-content;
 	max-width: 75%;
 	float: right;
@@ -166,7 +166,7 @@ body {
 	padding: 2px 15px 10px 15px;
 }
 
-.chat-msg-out .chat-time {
+.chat-msg-tx .chat-time {
 	text-align: right;
 }
 

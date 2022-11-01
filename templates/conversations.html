@@ -18,10 +18,12 @@
 		</div>
 		<div class="viewport">
 			<div class="content">
+
 				<!-- hidden element for cloning -->
 				<div class="conversation original-hidden">
-					<div class="presence-indicator">&nbsp;</div>
+					<div class="presence-indicator presence-unknown">&nbsp;</div>
 					<div class="chat-name">&nbsp;</div>
+					<div class="last-heard">&nbsp;</div>
 				</div>
 			</div>
 
@@ -33,13 +35,27 @@
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         socket.on('connect', function() {
-            socket.emit('log', {msg: 'Connected to socket'})
+            socket.emit('log', {msg: 'Connected to socket'});
         });
 
-		newConversation("Timothy Smith", "active");
-		newConversation("Someone Else", "unknown");
-		newConversation("Jane Doe", "inactive");
+		socket.on('heard', function( data ) {
+			if ( findConversation(data.username).length == 0 ) {
+				newConversation(data.username);
+			}
+			setPresence(data.username, 'active');
+			setLastHeard(data.username, data.last_heard);
+		});
+
+		newConversation("Timothy Smith");
+		setPresence("Timothy Smith", "active");
+		setLastHeard("Timothy Smith", "2 minutes ago");
+		newConversation("Someone Else");
+		setPresence("Someone Else", "unknown");
+		setLastHeard("Someone Else", "1 day ago");
+		newConversation("Jane Doe");
+		setPresence("Jane Doe", "inactive");
+		setLastHeard("Jane Doe", "3 hours ago");
 		
-		findConversation("Timothy Smith").addClass("unread");
+		markUnread("Timothy Smith");
 	</script>
 </html>
