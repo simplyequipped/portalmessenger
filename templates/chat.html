@@ -2,24 +2,24 @@
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
-		<link rel="stylesheet" type="text/css" href="../static/style.css" />
+		<link rel="stylesheet" type="text/css" href="../static/style.css">
+		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
 		<script src="../static/jquery.min.js"></script>
 		<script src="../static/socket.io.min.js"></script>
 		<script src="../static/common.js"></script>
 		<script src="../static/chat.js"></script>
-		<script>
-		</script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
     <body>
 	    <div class="header">
 			PORTAL MESSENGER
-		    <a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>
+			<!--<a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>-->
 		    <a href="/conversations"><span class="icon icon-list">&nbsp;</span></a>
 		</div>
 		<div class="details">
 			<div class="presence-indicator presence-{{ chat_data['presence'] }}">&nbsp;</div>
 			<div class="chat-name">{{ chat_data['username'] }}</div>
-			<div class="last-heard">Last heard {{ chat_data['last_heard'] }} ago</div>
+			<div class="last-heard">&nbsp;</div>
 		</div>
 		<div class="viewport">
             <div class="content chat-messages">
@@ -52,18 +52,19 @@
 	<script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        socket.on('connect', function() {
-            socket.emit('log', {msg: 'Connected to socket'});
-            socket.emit('init chat');
-        });
-
-        //socket.on('init chat', function( user_data ) {
-        //    initChat(user_data);
+        //socket.on('connect', function() {
+        //    socket.emit('log', {msg: 'Connected to socket'});
         //});
 
         socket.on('msg', function( msg ) {
             newChatMessage(msg);
+			scrollChat();
+			setLastHeard(0);
         });
+
+		socket.on('heard-user', function ( minutes ) {
+			setLastHeard(minutes);
+		});
 
 		$('#chat-text-form').submit(function( event ){
 			event.preventDefault();
@@ -73,5 +74,13 @@
 
 		});
 
+		$(window).on('load', function(){
+			scrollChat();
+			socket.emit('heard-user', {user: $('.chat-name').html()});
+		});
+
+		setInterval(function (){
+			socket.emit('heard-user', {user: $('.chat-name').html()});
+		}, 1000 * 60);
 	</script>
 </html>

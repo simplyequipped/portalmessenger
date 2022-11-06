@@ -1,3 +1,17 @@
+
+:root{
+	--primary-color: #cfd8dc;
+	--secondary-color: #9ea7aa;
+	--tertiary-color: #fafafa;
+/*
+		--primary-color: #29434e;
+		--secondary-color: #90a4ae;
+		--tertiary-color: #cfd8dc;
+*/
+	--outgoing-chat-color: var(--primary-color);
+	--incoming-chat-color: var(--tertiary-color);
+}
+
 body {
 	font-family: sans-serif;
 	width: 30%;
@@ -7,9 +21,9 @@ body {
 .header {
 	font-size: 24px;
 	font-weight: bold;
-	border: 2px solid #cfd8dc;
-	padding: 20px;
-	background-color: #cfd8dc;
+	border: 2px solid var(--primary-color);
+	padding: 15px;
+	background-color: var(--primary-color);
 	border-radius: 15px 15px 0px 0px;
 	margin-top: 10px;
 	position: relative;
@@ -71,9 +85,9 @@ body {
 }
 
 .details {
-	border: 2px solid #cfd8dc;
+	border: 2px solid var(--primary-color);
 	padding: 10px 15px 10px 15px;
-	background-color: #cfd8dc;
+	background-color: var(--primary-color);
 }
 
 .presence-indicator {
@@ -90,7 +104,7 @@ body {
 }
 
 .presence-active {
-	background-color: #33CC00;
+	background-color: #43a047;
 }
 
 .presence-inactive {
@@ -115,10 +129,12 @@ body {
 
 /*https://jsfiddle.net/ajiths4u/u9dzyvct/*/
 .viewport {
-	border: 2px solid #cfd8dc;
+	background-color: var(--secondary-color);
+	border: 2px solid var(--secondary-color);
 	overflow: none;
 	height: 500px;
 	position: relative;
+	overflow: hidden;
 }
 
 .content {
@@ -126,8 +142,8 @@ body {
 	padding-left: 10px;
 	width: 96%;
 	max-height: 500px;
-	overflow: auto;
 	position: absolute;
+	overflow: auto;
 }
 
 .chat-messages {
@@ -149,9 +165,16 @@ body {
 }
 
 .chat-bubble {
-	background-color: #bbdefb;
 	border-radius: 15px;
 	clear: both;
+}
+
+.chat-msg-tx .chat-bubble {
+	background-color: var(--outgoing-chat-color);
+}
+
+.chat-msg-rx .chat-bubble {
+	background-color: var(--incoming-chat-color);
 }
 
 .chat-msg {
@@ -164,6 +187,7 @@ body {
 .chat-time {
 	font-size: 14px;
 	padding: 2px 15px 10px 15px;
+	color: #555;
 }
 
 .chat-msg-tx .chat-time {
@@ -179,7 +203,7 @@ body {
 }
 
 .conversation {
-	background-color: #bbdefb;
+	background-color: var(--tertiary-color);
 	border-radius: 15px;
 	margin: 15px 5px 15px 5px;
 	padding: 10px 15px 10px 15px;
@@ -187,8 +211,16 @@ body {
 	cursor: pointer;
 }
 
+.conversation .presence-indicator {
+	border: 2px solid var(--secondary-color);
+}
+
 .unread {
 	font-weight: bold;
+}
+
+.pinned {
+	border: 5px solid #444444;
 }
 
 .setting-row {
@@ -207,16 +239,16 @@ body {
 }
 
 .footer {
-	border: 2px solid #cfd8dc;
+	border: 2px solid var(--primary-color);
 	padding: 25px;
-	background-color: #cfd8dc;
+	background-color: var(--primary-color);
 	border-radius: 0px 0px 15px 15px;
 	text-align: center;
 	min-height: 42px;
 }
 
 #chat-text {
-	width: 79%;
+	width: 75%;
 	padding: 5px;
 	font-size: 18px;
 }
@@ -234,5 +266,86 @@ button {
 
 .original-hidden {
 	display: none;
+}
+
+@media screen and (min-width: 350px) {
+	body {
+		width: 100%;
+		margin: 0px;
+		overflow: hidden;
+	}
+	.header {
+		margin-top: 0px;
+		border-radius: 0px;
+	}
+	.footer {
+		border-radius: 0px;
+		padding: 25px 10px 25px 10px;
+	}
+	.chat-time, .last-heard {
+		font-size: 16px;
+	}
+	.viewport {
+		height: calc(100vh - 269px);
+	}
+	.content{
+		max-height: calc(100vh - 269px);
+	}
+}
+
+@media screen and (min-width: 700px) {
+	body {
+		max-width: 700px;
+		margin: auto;
+		margin-top: 20px;
+		overflow: hidden;
+	}
+	.header {
+		margin-top: 10px;
+		border-radius: 15px 15px 0px 0px;
+	}
+	.footer {
+		border-radius: 0px 0px 15px 15px;
+		padding: 35px; 25px; 35px; 25px;
+	}
+	.conversation {
+		padding: 10px 15px 10px 15px;
+	}
+	.chat-time, .last-heard {
+		font-size: 14px;
+	}
+	.viewport {
+		height: 500px;
+	}
+	.content{
+		max-height: 500px;
+		padding-left: 15px;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--primary-color: #29434e;
+		--secondary-color: #90a4ae;
+		--tertiary-color: #cfd8dc;
+
+		--outgoing-chat-color: #607d8b;
+		--incoming-chat-color: var(--tertiary-color);
+	}
+	body, button, #chat-text {
+		background-color: var(--tertiary-color);
+	}
+	.viewport {
+		border-color: var(--secondary-color);
+	}
+	.header, .details, .chat-msg-tx .chat-bubble, .chat-msg-tx .chat-time {
+		color: var(--tertiary-color);
+	}
+	.chat-msg-rx .chat-bubble, .chat-msg-rx .chat-time {
+		color: var(--primary-color);
+	}
+	.conversation {
+		color: var(--primary-color);
+	}
 }
 

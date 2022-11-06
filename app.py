@@ -38,7 +38,7 @@ def chat():
         'username': username,
         'history': user_chat_history(username),
         'presence': presence(last_heard_timestamp),
-        'last_heard': last_heard_text(last_heard_timestamp)
+        'last_heard': last_heard_minutes(last_heard_timestamp)
     }
     print(chat_data)
 
@@ -78,6 +78,32 @@ def rx_msg(msg):
 def log(data):
     print('\tlog: ' + str(data['msg']))
 
+@socketio.on('heard-user')
+def heard_user(data):
+    last_heard = user_last_heard_timestamp(data['user'])
+
+    if last_heard != None:
+        last_heard = last_heard_minutes(last_heard)
+        socketio.emit('heard-user', last_heard)
+
+#TODO
+@socketio.on('test-conv')
+def test_conv():
+    spots = [{
+    'username': 'HG5HTG',
+    'last_heard': 5
+    }]
+    socketio.emit('heard-list', spots)
+
+
+@socketio.on('pin')
+def pin_user(data):
+    pass
+
+@socketio.on('unpin')
+def unpin_user(data):
+    pass
+
 
 
 ### helper functions
@@ -85,40 +111,21 @@ def log(data):
 def local_time_str(timestamp):
     return time.strftime('%X%p', time.localtime(timestamp))
 
-def last_heard_text(timestamp):
-    #TODO
-    return '1 minute'
-
-    text = ''
-
-    since = time.time() - timestamp
-    if since < 60:
-        return 'now'
-    elif since < (60 * 60):
-        # convert to minutes
-        num = int(since / 60)
-        text += str(num) + ' minute'
-        if num > 1:
-            text += 's'
-    elif since < (60 * 60 * 24):
-        # convert to hours
-        num = int(since / (60 * 60))
-        text += str(num) + ' hour'
-        if num > 1:
-            text += 's'
-    else:
-        # convert to days
-        num = int(since / (60 * 60 * 24))
-        text += str(num) + ' day'
-        if num > 1:
-            text += 's'
-
-    return 'Last heard ' + text + ' ago'
+def last_heard_minutes(timestamp):
+    return int((time.time() - timestamp) / 60)
 
 
-#TODO
 def user_last_heard_timestamp(username):
-    return '8:57pm'
+    #TODO
+    return time.time() - random.randint(0, 60 * 60)
+
+    spots = js8call.get_station_spots(station = username)
+
+    if len(spots) > 0:
+        spots.sort(key = lambda spot: spot['time'])
+        return spots[-1]
+    else:
+        return None
 
 #TODO
 def presence(timestamp):
@@ -128,6 +135,78 @@ def presence(timestamp):
 #TODO
 def user_chat_history(username):
     history = []
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'rx',
+        'time': '8:56pm',
+        'text': 'Hello there, how are you?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'tx',
+        'time': '8:57pm',
+        'text': 'Hey! Good, how about you?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'rx',
+        'time': '8:57pm',
+        'text': 'Glad to hear it. What\'s new?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'tx',
+        'time': '8:58pm',
+        'text': 'Not much new here',
+        'tx_status': 'Sending...'
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'rx',
+        'time': '8:56pm',
+        'text': 'Hello there, how are you?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'tx',
+        'time': '8:57pm',
+        'text': 'Hey! Good, how about you?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'rx',
+        'time': '8:57pm',
+        'text': 'Glad to hear it. What\'s new?',
+        'tx_status': None
+    }
+    history.append(chat)
+
+    chat = {
+        'id': secrets.token_urlsafe(16),
+        'type': 'tx',
+        'time': '8:58pm',
+        'text': 'Not much new here',
+        'tx_status': 'Sending...'
+    }
+    history.append(chat)
+
     chat = {
         'id': secrets.token_urlsafe(16),
         'type': 'rx',
@@ -178,7 +257,7 @@ def heard(spots):
     for username, timestamp in heard_data.items():
         heard = {
             'username': username, 
-            'time': last_heard_text(timestamp)
+            'last_heard': last_heard_minutes(timestamp)
             }
         socketio.emit('heard', heard)
 

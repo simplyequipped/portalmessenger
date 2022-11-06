@@ -1,11 +1,13 @@
 
-		function newConversation(username) {
+		function newConversation(username, presence, last_heard) {
 			newConv = $(".original-hidden").clone();
 			newConv.attr("name", username)
 			newConv.find(".chat-name").html(username);
 			newConv.click(conversationClick)
 			newConv.removeClass("original-hidden");
 			newConv.appendTo(".content");
+			setPresence(username, presence);
+			setLastHeard(username, last_heard);
 		}
 
 		function findConversation(username) {
@@ -42,7 +44,9 @@
 		}
 
 		function setLastHeard(username, last_heard) {
-			findConversation(username).find('.last-heard').html(last_heard);
+			conv = findConversation(username).find('.last-heard');
+			conv.attr('data-last-heard-minutes', last_heard);
+			conv.html(lastHeardText(last_heard));
 		}
 
 		function markRead(username) {
@@ -68,6 +72,19 @@
             $.post('/conversations', {user: username}, function() {
             	window.location = "/chat";
 			});
+		}
+
+		function sortConversations() {
+			var conversations = $('.conversation').not('.original-hidden');
+
+			conversations.sort(function(convA, convB) {
+				convALastHeard = parseInt( $(convA).find('.last-heard').attr('data-last-heard-minutes') );
+				convBLastHeard = parseInt( $(convB).find('.last-heard').attr('data-last-heard-minutes') );
+				return convALastHeard - convBLastHeard;
+			});
+
+			$('.conversation').not('.original-hidden').detach();
+			conversations.appendTo('.content');
 		}
 
 

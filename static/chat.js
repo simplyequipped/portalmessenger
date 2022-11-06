@@ -15,7 +15,6 @@
 
             newMsg.removeClass("original-hidden");
             newMsg.appendTo(".chat-messages");
-            scrollChat();
         }
 
         function setTxStatus(id, tx_status) {
@@ -73,4 +72,8 @@
         function sendMsg(msg_text) {
             socket.emit('tx msg', {msg: msg_text})
         }
+
+		function setLastHeard(last_heard) {
+			$('.last-heard').html(lastHeardText(last_heard));
+		}
 

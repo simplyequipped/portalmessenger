@@ -2,11 +2,13 @@
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
-		<link rel="stylesheet" type="text/css" href="../static/style.css" />
+		<link rel="stylesheet" type="text/css" href="../static/style.css">
+		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
 		<script src="../static/jquery.min.js"></script>
 		<script src="../static/socket.io.min.js"></script>
 		<script src="../static/common.js"></script>
 		<script src="../static/conversation.js"></script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
     <body>
 	    <div class="header">
@@ -34,28 +36,34 @@
 	<script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        socket.on('connect', function() {
-            socket.emit('log', {msg: 'Connected to socket'});
-        });
+        //socket.on('connect', function() {
+        //});
 
-		socket.on('heard', function( data ) {
-			if ( findConversation(data.username).length == 0 ) {
-				newConversation(data.username);
-			}
-			setPresence(data.username, 'active');
-			setLastHeard(data.username, data.last_heard);
+		socket.on('heard-list', function( data ) {
+			data.forEach(function (station) {
+				if ( findConversation(station.username).length == 0 ) {
+					newConversation(station.username, 'active', station.last_heard);
+				}
+				else {
+					setPresence(station.username, 'active');
+					setLastHeard(station.username, station.last_heard);
+				}
+			});
+			sortConversations();
 		});
 
-		newConversation("Timothy Smith");
-		setPresence("Timothy Smith", "active");
-		setLastHeard("Timothy Smith", "2 minutes ago");
-		newConversation("Someone Else");
-		setPresence("Someone Else", "unknown");
-		setLastHeard("Someone Else", "1 day ago");
-		newConversation("Jane Doe");
-		setPresence("Jane Doe", "inactive");
-		setLastHeard("Jane Doe", "3 hours ago");
-		
-		markUnread("Timothy Smith");
+		$(window).on('load', function(){
+			newConversation("HGOULD5", "active", 60*24);
+			newConversation("BKG14", "active", 37);
+			newConversation("A4GOULD", "unknown", 2);
+			newConversation("DRWNICK87", "inactive", 60*3);
+			sortConversations();
+			setTimeout(function () {socket.emit('test-conv');}, 5000);
+		});
+
+		//setInterval(function() {
+		//	socket.emit('heard-list')
+		//}, 1000 * 10);
+
 	</script>
 </html>
