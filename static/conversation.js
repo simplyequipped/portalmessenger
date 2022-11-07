@@ -1,19 +1,25 @@
 
-		function newConversation(username, presence, last_heard) {
+		// construct new conversation based on given username and minutes since last heard
+		function newConversation(username, last_heard, unread) {
 			newConv = $(".original-hidden").clone();
 			newConv.attr("name", username)
 			newConv.find(".chat-name").html(username);
 			newConv.click(conversationClick)
 			newConv.removeClass("original-hidden");
 			newConv.appendTo(".content");
-			setPresence(username, presence);
 			setLastHeard(username, last_heard);
+
+			if ( unread !== undefined && unread === true) {
+				markUnread(username);
+			}
 		}
 
+		// find a return the conversation DOM element based on given username 
 		function findConversation(username) {
 			return $(".conversation[name='" + username + "']");
 		}
 
+		// get conversation presence status based on given username
 		function getPresence(username) {
 			conv = findConversation(username)
 			if ( conv.find('.presence-indicator').hasClass("presence-active") ) {
@@ -28,9 +34,9 @@
 			else {
 				return "none";
 			}
-
 		}
 
+		// set conversation to given presence based on given username
 		function setPresence(username, presence) {
 			conv = findConversation(username);
 			presenceElement = conv.find('.presence-indicator');
@@ -43,12 +49,21 @@
 			presenceElement.addClass("presence-" + presence);
 		}
 
-		function setLastHeard(username, last_heard) {
-			conv = findConversation(username).find('.last-heard');
-			conv.attr('data-last-heard-minutes', last_heard);
-			conv.html(lastHeardText(last_heard));
+		// determine and set presence based on minutes since last heard
+		function updatePresence(username, last_heard_minutes) {
+			setPresence(username, presenceText(last_heard_minutes));
 		}
 
+		// update converation last heard time and presence based on given
+		// username and minutes since last heard
+		function setLastHeard(username, last_heard) {
+			convLastHeard = findConversation(username).find('.last-heard');
+			convLastHeard.attr('data-last-heard-minutes', last_heard);
+			convLastHeard.html(lastHeardText(last_heard));
+			updatePresence(username, last_heard);
+		}
+
+		// mark conversation as read based on username
 		function markRead(username) {
 			conv = findConversation(username);
 			chatNameElement = conv.find('.chat-name');
@@ -58,6 +73,7 @@
 			}
 		}
 
+		// mark conversation as unread based on username
 		function markUnread(username) {
 			conv = findConversation(username);
 			chatNameElement = conv.find('.chat-name');
@@ -67,6 +83,7 @@
 			}
 		}
 
+		// on click event handler for conversations div
 		function conversationClick() {
 		    var username = $(this).attr("name");
             $.post('/conversations', {user: username}, function() {
@@ -74,6 +91,7 @@
 			});
 		}
 
+		// sort conversations in ascending order by last heard time
 		function sortConversations() {
 			var conversations = $('.conversation').not('.original-hidden');
 
@@ -86,5 +104,6 @@
 			$('.conversation').not('.original-hidden').detach();
 			conversations.appendTo('.content');
 		}
+
 
 

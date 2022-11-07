@@ -59,19 +59,19 @@
         socket.on('msg', function( msg ) {
             newChatMessage(msg);
 			scrollChat();
-			setLastHeard(0);
+			if ( msg.type == 'rx' ) {
+				setLastHeard(msg.time);
+			}
         });
 
-		socket.on('heard-user', function ( minutes ) {
-			setLastHeard(minutes);
+		socket.on('heard-user', function ( last_heard ) {
+			setLastHeard(last_heard);
 		});
 
 		$('#chat-text-form').submit(function( event ){
 			event.preventDefault();
-			msg_text = $('#chat-text').val();
-			$('#chat-text').val("");
-			socket.emit('msg', {msg: msg_text})
-
+			socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
+			$('#chat-text').val('');
 		});
 
 		$(window).on('load', function(){
@@ -80,7 +80,8 @@
 		});
 
 		setInterval(function (){
-			socket.emit('heard-user', {user: $('.chat-name').html()});
+			//socket.emit('heard-user', {user: $('.chat-name').html()});
+			setLastHeard( parseInt( $('.last-heard').attr('data-last-heard') ) );
 		}, 1000 * 60);
 	</script>
 </html>

@@ -42,28 +42,34 @@
 		socket.on('heard-list', function( data ) {
 			data.forEach(function (station) {
 				if ( findConversation(station.username).length == 0 ) {
-					newConversation(station.username, 'active', station.last_heard);
+					newConversation(station.username, station.last_heard, station.unread);
 				}
 				else {
-					setPresence(station.username, 'active');
 					setLastHeard(station.username, station.last_heard);
+
+					if ( station.unread ) {
+						markUnread(station.username);
+					}
+					else {
+						markRead(station.username);
+					}
 				}
 			});
 			sortConversations();
 		});
 
 		$(window).on('load', function(){
-			newConversation("HGOULD5", "active", 60*24);
-			newConversation("BKG14", "active", 37);
-			newConversation("A4GOULD", "unknown", 2);
-			newConversation("DRWNICK87", "inactive", 60*3);
-			sortConversations();
-			setTimeout(function () {socket.emit('test-conv');}, 5000);
+			//newConversation("BKG14", 37);
+			//newConversation("A4GOULD", 2);
+			//newConversation("DRWNICK87", 60*3);
+			//sortConversations();
+			//setTimeout(function () {socket.emit('test-conv');}, 5000);
+			socket.emit('heard-list');
 		});
 
-		//setInterval(function() {
-		//	socket.emit('heard-list')
-		//}, 1000 * 10);
+		setInterval(function() {
+			socket.emit('heard-list');
+		}, 1000 * 10);
 
 	</script>
 </html>

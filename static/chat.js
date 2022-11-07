@@ -3,14 +3,14 @@
             newMsg = $(".original-hidden").clone();
             newMsg.attr('id', msg.id)
             newMsg.addClass('chat-msg-' + msg.type);
-            newMsg.find('.chat-time').html(msg.time);
+            newMsg.find('.chat-time').html(timeString(msg.time));
             newMsg.find('.chat-msg').html(msg.text);
 
-            if ( msg.tx_status == null ) {
+            if ( msg.sent == null ) {
                 newMsg.find('.chat-status').remove();
             }
             else {
-                newMsg.find('.chat-status').html(msg.tx_status);
+                newMsg.find('.chat-status').html(msg.sent);
             }
 
             newMsg.removeClass("original-hidden");
@@ -26,17 +26,6 @@
 
         function removeTxStatus(id) {
             $('#'+ id).find('chat-status').remove();
-        }
-
-        function initChat(user_data) {
-            console.log(user_data.username);
-            $('.chat-name').html(user_data.username);
-            $('.last-heard').html('Last heard ' + user_data.heard + ' ago');
-            setPresence(user_data.presence);
-
-            $.each(user_data.history, function(index, value) {
-                newChatMessage(value);
-            });
         }
 
 		function scrollChat() {
@@ -62,7 +51,7 @@
 		function setPresence(presence) {
 			currentPresence = getPresence();
 
-			if ( currentPresence !== "none" ) {
+			if ( currentPresence != "none" ) {
 				$('.presence-indicator').removeClass("presence-" + currentPresence);
 			}
 
@@ -70,10 +59,26 @@
 		}
 
         function sendMsg(msg_text) {
-            socket.emit('tx msg', {msg: msg_text})
+            socket.emit('tx msg', {msg: msg_text});
         }
 
 		function setLastHeard(last_heard) {
-			$('.last-heard').html(lastHeardText(last_heard));
+			now = new Date();
+			then = new Date(last_heard * 1000);
+
+			last_heard_minutes = Math.floor( ((now - then) / 1000) / 60 );
+
+			lastHeardElement = $('.last-heard');
+			lastHeardElement.html(lastHeardText(last_heard_minutes));
+			lastHeardElement.attr('data-last-heard', Math.floor(last_heard));
+			updatePresence(last_heard_minutes);
 		}
+
+		function updatePresence(last_heard_minutes) {
+			setPresence(presenceText(last_heard_minutes));
+		}
+
+
+
+
 

@@ -2,6 +2,7 @@ import json
 import secrets
 import random
 import time
+import sqlite3
 
 import pyjs8call
 
@@ -23,7 +24,7 @@ socketio = SocketIO(app)
 @app.route('/conversations.html', methods=['GET', 'POST'])
 def conversations():
     if request.method == 'POST':
-        session['username'] = request.form.get('user')
+        session['active_chat_username'] = request.form.get('user')
         return ''
     else:
         return render_template('conversations.html')
@@ -31,16 +32,13 @@ def conversations():
 @app.route('/chat')
 @app.route('/chat.html')
 def chat():
-    username = session.get('username')
-    last_heard_timestamp = user_last_heard_timestamp(username)
+    username = session.get('active_chat_username')
 
     chat_data = {
         'username': username,
-        'history': user_chat_history(username),
-        'presence': presence(last_heard_timestamp),
-        'last_heard': last_heard_minutes(last_heard_timestamp)
+        #'history': user_chat_history(username)
+        'history': build_test_msgs(10)
     }
-    print(chat_data)
 
     return render_template('chat.html', chat_data = chat_data)
 
@@ -59,20 +57,16 @@ def set_user(data):
     #print(session['username'])
     pass
 
-@socketio.on('tx msg')
+@socketio.on('msg')
 def tx_msg(data):
-    js8call.send_directed_message(session.get('username'), data['msg'])
+    msg = construct_tx_msg(data['user'], data['text'], time.time())
+    js8call.send_directed_message(msg['to'], msg['text'])
     
+# directed message callback
 def rx_msg(msg):
-    chat_msg = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'incoming',
-        'time': time.strftime('%X%p', time.localtime(msg['time'])).lower(),
-        'text': msg['value'],
-        'tx_status': None
-    }
-
-    socketio.emit('rx msg', chat_msg)
+    msg = construct_rx_msg(msg['from'], msg['value'], msg['time'])
+    if msg['from'] == session.get('active_chat_username'):
+        socketio.emit('msg', msg)
 
 @socketio.on('log')
 def log(data):
@@ -81,20 +75,18 @@ def log(data):
 @socketio.on('heard-user')
 def heard_user(data):
     last_heard = user_last_heard_timestamp(data['user'])
-
     if last_heard != None:
-        last_heard = last_heard_minutes(last_heard)
         socketio.emit('heard-user', last_heard)
 
-#TODO
-@socketio.on('test-conv')
-def test_conv():
-    spots = [{
-    'username': 'HG5HTG',
-    'last_heard': 5
-    }]
+@socketio.on('heard-list')
+def update_heard_list():
+    #TODO
+    spots = [
+        {'username': 'A4GOULD', 'last_heard': random.randint(0, 60), 'unread': False},
+        {'username': 'BKG14', 'last_heard': 37, 'unread': True},
+        {'username': 'DRWNICK87', 'last_heard': 60 * 24, 'unread': False}
+    ]
     socketio.emit('heard-list', spots)
-
 
 @socketio.on('pin')
 def pin_user(data):
@@ -109,7 +101,7 @@ def unpin_user(data):
 ### helper functions
 
 def local_time_str(timestamp):
-    return time.strftime('%X%p', time.localtime(timestamp))
+    return time.strftime('%I:%M%p', time.localtime(timestamp)).lower()
 
 def last_heard_minutes(timestamp):
     return int((time.time() - timestamp) / 60)
@@ -128,124 +120,86 @@ def user_last_heard_timestamp(username):
         return None
 
 #TODO
-def presence(timestamp):
-    #TODO calculate presence based on timestamp
-    return random.choice(['active', 'inactive', 'unknown'])
+def user_chat_history(from_user, to_user):
+    global db
+    query_data = {'from_user': from_user, 'to_user': to_user}
+    # select both sides of the conversation for the given users
+    messages = db.execute('SELECT * FROM messages WHERE (from = :from_user AND to = :to_user) OR (from = :to_user AND to = :from_user)', query_data)
+
+    msgs = []
+    for message in list(messages):
+        msg = {
+            'id': message[0],
+            'from': message[1],
+            'to': message[2],
+            'type': message[3],
+            'time': message[4],
+            'text': message[5],
+            'unread': message[6],
+            'sent': message[7]
+        }
+        msgs.append(msg)
+
+    return msgs.sort(key = lambda msg: msg['time'])
+    
 
 #TODO
-def user_chat_history(username):
-    history = []
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'rx',
-        'time': '8:56pm',
-        'text': 'Hello there, how are you?',
-        'tx_status': None
-    }
-    history.append(chat)
+def build_test_msgs(count):
+    active_chat_username = session.get('active_chat_username')
+    logged_in_username = 'KC3KVT'
+    msgs = []
+    last_from = logged_in_username
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'tx',
-        'time': '8:57pm',
-        'text': 'Hey! Good, how about you?',
-        'tx_status': None
-    }
-    history.append(chat)
+    for i in range(count):
+        if last_from == logged_in_username:
+            from_user = active_chat_username
+        else:
+            from_user = logged_in_username;
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'rx',
-        'time': '8:57pm',
-        'text': 'Glad to hear it. What\'s new?',
-        'tx_status': None
-    }
-    history.append(chat)
+        last_from = from_user
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'tx',
-        'time': '8:58pm',
-        'text': 'Not much new here',
-        'tx_status': 'Sending...'
-    }
-    history.append(chat)
+        if from_user == active_chat_username:
+            to_user = logged_in_username
+        else:
+            to_user = active_chat_username
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'rx',
-        'time': '8:56pm',
-        'text': 'Hello there, how are you?',
-        'tx_status': None
-    }
-    history.append(chat)
+        if from_user == logged_in_username:
+            msg_type = 'tx'
+        else:
+            msg_type = 'rx'
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'tx',
-        'time': '8:57pm',
-        'text': 'Hey! Good, how about you?',
-        'tx_status': None
-    }
-    history.append(chat)
+        if msg_type == 'rx':
+            unread = random.choice([True, False])
+        else:
+            unread = None
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'rx',
-        'time': '8:57pm',
-        'text': 'Glad to hear it. What\'s new?',
-        'tx_status': None
-    }
-    history.append(chat)
+        messages = [
+            'Hello there neighbor!',
+            'Hey there, how are you doing?',
+            'Doing good here, how about you?',
+            'Doing well, thanks for asking',
+            'Hope to see you all soon! Tell everyone there hello.'
+        ]
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'tx',
-        'time': '8:58pm',
-        'text': 'Not much new here',
-        'tx_status': 'Sending...'
-    }
-    history.append(chat)
+        msg = {
+            'id': secrets.token_urlsafe(16),
+            'from': from_user,
+            'to': to_user,
+            'type': msg_type,
+            'time': local_time_str(time.time() - random.randint(0, 60 * 60)),
+            'text': random.choice(messages),
+            'unread': unread,
+            'sent': None
+        }
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'rx',
-        'time': '8:56pm',
-        'text': 'Hello there, how are you?',
-        'tx_status': None
-    }
-    history.append(chat)
+        msgs.append(msg)
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'tx',
-        'time': '8:57pm',
-        'text': 'Hey! Good, how about you?',
-        'tx_status': None
-    }
-    history.append(chat)
+    return msgs
 
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'rx',
-        'time': '8:57pm',
-        'text': 'Glad to hear it. What\'s new?',
-        'tx_status': None
-    }
-    history.append(chat)
-
-    chat = {
-        'id': secrets.token_urlsafe(16),
-        'type': 'tx',
-        'time': '8:58pm',
-        'text': 'Not much new here',
-        'tx_status': 'Sending...'
-    }
-    history.append(chat)
-
-    return history
 
 def heard(spots):
+    global db
+
     # only unique spots with the latest timestamp
     heard_data = {}
     for spot in spots:
@@ -259,7 +213,64 @@ def heard(spots):
             'username': username, 
             'last_heard': last_heard_minutes(timestamp)
             }
-        socketio.emit('heard', heard)
+
+    #socketio.emit('heard-list', heard)
+    db.executemany()
+
+def construct_rx_msg(callsign, text, time):
+    global db
+    msg = {
+        'id': secrets.token_urlsafe(16),
+        'from': callsign,
+        'to': session.get('logged_in_user'),
+        'type': 'rx',
+        'time': time,
+        'text': text,
+        'unread': True,
+        'sent': None
+    }
+    
+    db.execute('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
+    db.commit()
+    return msg
+
+def construct_tx_msg(callsign, text, time):
+    global db
+    msg = {
+        'id': secrets.token_urlsafe(16),
+        'from': session.get('logged_in_user'),
+        'to': callsign,
+        'type': 'tx',
+        'time': time,
+        'text': text,
+        'unread': None,
+        'sent': 'Sending...'
+    }
+    
+    db.execute('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
+    db.commit()
+    return msg
+
+
+### database functions
+
+def configure_db(db):
+    table_names = db.execute('SELECT name FROM sqlite_master').fetchall()
+    #TODO
+    print(table_names)
+
+    if 'settings' not in table_names:
+        db.execute('CREATE TABLE settings(name, value)')
+        #TODO initialize settings
+
+    if 'messages' not in table_names:
+        db.execute('CREATE TABLE messages(id, from, to, type, time, text, unread, sent)')
+    
+    if 'spots' not in table_names:
+        db.execute('CREATE TABLE spots(callsign, time)')
+
+
+
 
 
 
@@ -272,9 +283,17 @@ def heard(spots):
 #js8call.set_config_profile('Portal')
 #js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
 #js8call.start()
-#js8call.spot_monitor.set_new_spot_callback(heard)
+
 
 
 if __name__ == 'main':
+    # initialize socket io
     socketio.run(app, debug=True)
+
+    # initialize database
+    db_con = sqlite3.connect('portal.db', detect_types=sqlite3.PARSE_DECLTYPES)
+    sqlite3.register_adapter(bool, int)
+    sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
+    db = db_con.cursor()
+    configure_db(db)
 
