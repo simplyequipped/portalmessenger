@@ -20,14 +20,14 @@ socketio = SocketIO(app)
 ### flask routes and template handling
 
 @app.route('/')
-@app.route('/conversations', methods=['GET', 'POST'])
-@app.route('/conversations.html', methods=['GET', 'POST'])
-def conversations():
+@app.route('/stations', methods=['GET', 'POST'])
+@app.route('/stations.html', methods=['GET', 'POST'])
+def stations():
     if request.method == 'POST':
         session['active_chat_username'] = request.form.get('user')
         return ''
     else:
-        return render_template('conversations.html')
+        return render_template('stations.html')
 
 @app.route('/chat')
 @app.route('/chat.html')
@@ -78,15 +78,15 @@ def heard_user(data):
     if last_heard != None:
         socketio.emit('heard-user', last_heard)
 
-@socketio.on('heard-list')
-def update_heard_list():
+@socketio.on('spot')
+def update_spots():
     #TODO
     spots = [
-        {'username': 'A4GOULD', 'last_heard': random.randint(0, 60), 'unread': False},
-        {'username': 'BKG14', 'last_heard': 37, 'unread': True},
-        {'username': 'DRWNICK87', 'last_heard': 60 * 24, 'unread': False}
+        {'username': 'A4GOULD', 'last_heard': user_last_heard_timestamp(''), 'unread': False},
+        {'username': 'BKG14', 'last_heard': user_last_heard_timestamp(''), 'unread': False},
+        {'username': 'DRWNICK87', 'last_heard': user_last_heard_timestamp(''), 'unread': False}
     ]
-    socketio.emit('heard-list', spots)
+    socketio.emit('spot', spots)
 
 @socketio.on('pin')
 def pin_user(data):

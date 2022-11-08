@@ -59,7 +59,7 @@
 		}
 
         function sendMsg(msg_text) {
-            socket.emit('tx msg', {msg: msg_text});
+            socket.emit('msg', {msg: msg_text});
         }
 
 		function setLastHeard(last_heard) {

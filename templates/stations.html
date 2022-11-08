@@ -7,7 +7,7 @@
 		<script src="../static/jquery.min.js"></script>
 		<script src="../static/socket.io.min.js"></script>
 		<script src="../static/common.js"></script>
-		<script src="../static/conversation.js"></script>
+		<script src="../static/stations.js"></script>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
     <body>
@@ -16,7 +16,8 @@
 		    <a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>
 		</div>
 		<div class="details">
-			<div class="details-name">Conversations</div>
+			<div class="details-name tab" id="tab-activity">Activity</div>
+			<div class="details-name tab" id="tab-conversations">Conversations</div>
 		</div>
 		<div class="viewport">
 			<div class="content">
@@ -39,7 +40,7 @@
         //socket.on('connect', function() {
         //});
 
-		socket.on('heard-list', function( data ) {
+		socket.on('spot', function( data ) {
 			data.forEach(function (station) {
 				if ( findConversation(station.username).length == 0 ) {
 					newConversation(station.username, station.last_heard, station.unread);
@@ -55,21 +56,37 @@
 					}
 				}
 			});
+			findConversation('BKG14').addClass('spot');
+			findConversation('A4GOULD').addClass('spot');
 			sortConversations();
 		});
 
 		$(window).on('load', function(){
-			//newConversation("BKG14", 37);
-			//newConversation("A4GOULD", 2);
-			//newConversation("DRWNICK87", 60*3);
-			//sortConversations();
-			//setTimeout(function () {socket.emit('test-conv');}, 5000);
-			socket.emit('heard-list');
+			$('#tab-activity').click(function(){
+				$('.spot').show();
+				$('#tab-conversations').removeClass('selected');
+				$('#tab-activity').addClass('selected');
+			});
+
+			$('#tab-conversations').click(function(){
+				$('.spot').hide();
+				$('#tab-activity').removeClass('selected');
+				$('#tab-conversations').addClass('selected');
+			});
+
+			$('#tab-activity').addClass('selected');
+			socket.emit('spot');
 		});
 
 		setInterval(function() {
-			socket.emit('heard-list');
-		}, 1000 * 10);
+			//socket.emit('heard-list');
+			$('.conversation').not('.original-hidden').each(function() {
+				username = $(this).attr('name');
+				timestamp = parseInt( $(this).find('.last-heard').attr('data-last-heard') );
+				setLastHeard(username, timestamp);
+			});
+
+		}, 1000 * 60);
 
 	</script>
 </html>

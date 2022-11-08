@@ -14,6 +14,7 @@
 
 body {
 	font-family: sans-serif;
+	color: #333;
 	width: 30%;
 	margin: 20px 0px 0px 20px;
 }
@@ -31,63 +32,42 @@ body {
 
 .icon {
 	float: right;
-	height: 40px;
-	width: 40px;
+	height: 45px;
+	width: 45px;
 	cursor: pointer;
 	margin-left: 15px;
+	mask-size: cover;
+	background: var(--secondary-color);
+}
+
+.icon:hover, .icon:focus {
+	background: var(--tertiary-color);
 }
 
 .icon-settings {
-	background: url('icons/gear-hollow.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
-}
-
-.icon-settings:hover {
-	background: url('icons/gear-solid.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
+	-webkit-mask-image: url('icons/gear-hollow.svg');
 }
 
 .icon-chat {
-	background: url('icons/chat-hollow.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
-}
-
-.icon-chat:hover {
-	background: url('icons/chat-solid.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
+	-webkit-mask-image: url('icons/chat-hollow.svg');
 }
 
 .icon-list {
-	background: url('icons/list-hollow.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
-}
-
-.icon-list:hover {
-	background: url('icons/list-solid.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
+	-webkit-mask-image: url('icons/list-hollow.svg');
 }
 
 .icon-back {
-	background: url('icons/arrow-left.svg');
-       	background-repeat: no-repeat;
-	background-size: 40px 40px;
-}
-
-.icon-back:hover {
-	height: 50px;
-	width: 50px;
+	-webkit-mask-image: url('icons/arrow-left.svg');
 }
 
 .details {
-	border: 2px solid var(--primary-color);
-	padding: 10px 15px 10px 15px;
+	/* border: 2px solid var(--primary-color); */
+	padding: 15px 15px 0px 15px;
 	background-color: var(--primary-color);
+}
+
+.chat-details {
+	padding-bottom: 15px;
 }
 
 .presence-indicator {
@@ -95,7 +75,7 @@ body {
 	height: 22px;
 	width: 22px;
 	border-radius: 50%;
-	margin: 0px 10px 0px 0px;
+	margin-right: 10px;
     position: relative;
     top: 2px;
 }
@@ -118,6 +98,29 @@ body {
 .details-name, .chat-name {
 	font-size: 22px;
 	display: inline-block;
+}
+
+.tab {
+	border: 2px solid var(--primary-color);
+	border-radius: 15px 15px 0px 0px;
+	background-color: var(--secondary-color);
+	padding: 7px 15px 3px 15px;
+	margin-right: 10px;
+	cursor: pointer;
+	text-align: center;
+}
+
+#tab-activity {
+	width: 80px;
+}
+
+#tab-conversations {
+	width: 155px;
+}
+
+.selected {
+	font-weight: bold;
+	border-color: var(--secondary-color);
 }
 
 .last-heard {
@@ -198,7 +201,7 @@ body {
 	font-size: 14px;
 	text-align: right;
 	margin-right: 15px;
-	color: #777;
+	color: var(--primary-color);
 	clear: both;
 }
 
@@ -346,6 +349,14 @@ button {
 	}
 	.conversation {
 		color: var(--primary-color);
+	}
+	.tab {
+		border-color: var(--primary-color);
+		background-color: var(--secondary-color);
+		color: var(--primary-color);
+	}
+	.selected {
+		border-color: var(--secondary-color);
 	}
 }
 

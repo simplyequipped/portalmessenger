@@ -45,7 +45,6 @@
 			if ( getPresence(username) !== "none" ) {
 				presenceElement.removeClass("presence-" + currentPresence);
 			}
-
 			presenceElement.addClass("presence-" + presence);
 		}
 
@@ -57,10 +56,14 @@
 		// update converation last heard time and presence based on given
 		// username and minutes since last heard
 		function setLastHeard(username, last_heard) {
+			now = new Date();
+			then = new Date(last_heard * 1000);
+			last_heard_minutes = Math.floor( ((now - then) / 1000) / 60 );
+
 			convLastHeard = findConversation(username).find('.last-heard');
-			convLastHeard.attr('data-last-heard-minutes', last_heard);
-			convLastHeard.html(lastHeardText(last_heard));
-			updatePresence(username, last_heard);
+			convLastHeard.attr('data-last-heard', Math.floor(last_heard));
+			convLastHeard.html(lastHeardText(last_heard_minutes));
+			updatePresence(username, last_heard_minutes);
 		}
 
 		// mark conversation as read based on username
@@ -85,9 +88,9 @@
 
 		// on click event handler for conversations div
 		function conversationClick() {
-		    var username = $(this).attr("name");
-            $.post('/conversations', {user: username}, function() {
-            	window.location = "/chat";
+		    var username = $(this).attr('name');
+            $.post('/stations', {user: username}, function() {
+            	window.location = '/chat';
 			});
 		}
 
@@ -96,9 +99,9 @@
 			var conversations = $('.conversation').not('.original-hidden');
 
 			conversations.sort(function(convA, convB) {
-				convALastHeard = parseInt( $(convA).find('.last-heard').attr('data-last-heard-minutes') );
-				convBLastHeard = parseInt( $(convB).find('.last-heard').attr('data-last-heard-minutes') );
-				return convALastHeard - convBLastHeard;
+				convALastHeard = parseInt( $(convA).find('.last-heard').attr('data-last-heard') );
+				convBLastHeard = parseInt( $(convB).find('.last-heard').attr('data-last-heard') );
+				return convBLastHeard - convALastHeard;
 			});
 
 			$('.conversation').not('.original-hidden').detach();
