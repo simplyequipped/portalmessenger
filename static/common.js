@@ -28,10 +28,10 @@
 		}
 
 		function presenceText(minutes) {
-			if ( minutes <= 10 ) {
+			if ( minutes < 10 ) {
 				return 'active';
 			}
-			else if ( minutes <= 60 ) {
+			else if ( minutes < 60 ) {
 				return 'inactive';
 			}
 			else {
