@@ -32,7 +32,8 @@
 			</div>
 
 		</div>
-		<div class="footer">&nbsp;</div>
+		<div class="footer"><div class="new-conversation"><div>+</div></div></div>
+		<div class="footer"><div class="new-conversation">+</div></div>
 
     </body>
 	<script>
@@ -71,6 +72,10 @@
 				// show conversations, including spots that are also conversations
 				$('.spot').hide();
 				$('.conversation').show();
+			});
+
+			$('#new-conversation').click(function(){
+                
 			});
 
 			// request station data from the server
