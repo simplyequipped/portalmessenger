@@ -85,15 +85,25 @@
 				timestamp = parseInt( $(this).find('.last-heard').attr('data-last-heard') );
 
 				// cull spots older than 10 miuntes
-				if ( $(this).hasClass('spot') && !$(this).hasClass('conversation') ) {
-					now = new Date();
+				if ( $(this).hasClass('spot') ) {
+			        now = new Date();
 					then = new Date( timestamp * 1000 );
 					lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
 
 					if ( lastHeardMinutes >= 10 ) {
-						$(this).remove()
-						// continue with next iteration
-						return true;
+                        if ( $(this).hasClass('conversation') ) {
+                            $(this).removeClass('spot');
+                            
+
+                            if ( selectedTab() == 'activity' ) {
+                                $(this).hide();
+                            }
+                        }
+				        else {
+						    $(this).remove();
+						    // continue with next iteration
+						    return true;
+                        }
 					}
 				}
 

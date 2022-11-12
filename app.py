@@ -120,7 +120,7 @@ def unpin_user(data):
 
 def user_last_heard_timestamp(username):
     #TODO
-    return time.time() - random.randint(0, 60 * 60)
+    return time.time() - random.randint(0, 60 * 10)
 
     spots = js8call.get_station_spots(station = username)
 
