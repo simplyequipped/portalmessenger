@@ -27,6 +27,9 @@ def stations():
         session['active_chat_username'] = request.form.get('user')
         return ''
     else:
+        if 'active_chat_username' in session.keys():
+            del session['active_chat_username']
+
         return render_template('stations.html')
 
 @app.route('/chat')
@@ -59,13 +62,13 @@ def set_user(data):
 
 @socketio.on('msg')
 def tx_msg(data):
-    msg = construct_tx_msg(data['user'], data['text'], time.time())
+    msg = process_tx_msg(data['user'], data['text'], time.time())
     js8call.send_directed_message(msg['to'], msg['text'])
     
 # directed message callback
 def rx_msg(msg):
-    msg = construct_rx_msg(msg['from'], msg['value'], msg['time'])
-    if msg['from'] == session.get('active_chat_username'):
+    msg = process_rx_msg(msg['from'], msg['value'], msg['time'])
+    if 'active_chat_username' in session.keys() and msg['from'] == session.get('active_chat_username'):
         socketio.emit('msg', msg)
 
 @socketio.on('log')
@@ -78,15 +81,30 @@ def heard_user(data):
     if last_heard != None:
         socketio.emit('heard-user', last_heard)
 
+# initilize spot data
 @socketio.on('spot')
 def update_spots():
-    #TODO
+    #TODO remove test data
     spots = [
-        {'username': 'A4GOULD', 'last_heard': user_last_heard_timestamp(''), 'unread': False},
-        {'username': 'BKG14', 'last_heard': user_last_heard_timestamp(''), 'unread': False},
-        {'username': 'DRWNICK87', 'last_heard': user_last_heard_timestamp(''), 'unread': False}
+        {'username': 'A4GOULD', 'time': user_last_heard_timestamp('')},
+        {'username': 'BKG14', 'time': user_last_heard_timestamp('')},
+        {'username': 'DRWNICK87', 'time': user_last_heard_timestamp('')}
     ]
     socketio.emit('spot', spots)
+
+    #TODO
+    # default to spots heard in last 10 minutes
+    #timestamp = time.time() - (60 * 10)
+    #spots = js8call.get_station_spots(since_timestamp = timestamp)
+    #heard(spots)
+
+@socketio.on('conversation')
+def update_conversations():
+    #TODO
+    conversations = [
+        {'username': 'BKG14', 'time': user_last_heard_timestamp(''), 'unread': True},
+    ]
+    socketio.emit('conversation', conversations)
 
 @socketio.on('pin')
 def pin_user(data):
@@ -100,13 +118,6 @@ def unpin_user(data):
 
 ### helper functions
 
-def local_time_str(timestamp):
-    return time.strftime('%I:%M%p', time.localtime(timestamp)).lower()
-
-def last_heard_minutes(timestamp):
-    return int((time.time() - timestamp) / 60)
-
-
 def user_last_heard_timestamp(username):
     #TODO
     return time.time() - random.randint(0, 60 * 60)
@@ -119,15 +130,14 @@ def user_last_heard_timestamp(username):
     else:
         return None
 
-#TODO
-def user_chat_history(from_user, to_user):
+def user_chat_history(user_a, user_b):
     global db
-    query_data = {'from_user': from_user, 'to_user': to_user}
+    query_data = {'user_a': user_a, 'user_b': user_b}
     # select both sides of the conversation for the given users
-    messages = db.execute('SELECT * FROM messages WHERE (from = :from_user AND to = :to_user) OR (from = :to_user AND to = :from_user)', query_data)
+    messages = db.execute('SELECT * FROM messages WHERE (from = :user_a AND to = :user_b) OR (from = :user_b AND to = :user_a)', query_data)
 
     msgs = []
-    for message in list(messages):
+    for message in messages:
         msg = {
             'id': message[0],
             'from': message[1],
@@ -196,10 +206,8 @@ def build_test_msgs(count):
 
     return msgs
 
-
+# new spots callback
 def heard(spots):
-    global db
-
     # only unique spots with the latest timestamp
     heard_data = {}
     for spot in spots:
@@ -208,16 +216,17 @@ def heard(spots):
         elif spot['time'] > heard_data[spot['from']]:
             heard_data[spot['from']] = spot['time']
 
+    heard = []
     for username, timestamp in heard_data.items():
-        heard = {
+        station = {
             'username': username, 
-            'last_heard': last_heard_minutes(timestamp)
+            'time': last_heard_minutes(timestamp)
             }
+        heard.append(station)
 
-    #socketio.emit('heard-list', heard)
-    db.executemany()
+    socketio.emit('spot', heard)
 
-def construct_rx_msg(callsign, text, time):
+def process_rx_msg(callsign, text, time):
     global db
     msg = {
         'id': secrets.token_urlsafe(16),
@@ -234,7 +243,7 @@ def construct_rx_msg(callsign, text, time):
     db.commit()
     return msg
 
-def construct_tx_msg(callsign, text, time):
+def process_tx_msg(callsign, text, time):
     global db
     msg = {
         'id': secrets.token_urlsafe(16),

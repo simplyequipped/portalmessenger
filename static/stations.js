@@ -1,34 +1,82 @@
 
-		// construct new conversation based on given username and minutes since last heard
-		function newConversation(username, last_heard, unread) {
-			newConv = $(".original-hidden").clone();
-			newConv.attr("name", username)
-			newConv.find(".chat-name").html(username);
-			newConv.click(conversationClick)
-			newConv.removeClass("original-hidden");
-			newConv.appendTo(".content");
-			setLastHeard(username, last_heard);
+		// construct new station element based on given username and minutes since last heard
+		function newStation(station) {
+			stationElement = $('.station.original-hidden').clone();
+			stationElement.attr('name', station.username)
+			stationElement.find('.chat-name').html(station.username);
+			stationElement.click(stationClick)
+			stationElement.removeClass('original-hidden');
+			stationElement.appendTo('.content');
+			setLastHeard(station.username, station.time);
+		}
 
-			if ( unread !== undefined && unread === true) {
-				markUnread(username);
+		function selectedTab() {
+			tab = $('.tab.selected').attr('id');
+
+			if ( tab == 'tab-conversation' ) {
+				return 'conversation';
+			}
+			else if ( tab == 'tab-activity' ) {
+				return 'activity';
 			}
 		}
 
-		// find a return the conversation DOM element based on given username 
-		function findConversation(username) {
-			return $(".conversation[name='" + username + "']");
+		// create or update spot stations sent from the server
+		function handleSpot(station) {
+			if ( findStation(station.username).length == 0 ) {
+				newStation(station);
+				stationElement = findStation(station.username);
+				stationElement.addClass('spot');
+
+				if ( selectedTab() == 'conversation' ) {
+					stationElement.hide();
+				}
+			}
+			else {
+				setLastHeard(station.username, station.time);
+				findStation(station.username).addClass('spot');
+			}
 		}
 
-		// get conversation presence status based on given username
+		// create or update conversation stations sent from the server
+		function handleConversation(station) {
+			if ( findStation(station.username).length == 0 ) {
+				newStation(station);
+				stationElement = findStation(station.username);
+				stationElement.addClass('conversation');
+
+				if ( selectedTab() == 'activity' ) {
+					stationElement.hide();
+				}
+			}
+			else {
+				setLastHeard(station.username, station.time);
+				findStation(station.username).addClass('conversation');
+			}
+
+			if ( station.unread ) {
+				findStation(station.username).find('.chat-name').addClass('unread');
+			}
+			else {
+				findStation(station.username).find('.chat-name').removeClass('unread');
+			}
+		}
+
+		// find a return the station DOM element based on given username 
+		function findStation(username) {
+			return $(".station[name='" + username + "']");
+		}
+
+		// get station presence status based on given username
 		function getPresence(username) {
-			conv = findConversation(username)
-			if ( conv.find('.presence-indicator').hasClass("presence-active") ) {
+			station = findStation(username)
+			if ( station.find('.presence-indicator').hasClass("presence-active") ) {
 				return "active";
 			}
-			else if ( conv.find(".presence-indicator").hasClass("presence-inactive") ) {
+			else if ( station.find(".presence-indicator").hasClass("presence-inactive") ) {
 				return "inactive";
 			}
-			else if ( conv.find(".presence-indicator").hasClass("presence-unknown") ) {
+			else if ( station.find(".presence-indicator").hasClass("presence-unknown") ) {
 				return "unknown";
 			}
 			else {
@@ -36,10 +84,10 @@
 			}
 		}
 
-		// set conversation to given presence based on given username
+		// set station to given presence based on given username
 		function setPresence(username, presence) {
-			conv = findConversation(username);
-			presenceElement = conv.find('.presence-indicator');
+			station = findStation(username);
+			presenceElement = station.find('.presence-indicator');
 			currentPresence = getPresence(username);
 
 			if ( getPresence(username) !== "none" ) {
@@ -53,60 +101,61 @@
 			setPresence(username, presenceText(last_heard_minutes));
 		}
 
-		// update converation last heard time and presence based on given
+		// update station last heard time and presence based on given
 		// username and minutes since last heard
-		function setLastHeard(username, last_heard) {
+		function setLastHeard(username, lastHeard) {
 			now = new Date();
-			then = new Date(last_heard * 1000);
-			last_heard_minutes = Math.floor( ((now - then) / 1000) / 60 );
+			then = new Date(lastHeard * 1000);
+			lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
 
-			convLastHeard = findConversation(username).find('.last-heard');
-			convLastHeard.attr('data-last-heard', Math.floor(last_heard));
-			convLastHeard.html(lastHeardText(last_heard_minutes));
-			updatePresence(username, last_heard_minutes);
+			stationLastHeard = findStation(username).find('.last-heard');
+			stationLastHeard.attr('data-last-heard', Math.floor(lastHeard));
+			stationLastHeard.html(lastHeardText(lastHeardMinutes));
+			updatePresence(username, lastHeardMinutes);
 		}
 
-		// mark conversation as read based on username
+		// mark station as read based on username
 		function markRead(username) {
-			conv = findConversation(username);
-			chatNameElement = conv.find('.chat-name');
-
-			if ( chatNameElement.hasClass('unread') ) {
-				chatNameElement.removeClass('unread');
-			}
+			findStation(username).find('.chat-name').removeClass('unread');
 		}
 
-		// mark conversation as unread based on username
+		// mark stations as unread based on username
 		function markUnread(username) {
-			conv = findConversation(username);
-			chatNameElement = conv.find('.chat-name');
-
-			if ( !chatNameElement.hasClass('unread') ) {
-				chatNameElement.addClass('unread');
-			}
+			findStation(username).find('.chat-name').addClass('unread');
 		}
 
-		// on click event handler for conversations div
-		function conversationClick() {
+		// on click event handler for stations div
+		function stationClick() {
 		    var username = $(this).attr('name');
             $.post('/stations', {user: username}, function() {
             	window.location = '/chat';
 			});
 		}
 
-		// sort conversations in ascending order by last heard time
-		function sortConversations() {
-			var conversations = $('.conversation').not('.original-hidden');
+		// sort stations in ascending order by last heard time
+		function sortStations() {
+			var stations = $('.station').not('.original-hidden');
 
-			conversations.sort(function(convA, convB) {
-				convALastHeard = parseInt( $(convA).find('.last-heard').attr('data-last-heard') );
-				convBLastHeard = parseInt( $(convB).find('.last-heard').attr('data-last-heard') );
-				return convBLastHeard - convALastHeard;
+			stations.sort(function(stationA, stationB) {
+				stationALastHeard = parseInt( $(stationA).find('.last-heard').attr('data-last-heard') );
+				stationBLastHeard = parseInt( $(stationB).find('.last-heard').attr('data-last-heard') );
+				return stationBLastHeard - stationALastHeard;
 			});
 
-			$('.conversation').not('.original-hidden').detach();
-			conversations.appendTo('.content');
+			$('.station').not('.original-hidden').detach();
+			stations.appendTo('.content');
 		}
 
+function cullSpots() {
+	$('.stations.spot').not('.conversation').each(function () {
+		now = new Date();
+		spotLastHeard = new Date( $(this).find('.last-heard').attr('data-last-heard') * 1000 );
+		lastHeardMinutes = Math.floor( ((now - spotLastHeard) / 1000) / 60 );
+
+		if ( lastHeardMinutes >= 10 ) {
+			$(this).remove()
+		}
+	});
+}
 
 
