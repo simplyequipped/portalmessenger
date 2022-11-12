@@ -146,16 +146,5 @@
 			stations.appendTo('.content');
 		}
 
-function cullSpots() {
-	$('.stations.spot').not('.conversation').each(function () {
-		now = new Date();
-		spotLastHeard = new Date( $(this).find('.last-heard').attr('data-last-heard') * 1000 );
-		lastHeardMinutes = Math.floor( ((now - spotLastHeard) / 1000) / 60 );
-
-		if ( lastHeardMinutes >= 10 ) {
-			$(this).remove()
-		}
-	});
-}
 
 
