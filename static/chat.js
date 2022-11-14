@@ -3,6 +3,7 @@
             newMsg = $(".original-hidden").clone();
             newMsg.attr('id', msg.id)
             newMsg.addClass('chat-msg-' + msg.type);
+            newMsg.find('.chat-time').attr('data-timestamp', msg.time);
             newMsg.find('.chat-time').html(timeString(msg.time));
             newMsg.find('.chat-msg').html(msg.text);
 
@@ -78,7 +79,18 @@
 			setPresence(presenceText(last_heard_minutes));
 		}
 
+		function sortChat() {
+			var messages = $('.chat-msg-rx, .chat-msg-tx')
 
+			messages.sort(function(msgA, msgB) {
+				msgATime = parseInt( $(msgA).find('.chat-time').attr('data-timestamp') );
+				msgBTime = parseInt( $(msgB).find('.chat-time').attr('data-timestamp') );
+				return msgATime - msgBTime;
+			});
+
+			$('.chat-msg-rx, .chat-msg-tx').detach();
+			messages.appendTo('.chat-messages');
+		}
 
 
 

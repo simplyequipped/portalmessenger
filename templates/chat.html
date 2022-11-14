@@ -17,21 +17,12 @@
 		    <a href="/stations"><span class="icon icon-list">&nbsp;</span></a>
 		</div>
 		<div class="details chat-details">
-			<div class="presence-indicator presence-{{ chat_data['presence'] }}">&nbsp;</div>
-			<div class="chat-name">{{ chat_data['username'] }}</div>
+			<div class="presence-indicator presence-unknown">&nbsp;</div>
+			<div class="chat-name">{{ user }}</div>
 			<div class="last-heard">&nbsp;</div>
 		</div>
 		<div class="viewport">
             <div class="content chat-messages">
-
-			{% for msg in chat_data['history'] %}
-
-				<div id="{{ msg.id }}" class="chat-msg-{{ msg.type }}"><div class="chat-bubble">
-					<div class="chat-msg">{{ msg.text }}</div>
-					<div class="chat-time">{{ msg.time }}</div>
-				</div></div>
-
-			{% endfor %}
 
                 <!-- hidden original for cloning -->
 				<div class="original-hidden"><div class="chat-bubble">
@@ -56,12 +47,16 @@
         //    socket.emit('log', {msg: 'Connected to socket'});
         //});
 
-        socket.on('msg', function( msg ) {
-            newChatMessage(msg);
+        socket.on('msg', function( msgs ) {
+			msgs.forEach(function ( msg ) {
+				newChatMessage(msg)
+			});
+			sortChat();
 			scrollChat();
-			if ( msg.type == 'rx' ) {
-				setLastHeard(msg.time);
-			}
+
+			//if ( msg.type == 'rx' ) {
+			//	setLastHeard(msg.time);
+			//}
         });
 
 		socket.on('heard-user', function ( last_heard ) {
@@ -75,7 +70,7 @@
 		});
 
 		$(window).on('load', function(){
-			scrollChat();
+			socket.emit('init-chat');
 			socket.emit('heard-user', {user: $('.chat-name').html()});
 		});
 

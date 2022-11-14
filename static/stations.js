@@ -1,5 +1,5 @@
 
-		// construct new station element based on given username and minutes since last heard
+		// construct new station element based on given station data
 		function newStation(station) {
 			stationElement = $('.station.original-hidden').clone();
 			stationElement.attr('name', station.username)
@@ -10,11 +10,21 @@
 			setLastHeard(station.username, station.time);
 		}
 
+		// construct new conversation station element based on given username
+		function newConversation(username) {
+			stationElement = $('.station.original-hidden').clone();
+			stationElement.attr('name', username)
+			stationElement.find('.chat-name').html(username);
+			stationElement.click(stationClick)
+			stationElement.removeClass('original-hidden');
+			stationElement.appendTo('.content');
+		}
+
 		function selectedTab() {
 			tab = $('.tab.selected').attr('id');
 
-			if ( tab == 'tab-conversation' ) {
-				return 'conversation';
+			if ( tab == 'tab-conversations' ) {
+				return 'conversations';
 			}
 			else if ( tab == 'tab-activity' ) {
 				return 'activity';
@@ -28,7 +38,7 @@
 				stationElement = findStation(station.username);
 				stationElement.addClass('spot');
 
-				if ( selectedTab() == 'conversation' ) {
+				if ( selectedTab() == 'conversations' ) {
 					stationElement.hide();
 				}
 			}
@@ -55,10 +65,10 @@
 			}
 
 			if ( station.unread ) {
-				findStation(station.username).find('.chat-name').addClass('unread');
+				markUnread(station.username);
 			}
 			else {
-				findStation(station.username).find('.chat-name').removeClass('unread');
+				markRead(station.username);
 			}
 		}
 
@@ -116,12 +126,46 @@
 
 		// mark station as read based on username
 		function markRead(username) {
-			findStation(username).find('.chat-name').removeClass('unread');
+			stationChatName = findStation(username).find('.chat-name');
+
+			if ( stationChatName.hasClass('unread') ) {
+				stationChatName.removeClass('unread');
+				// increment stored unread count
+				unreadCount = parseInt( $('#unread-count').attr('data-unread-count') );
+				unreadCount--;
+				$('#unread-count').attr('data-unread-count', unreadCount);
+
+				// update and show/hide unread count
+				if ( unreadCount > 0 ) {
+					$('#unread-count').html('(' + unreadCount + ')');
+					$('#unread-count').show();
+				}
+				else {
+					$('#unread-count').hide();
+				}
+			}
 		}
 
 		// mark stations as unread based on username
 		function markUnread(username) {
-			findStation(username).find('.chat-name').addClass('unread');
+			stationChatName = findStation(username).find('.chat-name');
+
+			if ( !stationChatName.hasClass('unread') ) {
+				stationChatName.addClass('unread');
+				// increment stored unread count
+				unreadCount = parseInt( $('#unread-count').attr('data-unread-count') );
+				unreadCount++;
+				$('#unread-count').attr('data-unread-count', unreadCount);
+
+				// update and show/hide unread count
+				if ( unreadCount > 0 ) {
+					$('#unread-count').html('(' + unreadCount + ')');
+					$('#unread-count').show();
+				}
+				else {
+					$('#unread-count').hide();
+				}
+			}
 		}
 
 		// on click event handler for stations div
@@ -130,6 +174,14 @@
             $.post('/stations', {user: username}, function() {
             	window.location = '/chat';
 			});
+		}
+
+		function conversationHover() {
+			if ( selectedTab() == 'conversations' ) {
+				console.log('hover');
+				$(this).find('.last-heard').toggle();
+				$(this).find('.icon-conversation-settings').toggle();
+			}
 		}
 
 		// sort stations in ascending order by last heard time

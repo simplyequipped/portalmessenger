@@ -36,14 +36,7 @@ def stations():
 @app.route('/chat.html')
 def chat():
     username = session.get('active_chat_username')
-
-    chat_data = {
-        'username': username,
-        #'history': user_chat_history(username)
-        'history': build_test_msgs(10)
-    }
-
-    return render_template('chat.html', chat_data = chat_data)
+    return render_template('chat.html', user = username)
 
 @app.route('/settings')
 @app.route('/settings.html')
@@ -69,7 +62,7 @@ def tx_msg(data):
 def rx_msg(msg):
     msg = process_rx_msg(msg['from'], msg['value'], msg['time'])
     if 'active_chat_username' in session.keys() and msg['from'] == session.get('active_chat_username'):
-        socketio.emit('msg', msg)
+        socketio.emit('msg', [msg])
 
 @socketio.on('log')
 def log(data):
@@ -106,13 +99,11 @@ def update_conversations():
     ]
     socketio.emit('conversation', conversations)
 
-@socketio.on('pin')
-def pin_user(data):
-    pass
-
-@socketio.on('unpin')
-def unpin_user(data):
-    pass
+@socketio.on('init-chat')
+def init_chat():
+    username = session.get('active_chat_username')
+    socketio.emit('msg', build_test_msgs(10))
+    
 
 
 
@@ -196,7 +187,7 @@ def build_test_msgs(count):
             'from': from_user,
             'to': to_user,
             'type': msg_type,
-            'time': local_time_str(time.time() - random.randint(0, 60 * 60)),
+            'time': time.time() - random.randint(0, 60 * 60),
             'text': random.choice(messages),
             'unread': unread,
             'sent': None
