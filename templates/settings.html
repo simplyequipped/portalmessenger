@@ -11,7 +11,8 @@
     <body>
 	    <div class="header">
 		    PORTAL MESSENGER
-		    <a href="javascript:history.back()"><span class="icon icon-back">&nbsp;</span></a>
+		    <a href="/stations"><span class="icon icon-list">&nbsp;</span></a>
+		    <!--<a href="javascript:history.back()"><span class="icon icon-back">&nbsp;</span></a>-->
 	    </div>
 		<div class="details">
 			<div class="details-name">Settings</div>
@@ -19,23 +20,47 @@
 		<div class="viewport">
 			<div class="content">
 				<br/>
-				<div class="setting-row"><label for="callsign">Callsign</label><input type="text" id="callsign" value="KC3KVT"></div>
-				<div class="setting-row"><label for="grid">Grid Square</label><input type="text" id="grid" value="FM19"></div>
-				<div class="setting-row"><label for="speed">Rx/Tx Speed</label><select type="text" id="speed">
-					<option value="slow">Slow</option>
-					<option value="normal">Normal</option>
-					<option value="fast">Fast</option>
-					<option value="turbo">Turbo</option>
-				</select></div>
-			</div>
+                
+			    <form id="settings-form" action="/settings" method="post">
+
+                {% for setting, data in settings.items() %}
+				<div class="setting-row">
+                    <label for="{{ setting }}">{{ data['label'] }}</label>
+                    {% if data['options'] == None %}
+                    <input type="text" id="{{ setting }}" name="{{ setting }}" value="{{ data['value'] }}"
+                    {% if data['required'] and data['value'] == '' %} class="required" {% endif %}
+                    >
+                    {% else %}
+				    <select type="text" id="{{ setting }}" name="{{ setting }}">
+                        {% for option in data['options'] %}
+					    <option value="{{ option }}"
+                        {% if option == data['value'] %} selected {% endif %}
+                        >{{ option[0]|upper }}{{ option[1:] }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+			    </form>
+
+		    </div>
 		</div>
 		<div class="footer">
-			<form id="settings-form">
-				<button type="button" id="send-button">Save Settings</button>
-			</form>
+			<form><button type="submit" id="save-button">Save Settings</button></form>
 		</div>
 
     </body>
 	<script>
+        $(window).on('load', function(){
+            $('#save-button').click(function() {
+                event.preventDefault();
+                $('#settings-form').submit()
+            });
+
+            // parse loaded settings and compare to localStorage
+        });
+
+
 	</script>
 </html>

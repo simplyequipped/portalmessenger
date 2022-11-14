@@ -20,17 +20,6 @@
 			stationElement.appendTo('.content');
 		}
 
-		function selectedTab() {
-			tab = $('.tab.selected').attr('id');
-
-			if ( tab == 'tab-conversations' ) {
-				return 'conversations';
-			}
-			else if ( tab == 'tab-activity' ) {
-				return 'activity';
-			}
-		}
-
 		// create or update spot stations sent from the server
 		function handleSpot(station) {
 			if ( findStation(station.username).length == 0 ) {
@@ -114,14 +103,18 @@
 		// update station last heard time and presence based on given
 		// username and minutes since last heard
 		function setLastHeard(username, lastHeard) {
+            if ( lastHeard == null ) {
+                lastHeard = 0;
+            }
+
 			now = new Date();
-			then = new Date(lastHeard * 1000);
-			lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
+		    then = new Date(lastHeard * 1000);
+		    lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
 
 			stationLastHeard = findStation(username).find('.last-heard');
-			stationLastHeard.attr('data-last-heard', Math.floor(lastHeard));
-			stationLastHeard.html(lastHeardText(lastHeardMinutes));
-			updatePresence(username, lastHeardMinutes);
+		    stationLastHeard.attr('data-last-heard', Math.floor(lastHeard));
+		    stationLastHeard.html(lastHeardText(lastHeardMinutes));
+		    updatePresence(username, lastHeardMinutes);
 		}
 
 		// mark station as read based on username
@@ -165,6 +158,17 @@
 				else {
 					$('#unread-count').hide();
 				}
+			}
+		}
+
+		function selectedTab() {
+			tab = $('.tab.selected').attr('id');
+
+			if ( tab == 'tab-conversations' ) {
+				return 'conversations';
+			}
+			else if ( tab == 'tab-activity' ) {
+				return 'activity';
 			}
 		}
 

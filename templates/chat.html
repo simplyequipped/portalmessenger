@@ -59,6 +59,10 @@
 			//}
         });
 
+		socket.on('remove-tx-status', function ( id ) {
+			removeTxStatus(id);
+		});
+
 		socket.on('heard-user', function ( last_heard ) {
 			setLastHeard(last_heard);
 		});

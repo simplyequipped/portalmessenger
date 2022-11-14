@@ -19,14 +19,14 @@
         }
 
         function setTxStatus(id, tx_status) {
-			if ( $('#' + id).find('chat-status').length == 0 ) {
-				$('.original-hidden').find('chat-status').clone().appendTo('#' + id)
+			if ( $('#' + id).find('.chat-status').length == 0 ) {
+				$('.original-hidden').find('.chat-status').clone().appendTo('#' + id)
 			}
-            $('#'+ id).find('chat-status').html(tx_status);
+            $('#'+ id).find('.chat-status').html(tx_status);
         }
 
         function removeTxStatus(id) {
-            $('#'+ id).find('chat-status').remove();
+            $('#'+ id).find('.chat-status').remove();
         }
 
 		function scrollChat() {

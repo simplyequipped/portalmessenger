@@ -218,7 +218,7 @@ body {
 .chat-status {
 	font-size: 14px;
 	text-align: right;
-	margin-right: 15px;
+	margin-right: 5px;
 	color: var(--primary-color);
 	clear: both;
 }
@@ -262,6 +262,10 @@ body {
 .setting-row label {
 	padding-left: 10px;
 	padding-right: 10px;
+}
+
+input.required {
+    background-color: #F9BDBB;
 }
 
 .footer {

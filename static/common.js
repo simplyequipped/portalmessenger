@@ -6,25 +6,44 @@
 
 		function lastHeardText(minutes) {
 			var text = '';
-			if ( minutes < 60 ) {
+
+            // now (less than 1 minute)
+			if ( minutes < 1 ) {
+				num = null;
+				text = 'Now';
+			}
+            // minutes
+			else if ( minutes < 60 ) {
 				num = minutes;
 				text = String(num) + ' minute';
 			}
+            // hours
 			else if ( minutes < 60 * 24 ) {
 				num = Math.floor(minutes / 60);
 				text = String(num) + ' hour';
 			}
-			else {
-				num = Math.floor(minutes / (60 * 24));
+            // days
+			else if ( minutes < 60 * 24 * 365 ) {
+				num = Math.floor((minutes / 60) / 24);
 				text = String(num) + ' day';
 			}
+            // over a year
+			else {
+				num = null;
+				text = 'Never';
+			}
 
-			// plural
-			if ( num != 1 ) {
+			// handle plural
+			if ( num != 1 && num != null) {
 				text = text + 's'
 			}
 
-			return text + ' ago';
+            if ( num == null ) {
+                return text;
+            }
+            else {
+			    return text + ' ago';
+            }
 		}
 
 		function presenceText(minutes) {
@@ -38,10 +57,6 @@
 				return 'unknown';
 			}
 		}
-
-function last_heard_minutes(timestamp) {
-	return Math.floor( (Date.now() - timestamp) / 60 )
-}
 
 function timeString(unix_timestamp) {
 	// unix = seconds, js = milliseconds
