@@ -121,7 +121,7 @@
 		function markRead(username) {
 			stationChatName = findStation(username).find('.chat-name');
 
-			if ( stationChatName.hasClass('unread') ) {
+			if ( stationChatName.length > 0 && stationChatName.hasClass('unread') ) {
 				stationChatName.removeClass('unread');
 				// increment stored unread count
 				unreadCount = parseInt( $('#unread-count').attr('data-unread-count') );
@@ -143,7 +143,7 @@
 		function markUnread(username) {
 			stationChatName = findStation(username).find('.chat-name');
 
-			if ( !stationChatName.hasClass('unread') ) {
+			if ( stationChatName.length > 0 && !stationChatName.hasClass('unread') ) {
 				stationChatName.addClass('unread');
 				// increment stored unread count
 				unreadCount = parseInt( $('#unread-count').attr('data-unread-count') );

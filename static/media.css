@@ -1,0 +1,54 @@
+@media screen and (min-width: 350px) {
+	body {
+		width: 100%;
+		margin: 0px;
+		overflow: hidden;
+	}
+	.header {
+		margin-top: 0px;
+		border-radius: 0px;
+	}
+	.footer {
+		border-radius: 0px;
+		padding: 25px 10px 25px 10px;
+	}
+	.chat-time, .last-heard {
+		font-size: 16px;
+	}
+	.viewport {
+		height: calc(100vh - 269px);
+	}
+	.content{
+		max-height: calc(100vh - 269px);
+	}
+}
+
+@media screen and (min-width: 700px) {
+	body {
+		max-width: 700px;
+		margin: auto;
+		margin-top: 20px;
+		overflow: hidden;
+	}
+	.header {
+		margin-top: 10px;
+		border-radius: 15px 15px 0px 0px;
+	}
+	.footer {
+		border-radius: 0px 0px 15px 15px;
+		padding: 35px 25px 35px 25px;
+	}
+	.conversation {
+		padding: 10px 15px 10px 15px;
+	}
+	.chat-time, .last-heard {
+		font-size: 14px;
+	}
+	.viewport {
+		height: 500px;
+	}
+	.content {
+		max-height: 500px;
+		padding-left: 15px;
+	}
+}

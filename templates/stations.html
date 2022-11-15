@@ -2,7 +2,11 @@
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
-		<link rel="stylesheet" type="text/css" href="../static/style.css">
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<link rel="stylesheet" type="text/css" href="../static/media.css">
+		{% if settings['theme']['value'] == 'dark' %}
+		<link rel="stylesheet" type="text/css" href="../static/dark.css">
+		{% endif %}
 		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
 		<script src="../static/jquery.min.js"></script>
 		<script src="../static/socket.io.min.js"></script>
@@ -16,8 +20,10 @@
 		    <a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>
 		</div>
 		<div class="details tab-container">
-			<div class="details-name tab selected" id="tab-activity">Activity</div>
-			<div class="details-name tab" id="tab-conversations">Conversations
+			<div class="details-name tab {% if settings['tab']['value'] == 'activity' %} selected {% endif %}" 
+				 id="tab-activity" data-aging="{{ settings['aging']['value'] }}">Activity</div>
+			<div class="details-name tab {% if settings['tab']['value'] == 'conversations' %} selected {% endif %}" 
+				id="tab-conversations">Conversations
 				<span id="unread-count" data-unread-count="0">&nbsp;</span>
 			</div>
 		</div>
@@ -113,10 +119,9 @@
 					then = new Date( timestamp * 1000 );
 					lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
 
-					if ( lastHeardMinutes >= 10 ) {
+					if ( lastHeardMinutes >= parseInt( $('#tab-activity').attr('data-aging') ) ) {
                         if ( $(this).hasClass('conversation') ) {
                             $(this).removeClass('spot');
-                            
 
                             if ( selectedTab() == 'activity' ) {
                                 $(this).hide();

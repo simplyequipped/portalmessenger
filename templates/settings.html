@@ -2,8 +2,13 @@
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
-		<link rel="stylesheet" type="text/css" href="../static/style.css">
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<link rel="stylesheet" type="text/css" href="../static/media.css">
+		{% if settings['theme']['value'] == 'dark' %}
+		<link rel="stylesheet" type="text/css" href="../static/dark.css">
+		{% endif %}
 		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
+		<script src="../static/common.js"></script>
 		<script src="../static/jquery.min.js"></script>
 		<script src="../static/socket.io.min.js"></script>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -52,15 +57,30 @@
 
     </body>
 	<script>
+		var socket = io.connect('http://' + document.domain + ':' + location.port);
+	
+		socket.on('get-settings', function( settings ) {
+			Object.keys(settings).forEach(function( setting ) {
+				updateLocalSetting('setting-' + setting, settings[setting]);
+			});
+
+			handleLocalSettings();
+		});
+
         $(window).on('load', function(){
             $('#save-button').click(function() {
                 event.preventDefault();
+				//$('#settings-form input, #settings-form select').each(function( index ) {
+				//	updateLocalSetting( 'setting-' + $(this).attr('id'), $(this).val(), true );
+				//});
                 $('#settings-form').submit()
             });
-
-            // parse loaded settings and compare to localStorage
+			
+			//var settings = ['theme', 'size', 'tab'];
+			//settings.forEach(function ( setting ) {
+			//	$('#' + setting).val( getSetting( 'setting-' + setting ) ).change();
+			//});
         });
-
 
 	</script>
 </html>

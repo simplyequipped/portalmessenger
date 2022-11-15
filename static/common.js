@@ -99,4 +99,42 @@ function timeString(unix_timestamp) {
 	return then.toLocaleString('en-US', options);
 }
 
+function getSetting( setting ) {
+	return localStorage.getItem( setting );
+}
+
+function updateLocalSetting( setting, value, force ) {
+	if ( force === undefined ) {
+		force = false;
+	}
+
+	if ( localStorage.getItem(setting) === null || ( value != '' && force ) ) {
+		localStorage.setItem( setting, value );
+	}
+}
+
+function handleLocalSettings() {
+	var settings = ['setting-theme', 'setting-size', 'setting-tab'];
+
+	settings.forEach(function( setting, index, settings ) {
+		setting = settings[index];
+		localSetting = getSetting( setting );
+		console.log(setting);
+		console.log(localSetting);
+
+		if ( setting == 'setting-theme' && localSetting == 'dark' && $('link[href="../static/dark.css"]').length == 0 ) {
+			$('head').append('<link rel="stylesheet" type="text/css" href="../static/dark.css">');
+		}
+
+		if ( setting == 'setting-size' ) {
+			if ( localSetting == 'small' ) {
+				//TODO
+			}
+			else if ( localSetting == 'large' ) {
+				//TODO
+			}
+		}
+	});
+}
+
 

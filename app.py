@@ -23,26 +23,28 @@ socketio = SocketIO(app)
 @app.route('/stations', methods=['GET', 'POST'])
 @app.route('/stations.html', methods=['GET', 'POST'])
 def stations():
+    global settings
+    
     if request.method == 'POST':
         session['active_chat_username'] = request.form.get('user')
-        #TODO
-        session['logged_in_username'] = 'KC3KVT'
+        session['logged_in_username'] = settings['callsign']['value']
         return ''
     else:
-        global settings
         if settings['callsign']['value'] == '':
             return redirect('/settings')
 
         if 'active_chat_username' in session.keys():
             del session['active_chat_username']
 
-        return render_template('stations.html')
+        return render_template('stations.html', settings = settings)
 
 @app.route('/chat')
 @app.route('/chat.html')
 def chat():
+    global settings
+
     username = session.get('active_chat_username')
-    return render_template('chat.html', user = username)
+    return render_template('chat.html', user = username, settings = settings)
 
 @app.route('/settings', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
@@ -142,7 +144,8 @@ def update_setting(data):
 @socketio.on('get-settings')
 def update_setting():
     global settings
-    socketio.emit('get-settings', settings)
+    min_settings = {setting: data['value'] for setting, data in settings.items()}
+    socketio.emit('get-settings', min_settings)
 
 
 

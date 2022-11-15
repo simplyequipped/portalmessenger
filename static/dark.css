@@ -1,0 +1,35 @@
+:root {
+	--primary-color: #29434e;
+	--secondary-color: #90a4ae;
+	--tertiary-color: #cfd8dc;
+
+	--outgoing-chat-color: #607d8b;
+	--incoming-chat-color: var(--tertiary-color);
+}
+body {
+	background-color: #555;
+}
+button, #chat-text {
+	background-color: var(--tertiary-color);
+}
+.viewport {
+	border-color: var(--secondary-color);
+}	
+.header, .details, .chat-msg-tx .chat-bubble, .chat-msg-tx .chat-time {
+	color: var(--tertiary-color);
+}
+.chat-msg-rx .chat-bubble, .chat-msg-rx .chat-time {
+	color: var(--primary-color);
+}
+.station {
+	color: var(--primary-color);
+}
+.tab {
+	border-color: var(--primary-color);
+	background-color: var(--secondary-color);
+	color: var(--primary-color);
+}
+.selected {
+	border-color: var(--secondary-color);
+}
+
