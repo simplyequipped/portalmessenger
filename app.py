@@ -50,12 +50,14 @@ def chat_route():
 @app.route('/settings.html', methods=['GET', 'POST'])
 def settings_route():
     settings = get_settings()
+    errors = []
 
     if request.method == 'POST':
         # process posted settings
         for setting, value in request.form.items():
             if setting in settings.keys() and value != settings[setting]['value']:
                 valid, error = validate_setting(setting, value, settings)
+                settings[setting]['error'] = error
 
                 if valid:
                     # store new setting value
@@ -349,7 +351,7 @@ def validate_aging(aging):
         valid = True
     else:
         valid = False
-        error = 'Activity Aging must be a number'
+        error = 'Activity aging must be a number'
 
     return (valid, error)
 

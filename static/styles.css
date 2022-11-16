@@ -284,7 +284,12 @@ body {
 }
 
 input.required {
-    background-color: #F9BDBB;
+    background-color: #f9bdbb;
+}
+
+.error {
+    color: #b0120a;
+	padding-left: 10px;
 }
 
 .footer {

@@ -47,9 +47,13 @@
                         {% endfor %}
                     </select>
                     {% endif %}
+
+                {% if 'error' in data.keys() and data['error'] != None %}
+                <div class="error">{{ data['error'] }}</div>
+                {% endif %}
+
                 </div>
                 {% endfor %}
-
 			    </form>
 
 		    </div>
@@ -73,16 +77,12 @@
         $(window).on('load', function(){
             $('#save-button').click(function() {
                 event.preventDefault();
-				//$('#settings-form input, #settings-form select').each(function( index ) {
-				//	updateLocalSetting( 'setting-' + $(this).attr('id'), $(this).val(), true );
-				//});
                 $('#settings-form').submit()
             });
-			
-			//var settings = ['theme', 'size', 'tab'];
-			//settings.forEach(function ( setting ) {
-			//	$('#' + setting).val( getSetting( 'setting-' + setting ) ).change();
-			//});
+		
+            if ( $('#error').html != '' ) {
+                $('#error').show()
+            }
         });
 
 	</script>
