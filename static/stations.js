@@ -11,7 +11,7 @@
 		}
 
 		// construct new conversation station element based on given username
-		function newConversation(username) {
+		function newConversation(station) {
 			stationElement = $('.station.original-hidden').clone();
 			stationElement.attr('name', username)
 			stationElement.find('.chat-name').html(username);
@@ -25,10 +25,10 @@
 			if ( findStation(station.username).length == 0 ) {
 				newStation(station);
 				stationElement = findStation(station.username);
-				stationElement.addClass('spot');
+			    stationElement.addClass('spot');
 
-				if ( selectedTab() == 'conversations' ) {
-					stationElement.hide();
+				if ( selectedTab() != 'activity' ) {
+				    stationElement.hide();
 				}
 			}
 			else {
@@ -42,10 +42,10 @@
 			if ( findStation(station.username).length == 0 ) {
 				newStation(station);
 				stationElement = findStation(station.username);
-				stationElement.addClass('conversation');
+			    stationElement.addClass('conversation');
 
-				if ( selectedTab() == 'activity' ) {
-					stationElement.hide();
+				if ( selectedTab() != 'conversations' ) {
+				    stationElement.hide();
 				}
 			}
 			else {
@@ -61,7 +61,7 @@
 			}
 		}
 
-		// find a return the station DOM element based on given username 
+		// find and return the station DOM element based on given username 
 		function findStation(username) {
 			return $(".station[name='" + username + "']");
 		}

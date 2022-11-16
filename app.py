@@ -229,7 +229,8 @@ def get_stored_conversations():
                 
         else:
             last_heard = user_last_heard_timestamp(username)
-            if last_heard == 0:
+            # no spots but msg is from user, use msg timestamp
+            if last_heard == 0 and msg['from'] == username:
                 last_heard = msg['time']
 
             conversations[username] = {

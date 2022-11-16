@@ -43,7 +43,7 @@
 		<div class="footer">
 			<span class="icon icon-add">&nbsp;</span>
 			<form id="new-conversation-form">
-				<input type="text" id="new-conversation" placeholder="Type user here..." autofocus/>
+				<input type="text" id="new-conversation" placeholder="Type user here..." autofocus autocomplete="off"/>
 				<button type="submit" id="new-conversation-button">Add</button>
 			</form>
 		</div>
@@ -86,6 +86,9 @@
 				$('.spot').hide();
 				$('.conversation').show();
 			});
+
+            // click selected tab to force above event handling
+            $('.tab.selected').click();
 
 			$('.icon-add').click(function(){
 				$('.icon-add').hide();
