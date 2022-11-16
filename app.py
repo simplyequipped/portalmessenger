@@ -87,6 +87,7 @@ def tx_msg(data):
     msg = process_tx_msg(data['user'], data['text'], time.time())
     #TODOjs8call
     #js8call.send_directed_message(msg['to'], msg['text'])
+    #js8call.tx_monitor.monitor(msg['text'], identifier = msg['id'])
     socketio.emit('msg', [msg])
     
 @socketio.on('log')
@@ -290,13 +291,9 @@ def process_tx_msg(callsign, text, time):
 
     return msg
 
-#TODO handle uppercase text returned from pyjs8call.TxMonitor
-#TODO handle multiple messages with the same text
-#TODO improve pyjs8call.TxMonitor to handle msg id's
-def tx_complete(text):
-
-    msg = query('SELECT id FROM messages WHERE sent != NULL AND text = :text', {'text': text}).fetchone()
-    socketio.emit('remove-tx-status', msg[0])
+def tx_complete(identifier):
+    query('UPDATE messages SET sent = NULL WHERE id = :id', {'id': identifier})
+    socketio.emit('remove-tx-status', identifier)
 
 def validate_callsign(callsign):
     error = None
