@@ -22,7 +22,7 @@
 		font-size: var(--normal-font-size);
 	}
 	.viewport {
-		height: calc(100vh - 220px - (100vh - 100%));
+		height: calc(100vh - 212px - (100vh - 100%));
 	}
 	.content {
 		max-height: calc(100vh - (100vh - 100%));
