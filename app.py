@@ -14,9 +14,6 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex()
 socketio = SocketIO(app)
 
-#TODO stop js8call app when socketio closed
-
-
 
 ### flask routes and template handling
 
@@ -64,17 +61,15 @@ def settings_route():
                     query('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
                     settings[setting]['value'] = value
 
-                    #TODOjs8call
-                    # handle settings affecting js8call modem
-                    #if setting == 'callsign':
-                    #    js8call.set_station_callsign(value)
-                    #if setting == 'speed':
-                    #    js8call.set_speed(value)
-                    #if setting == 'grid':
-                    #    js8call.set_station_grid(value)
+                    # handle settings affecting js8call
+                    if setting == 'callsign':
+                        js8call.set_station_callsign(value)
+                    if setting == 'speed':
+                        js8call.set_speed(value)
+                    if setting == 'grid':
+                        js8call.set_station_grid(value)
 
     return render_template('settings.html', settings = settings)
-
 
 
 
@@ -82,12 +77,10 @@ def settings_route():
 
 @socketio.on('msg')
 def tx_msg(data):
-    #TODOjs8call
-    #global js8call
+    global js8call
     msg = process_tx_msg(data['user'], data['text'], time.time())
-    #TODOjs8call
-    #js8call.send_directed_message(msg['to'], msg['text'])
-    #js8call.tx_monitor.monitor(msg['text'], identifier = msg['id'])
+    js8call.send_directed_message(msg['to'], msg['text'])
+    js8call.tx_monitor.monitor(msg['text'], identifier = msg['id'])
     socketio.emit('msg', [msg])
     
 @socketio.on('log')
@@ -102,24 +95,18 @@ def heard_user(data):
 # initilize spot data
 @socketio.on('spot')
 def update_spots():
-    #TODOjs8call
-    #global js8call
+    global js8call
     spots = []
 
-    #TODOjs8call
     # default to spots heard in last 10 minutes
-    #timestamp = time.time() - (60 * 10)
-    #spots = js8call.get_station_spots(since_timestamp = timestamp)
+    timestamp = time.time() - (60 * 10)
+    spots = js8call.get_station_spots(since_timestamp = timestamp)
     if len(spots) > 0:
         heard(spots)
 
 @socketio.on('conversation')
 def update_conversations():
     conversations = get_stored_conversations()
-    #TODO
-    #conversations = [
-    #    {'username': 'BKG14', 'time': user_last_heard_timestamp(''), 'unread': True},
-    #]
     socketio.emit('conversation', conversations)
 
 @socketio.on('init-chat')
@@ -130,30 +117,11 @@ def init_chat():
     msgs = user_chat_history(active_chat_username, logged_in_username)
     socketio.emit('msg', msgs)
     
-@socketio.on('setting')
-def update_setting(data):
-    global settings
-    setting = data['name']
-    value = data['value']
-
-    if setting in settings.keys():
-        valid, error = validate_setting(setting, value)
-
-        if valid:
-            # store new setting value
-            settings[setting]['value'] = value
-        else:
-            # get current setting value
-            value = settings[setting]['value']
-        
-        socketio.emit('setting', {'setting': setting, 'value': value, 'error': error})
-            
 @socketio.on('get-settings')
 def update_setting():
     settings = query('SELECT setting, value FROM settings').fetchall()
     settings = dict(settings)
     socketio.emit('get-settings', settings)
-
 
 
 
@@ -167,13 +135,9 @@ def rx_msg(msg):
         socketio.emit('msg', [msg])
 
 def user_last_heard_timestamp(username):
-    #TODO
-    #return time.time() - random.randint(0, 60 * 10)
-
-    #TODOjs8call
     spots = []
-    #global js8call
-    #spots = js8call.get_station_spots(station = username)
+    global js8call
+    spots = js8call.get_station_spots(station = username)
 
     if len(spots) > 0:
         spots.sort(key = lambda spot: spot['time'])
@@ -282,9 +246,7 @@ def process_tx_msg(callsign, text, time):
         'time': time,
         'text': text,
         'unread': None,
-        #TODO
         'sent': 'Sending...'
-        #'sent': None
     }
     
     query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
@@ -425,10 +387,6 @@ def query(query, parameters=None):
 
     return result
 
-    
-
-
-
 
 
 
@@ -436,18 +394,16 @@ def query(query, parameters=None):
 
 js8call = pyjs8call.Client()
 
-#TODOjs8call
-# initialize js8call client
-#global js8call
-#if 'Portal' not in js8call.config.get_profile_list():
-#    js8call.config.create_new_profile('Portal')
+# configure js8call for use with portal
+if 'Portal' not in js8call.config.get_profile_list():
+    js8call.config.create_new_profile('Portal')
 
-#js8call.set_config_profile('Portal')
-#js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
-#js8call.start()
+js8call.set_config_profile('Portal')
+js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
+js8call.start()
 #TODO use channel DIG-40: 7055000
-#js8call.set_freq(7078000)
-#js8call.tx_monitor.tx_complete_callback(tx_complete)
+js8call.set_freq(7078000)
+js8call.tx_monitor.tx_complete_callback(tx_complete)
 
 
 
