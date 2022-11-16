@@ -62,6 +62,15 @@ def settings_route():
                     query('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
                     settings[setting]['value'] = value
 
+                    #TODOjs8call
+                    # handle settings affecting js8call modem
+                    #if setting == 'callsign':
+                    #    js8call.set_station_callsign(value)
+                    #if setting == 'speed':
+                    #    js8call.set_speed(value)
+                    #if setting == 'grid':
+                    #    js8call.set_station_grid(value)
+
     return render_template('settings.html', settings = settings)
 
 
