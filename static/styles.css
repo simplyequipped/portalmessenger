@@ -267,10 +267,6 @@ body {
     color: black;
 }
 
-input.required {
-    background-color: #F9BDBB;
-}
-
 .setting-row input, .setting-row select {
 	background-color: var(--tertiary-color);
 	border-width: 0px;
@@ -285,6 +281,10 @@ input.required {
 
 .setting-row select {
     width: 175px;
+}
+
+input.required {
+    background-color: #F9BDBB;
 }
 
 .footer {
