@@ -492,7 +492,7 @@ default_settings = {
         'label': 'Default Tab',
         'default': 'activity',
         'required': False,
-        'options': ['activity', 'conversations']
+        'options': ['activity', 'messages']
     }
 }
 

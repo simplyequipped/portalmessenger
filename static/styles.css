@@ -276,11 +276,11 @@ input.required {
 	border-width: 0px;
     border-radius: 5px;
     color: black;
-    padding: 3px;
+    padding: 5px;
 }
 
 .setting-row input {
-    width: 170px;
+    width: 165px;
 }
 
 .setting-row select {
