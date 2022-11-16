@@ -485,7 +485,7 @@ default_settings = {
         'label': 'Font Size',
         'default': 'normal',
         'required': False,
-        'options': ['small', 'normal', 'large']
+        'options': ['normal', 'large']
     },
     'tab': {
         'value': 'activity', 

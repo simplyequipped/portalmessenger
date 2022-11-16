@@ -13,7 +13,7 @@
 		padding: 25px 10px 25px 10px;
 	}
 	.chat-time, .last-heard {
-		font-size: 16px;
+		font-size: var(--normal-font-size);
 	}
 	.viewport {
 		height: calc(100vh - 269px);
@@ -42,7 +42,7 @@
 		padding: 10px 15px 10px 15px;
 	}
 	.chat-time, .last-heard {
-		font-size: 14px;
+		font-size: var(--small-font-size);
 	}
 	.viewport {
 		height: 500px;

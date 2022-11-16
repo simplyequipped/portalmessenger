@@ -5,6 +5,12 @@
 
 	--outgoing-chat-color: var(--primary-color);
 	--incoming-chat-color: var(--tertiary-color);
+
+    --small-font-size: 0.875em;
+    --normal-font-size: 1em;
+    --large-font-size: 1.125em;
+    --heading-font-size: 1.375em;
+    --title-font-size: 1.5em;
 }
 
 body {
@@ -12,10 +18,11 @@ body {
 	color: #333;
 	width: 30%;
 	margin: 20px 0px 0px 20px;
+    font-size: 100%;
 }
 
 .header {
-	font-size: 24px;
+	font-size: var(--title-font-size);
 	font-weight: bold;
 	border: 2px solid var(--primary-color);
 	padding: 15px;
@@ -106,7 +113,7 @@ body {
 }
 
 .details-name, .chat-name {
-	font-size: 22px;
+	font-size: var(--heading-font-size);
 	display: inline-block;
 }
 
@@ -140,7 +147,7 @@ body {
 
 .last-heard {
 	display: inline-block;
-	font-size: 14px;
+	font-size: var(--small-font-size);
 	float: right;
 	padding-top: 4px;
 }
@@ -198,14 +205,14 @@ body {
 }
 
 .chat-msg {
-	font-size: 18px;
+	font-size: var(--large-font-size);
 	padding: 10px 15px 0px 15px;
 	text-align: justify;
 	text-justify: inter-word;
 }
 
 .chat-time {
-	font-size: 14px;
+	font-size: var(--small-font-size);
 	padding: 2px 15px 10px 15px;
 	color: #555;
 }
@@ -215,7 +222,7 @@ body {
 }
 
 .chat-status {
-	font-size: 14px;
+	font-size: var(--small-font-size);
 	text-align: right;
 	margin-right: 5px;
 	color: var(--primary-color);
@@ -244,10 +251,6 @@ body {
 	font-weight: bold;
 }
 
-.pinned {
-	border: 5px solid #444444;
-}
-
 .setting-row {
 	display: table-row;
 }
@@ -255,16 +258,33 @@ body {
 .setting-row label, .setting-row input, .setting-row select {
 	display: table-cell;
 	margin: 10px;
-	font-size: 18px;
+	font-size: var(--large-font-size);
 }
 
 .setting-row label {
 	padding-left: 10px;
-	padding-right: 10px;
+	padding-right: 15px;
+    color: black;
 }
 
 input.required {
     background-color: #F9BDBB;
+}
+
+.setting-row input, .setting-row select {
+	background-color: var(--tertiary-color);
+	border-width: 0px;
+    border-radius: 5px;
+    color: black;
+    padding: 3px;
+}
+
+.setting-row input {
+    width: 170px;
+}
+
+.setting-row select {
+    width: 175px;
 }
 
 .footer {
@@ -283,7 +303,7 @@ input.required {
 #chat-text, #new-conversation {
 	width: 75%;
 	padding: 5px;
-	font-size: 18px;
+	font-size: var(--large-font-size);
 	background-color: var(--tertiary-color);
 }
 
@@ -293,7 +313,7 @@ input {
 
 button {
 	padding: 9px;
-	font-size: 18px;
+	font-size: var(--large-font-size);
 	cursor: pointer;
 	border-radius: 10px;
 	border: 1px solid var(--secondary-color);
