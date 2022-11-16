@@ -26,7 +26,7 @@
 			<div class="details-name tab {% if settings['tab']['value'] == 'activity' %} selected {% endif %}" 
 				 id="tab-activity" data-aging="{{ settings['aging']['value'] }}">Activity</div>
 			<div class="details-name tab {% if settings['tab']['value'] == 'conversations' %} selected {% endif %}" 
-				id="tab-conversations">Conversations
+				id="tab-conversations">Messages
 				<span id="unread-count" data-unread-count="0">&nbsp;</span>
 			</div>
 		</div>
@@ -107,6 +107,11 @@
 					window.location = '/chat';
 				});
 			});
+
+			//$(window).resize(function (){
+            //    vh = window.innerHeight * 0.01;
+            //    $(':root').css('--vh', vh + 'px');
+			//});
 
 			// request station data from the server
 			socket.emit('spot');
