@@ -3,6 +3,7 @@ import secrets
 import random
 import time
 import sqlite3
+import atexit
 
 import pyjs8call
 
@@ -22,12 +23,12 @@ socketio = SocketIO(app)
 @app.route('/')
 @app.route('/stations', methods=['GET', 'POST'])
 @app.route('/stations.html', methods=['GET', 'POST'])
-def stations():
-    global settings
+def stations_route():
+    settings = get_settings()
+    session['logged_in_username'] = settings['callsign']['value']
     
     if request.method == 'POST':
         session['active_chat_username'] = request.form.get('user')
-        session['logged_in_username'] = settings['callsign']['value']
         return ''
     else:
         if settings['callsign']['value'] == '':
@@ -40,28 +41,29 @@ def stations():
 
 @app.route('/chat')
 @app.route('/chat.html')
-def chat():
-    global settings
-
+def chat_route():
+    settings = get_settings()
     username = session.get('active_chat_username')
     return render_template('chat.html', user = username, settings = settings)
 
 @app.route('/settings', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
-def settings():
-    global settings
+def settings_route():
+    settings = get_settings()
 
     if request.method == 'POST':
+        # process posted settings
         for setting, value in request.form.items():
-            if setting in settings.keys():
-                valid, error = validate_setting(setting, value)
+            if setting in settings.keys() and value != settings[setting]['value']:
+                valid, error = validate_setting(setting, value, settings)
 
                 if valid:
                     # store new setting value
+                    query('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
                     settings[setting]['value'] = value
-            
 
     return render_template('settings.html', settings = settings)
+
 
 
 
@@ -72,6 +74,7 @@ def tx_msg(data):
     #TODOjs8call
     #global js8call
     msg = process_tx_msg(data['user'], data['text'], time.time())
+    #TODOjs8call
     #js8call.send_directed_message(msg['to'], msg['text'])
     socketio.emit('msg', [msg])
     
@@ -90,14 +93,6 @@ def update_spots():
     #TODOjs8call
     #global js8call
     spots = []
-
-    #TODO remove test data
-    #spots = [
-    #    {'username': 'A4GOULD', 'time': user_last_heard_timestamp('')},
-    #    {'username': 'BKG14', 'time': user_last_heard_timestamp('')},
-    #    {'username': 'DRWNICK87', 'time': user_last_heard_timestamp('')}
-    #]
-    #socketio.emit('spot', spots)
 
     #TODOjs8call
     # default to spots heard in last 10 minutes
@@ -143,11 +138,9 @@ def update_setting(data):
             
 @socketio.on('get-settings')
 def update_setting():
-    global settings
-    min_settings = {setting: data['value'] for setting, data in settings.items()}
-    socketio.emit('get-settings', min_settings)
-
-
+    settings = query('SELECT setting, value FROM settings').fetchall()
+    settings = dict(settings)
+    socketio.emit('get-settings', settings)
 
 
 
@@ -177,43 +170,22 @@ def user_last_heard_timestamp(username):
         return 0
 
 def user_chat_history(user_a, user_b):
-    #TODO
-    #global db
-    #query_data = {'user_a': user_a, 'user_b': user_b}
+    users = {'user_a': user_a, 'user_b': user_b}
     # select both sides of the conversation for the given users
-    #messages = db.execute('SELECT * FROM messages WHERE (from = :user_a AND to = :user_b) OR (from = :user_b AND to = :user_a)', query_data)
-    global message_store
-
-    msgs = []
-    #TODO
-    users = [user_a, user_b]
-    for message in message_store:
-        if (
-            message['from'] == user_a and message['to'] == user_b or
-            message['from'] == user_b and message['to'] == user_a
-        ):
-            msgs.append(message)
-    #for message in messages:
-    #    msg = {
-    #        'id': message[0],
-    #        'from': message[1],
-    #        'to': message[2],
-    #        'type': message[3],
-    #        'time': message[4],
-    #        'text': message[5],
-    #        'unread': message[6],
-    #        'sent': message[7]
-    #    }
-    #    msgs.append(msg)
-
+    columns = ['id', 'from', 'to', 'type', 'time', 'text', 'unread', 'sent']
+    msgs = query('SELECT * FROM messages WHERE ("from" = :user_a AND "to" = :user_b) OR ("from" = :user_b AND "to" = :user_a)', users).fetchall()
+    msgs = [dict(zip(columns, msg)) for msg in msgs]
     return msgs
     
 def get_stored_conversations():
-    global message_store
     conversations = {}
     logged_in_username = session.get('logged_in_username')
 
-    for msg in message_store:
+    columns = ['id', 'from', 'to', 'type', 'time', 'text', 'unread', 'sent']
+    msgs = query('SELECT * FROM messages WHERE "from" = :user OR "to" = :user', {'user': logged_in_username}).fetchall()
+    msgs = [dict(zip(columns, msg)) for msg in msgs]
+
+    for msg in msgs:
         if msg['from'] == logged_in_username:
             username = msg['to']
         elif msg['to'] == logged_in_username:
@@ -239,61 +211,19 @@ def get_stored_conversations():
                 'unread': msg['unread']
             }
 
-    print(list(conversations.values()))
     return list(conversations.values())
 
-#TODO
-def build_test_msgs(count):
-    active_chat_username = session.get('active_chat_username')
-    logged_in_username = 'KC3KVT'
-    msgs = []
-    last_from = logged_in_username
+def get_settings():
+    columns = ['setting', 'value', 'label', 'default', 'required', 'options']
+    settings = query('SELECT * FROM settings').fetchall()
+    settings = [dict(zip(columns, setting)) for setting in settings]
+    settings = {setting['setting']: setting for setting in settings}
 
-    for i in range(count):
-        if last_from == logged_in_username:
-            from_user = active_chat_username
-        else:
-            from_user = logged_in_username;
+    for setting in settings.keys():
+        if settings[setting]['options'] != None:
+            settings[setting]['options'] = json.loads(settings[setting]['options'])
 
-        last_from = from_user
-
-        if from_user == active_chat_username:
-            to_user = logged_in_username
-        else:
-            to_user = active_chat_username
-
-        if from_user == logged_in_username:
-            msg_type = 'tx'
-        else:
-            msg_type = 'rx'
-
-        if msg_type == 'rx':
-            unread = random.choice([True, False])
-        else:
-            unread = None
-
-        messages = [
-            'Hello there neighbor!',
-            'Hey there, how are you doing?',
-            'Doing good here, how about you?',
-            'Doing well, thanks for asking',
-            'Hope to see you all soon! Tell everyone there hello.'
-        ]
-
-        msg = {
-            'id': secrets.token_urlsafe(16),
-            'from': from_user,
-            'to': to_user,
-            'type': msg_type,
-            'time': time.time() - random.randint(0, 60 * 60),
-            'text': random.choice(messages),
-            'unread': unread,
-            'sent': None
-        }
-
-        msgs.append(msg)
-
-    return msgs
+    return settings
 
 # new spots callback
 def heard(spots):
@@ -316,7 +246,6 @@ def heard(spots):
     socketio.emit('spot', heard)
 
 def process_rx_msg(callsign, text, time):
-    #global db
     msg = {
         'id': secrets.token_urlsafe(16),
         'from': callsign,
@@ -328,17 +257,11 @@ def process_rx_msg(callsign, text, time):
         'sent': None
     }
     
-    #db.execute('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
-    #db.commit()
-
-    #TODO
-    global message_store
-    message_store.append(msg)
+    query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
 
     return msg
 
 def process_tx_msg(callsign, text, time):
-    #global db
     msg = {
         'id': secrets.token_urlsafe(16),
         'from': session.get('logged_in_username'),
@@ -352,44 +275,17 @@ def process_tx_msg(callsign, text, time):
         #'sent': None
     }
     
-    #db.execute('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
-    #db.commit()
-
-    #TODO
-    global message_store
-    message_store.append(msg)
+    query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
 
     return msg
 
-
-#TODO migrate to db solution
+#TODO handle uppercase text returned from pyjs8call.TxMonitor
+#TODO handle multiple messages with the same text
 #TODO improve pyjs8call.TxMonitor to handle msg id's
 def tx_complete(text):
-    global message_store
 
-    for msg in message_store:
-        if msg['sent'] != None and msg['text'].upper() == text.upper():
-            socketio.emit('remove-tx-status', msg['id'])
-
-
-
-### database functions
-
-def init_db(db):
-    table_names = db.execute('SELECT name FROM sqlite_master').fetchall()
-    #TODO
-    print(table_names)
-
-    if 'settings' not in table_names:
-        db.execute('CREATE TABLE settings(name, value)')
-        #TODO initialize settings
-
-    if 'messages' not in table_names:
-        db.execute('CREATE TABLE messages(id, from, to, type, time, text, unread, sent)')
-    
-    if 'spots' not in table_names:
-        db.execute('CREATE TABLE spots(callsign, time)')
-
+    msg = query('SELECT id FROM messages WHERE sent != NULL AND text = :text', {'text': text}).fetchone()
+    socketio.emit('remove-tx-status', msg[0])
 
 def validate_callsign(callsign):
     error = None
@@ -448,9 +344,7 @@ def validate_aging(aging):
 
     return (valid, error)
 
-
-def validate_setting(setting, value):
-    global settings
+def validate_setting(setting, value, settings):
     error = None
     valid = False
 
@@ -458,23 +352,101 @@ def validate_setting(setting, value):
         error = 'Invalid setting'
         return (valid, error)
 
-    if settings[setting]['validate'] == None:
+    if setting == 'callsign':
+        valid, error = validate_callsign(value)
+    elif setting == 'grid':
+        valid, error = validate_grid(value)
+    elif setting == 'aging':
+        valid, error = validate_aging(value)
+    else:
         if settings[setting]['options'] != None and value in settings[setting]['options']:
             valid = True
         else:
             valid = False
             error = 'Invalid ' + setting
-    else:
-        valid, error = settings[setting]['validate'](value)
 
     return (valid, error)
 
 
-settings = {
+
+
+
+### database functions
+
+def init_db():
+    with sqlite3.connect('portal.db', detect_types=sqlite3.PARSE_DECLTYPES) as con:
+        sqlite3.register_adapter(bool, int)
+        sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
+        cur = con.cursor()
+
+        tables = cur.execute('SELECT name FROM sqlite_master').fetchall()
+        tables = [tables[i][0] for i in range(len(tables))]
+
+        if 'settings' not in tables:
+            cur.execute('CREATE TABLE settings(setting, value, label, "default", required, options)')
+            global default_settings
+
+            for setting, data in default_settings.items():
+                data['setting'] = setting
+
+                if isinstance(data['options'], list):
+                    data['options'] = json.dumps(data['options'])
+
+                cur.execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options)', data)
+
+        if 'messages' not in tables:
+            cur.execute('CREATE TABLE messages(id, "from", "to", type, time, text, unread, sent)')
+    
+        if 'spots' not in tables:
+            cur.execute('CREATE TABLE spots(callsign, time)')
+    
+        con.commit()
+
+def query(query, parameters=None):
+    with sqlite3.connect('portal.db', detect_types=sqlite3.PARSE_DECLTYPES) as con:
+        sqlite3.register_adapter(bool, int)
+        sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
+        db = con.cursor()
+
+        if parameters == None:
+            result = db.execute(query)
+        else:
+            result = db.execute(query, parameters)
+
+        con.commit()
+
+    return result
+
+    
+
+
+
+
+
+
+### initialize application ###
+
+js8call = pyjs8call.Client()
+
+#TODOjs8call
+# initialize js8call client
+#global js8call
+#if 'Portal' not in js8call.config.get_profile_list():
+#    js8call.config.create_new_profile('Portal')
+
+#js8call.set_config_profile('Portal')
+#js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
+#js8call.start()
+#TODO use channel DIG-40: 7055000
+#js8call.set_freq(7078000)
+#js8call.tx_monitor.tx_complete_callback(tx_complete)
+
+
+
+default_settings = {
     'callsign': {
         'value': '',
         'label': 'Callsign',
-        'validate': validate_callsign,
         'default': '',
         'required': True,
         'options': None
@@ -482,7 +454,6 @@ settings = {
     'grid': {
         'value': '',
         'label': 'Grid Square',
-        'validate': validate_grid,
         'default': '',
         'required': False,
         'options': None
@@ -490,7 +461,6 @@ settings = {
     'speed': {
         'value': 'fast',
         'label': 'JS8Call Speed',
-        'validate': None,
         'default': 'fast',
         'required': False,
         'options': ['slow', 'normal', 'fast', 'turbo']
@@ -499,7 +469,6 @@ settings = {
     'aging': {
         'value': '10', 
         'label': 'Aging (minutes)',
-        'validate': validate_aging, 
         'default': '10',
         'required': False,
         'options': None
@@ -507,7 +476,6 @@ settings = {
     'theme': {
         'value': 'light', 
         'label': 'App Theme',
-        'validate': None, 
         'default': 'light',
         'required': False,
         'options': ['light', 'dark']
@@ -515,7 +483,6 @@ settings = {
     'size': {
         'value': 'normal', 
         'label': 'Font Size',
-        'validate': None, 
         'default': 'normal',
         'required': False,
         'options': ['small', 'normal', 'large']
@@ -523,7 +490,6 @@ settings = {
     'tab': {
         'value': 'activity', 
         'label': 'Default Tab',
-        'validate': None, 
         'default': 'activity',
         'required': False,
         'options': ['activity', 'conversations']
@@ -531,32 +497,11 @@ settings = {
 }
 
 
-#TODO global js8call doesn't work either
-message_store = []
-js8call = pyjs8call.Client()
+# initialize database
+init_db()
+
 
 if __name__ == 'main':
     # initialize socket io
     socketio.run(app, debug=True)
-    #TODO temp msg storage
-
-    #TODOjs8call
-    # initialize js8call client
-    #global js8call
-    #if 'Portal' not in js8call.config.get_profile_list():
-    #    js8call.config.create_new_profile('Portal')
-
-    #js8call.set_config_profile('Portal')
-    #js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
-    #js8call.start()
-    #TODO use channel DIG-40: 7055000
-    #js8call.set_freq(7078000)
-    #js8call.tx_monitor.tx_complete_callback(tx_complete)
-
-    # initialize database
-    #db_con = sqlite3.connect('portal.db', detect_types=sqlite3.PARSE_DECLTYPES)
-    #sqlite3.register_adapter(bool, int)
-    #sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
-    #db = db_con.cursor()
-    #init_db(db)
 
