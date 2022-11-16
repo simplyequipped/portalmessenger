@@ -14,6 +14,8 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex()
 socketio = SocketIO(app)
 
+#TODO add ability to restore defaults, button in settings.html footer
+
 
 ### flask routes and template handling
 
@@ -193,11 +195,15 @@ def get_settings():
     columns = ['setting', 'value', 'label', 'default', 'required', 'options']
     settings = query('SELECT * FROM settings').fetchall()
     settings = [dict(zip(columns, setting)) for setting in settings]
-    settings = {setting['setting']: setting for setting in settings}
+    
+    if len(settings) > 0:
+        settings = {setting['setting']: setting for setting in settings}
 
-    for setting in settings.keys():
-        if settings[setting]['options'] != None:
-            settings[setting]['options'] = json.loads(settings[setting]['options'])
+        for setting in settings.keys():
+            if settings[setting]['options'] != None:
+                settings[setting]['options'] = json.loads(settings[setting]['options'])
+    else:
+        settings = {}
 
     return settings
 
@@ -314,6 +320,18 @@ def validate_aging(aging):
 
     return (valid, error)
 
+def validate_freq(freq):
+    error = None
+    valid = False
+
+    if aging.isnumeric():
+        valid = True
+    else:
+        valid = False
+        error = 'Frequency must be a number'
+
+    return (valid, error)
+
 def validate_setting(setting, value, settings):
     error = None
     valid = False
@@ -328,6 +346,8 @@ def validate_setting(setting, value, settings):
         valid, error = validate_grid(value)
     elif setting == 'aging':
         valid, error = validate_aging(value)
+    elif setting == 'freq':
+        valid, error = validate_freq(value)
     else:
         if settings[setting]['options'] != None and value in settings[setting]['options']:
             valid = True
@@ -336,8 +356,6 @@ def validate_setting(setting, value, settings):
             error = 'Invalid ' + setting
 
     return (valid, error)
-
-
 
 
 
@@ -352,11 +370,18 @@ def init_db():
         tables = cur.execute('SELECT name FROM sqlite_master').fetchall()
         tables = [tables[i][0] for i in range(len(tables))]
 
+        if 'messages' not in tables:
+            cur.execute('CREATE TABLE messages(id, "from", "to", type, time, text, unread, sent)')
+        if 'spots' not in tables:
+            cur.execute('CREATE TABLE spots(callsign, time)')
         if 'settings' not in tables:
             cur.execute('CREATE TABLE settings(setting, value, label, "default", required, options)')
-            global default_settings
+        
+        settings = get_settings()
+        global default_settings
 
-            for setting, data in default_settings.items():
+        for setting, data in default_settings.items():
+            if setting not in settings.keys():
                 data['setting'] = setting
 
                 if isinstance(data['options'], list):
@@ -364,12 +389,6 @@ def init_db():
 
                 cur.execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options)', data)
 
-        if 'messages' not in tables:
-            cur.execute('CREATE TABLE messages(id, "from", "to", type, time, text, unread, sent)')
-    
-        if 'spots' not in tables:
-            cur.execute('CREATE TABLE spots(callsign, time)')
-    
         con.commit()
 
 def query(query, parameters=None):
@@ -434,7 +453,7 @@ default_settings = {
         'value': '10', 
         'label': 'Aging (minutes)',
         'default': '10',
-        'required': False,
+        'required': True,
         'options': None
     },
     'theme': {
@@ -457,6 +476,13 @@ default_settings = {
         'default': 'activity',
         'required': False,
         'options': ['activity', 'messages']
+    },
+    'freq': {
+        'value': '7078000', 
+        'label': 'Frequency (Hz)',
+        'default': '7078000',
+        'required': True,
+        'options': None
     }
 }
 
