@@ -263,6 +263,8 @@ def process_tx_msg(callsign, text, time):
     return msg
 
 def tx_complete(identifier):
+    # works inconsistently without this delay, root cause unknown
+    time.sleep(0.001)
     query('UPDATE messages SET sent = NULL WHERE id = :id', {'id': identifier})
     socketio.emit('remove-tx-status', identifier)
 
