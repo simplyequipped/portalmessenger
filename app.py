@@ -70,6 +70,8 @@ def settings_route():
                         js8call.set_speed(value)
                     if setting == 'grid':
                         js8call.set_station_grid(value)
+                    if setting == 'freq':
+                        js8call.set_freq(value)
 
     return render_template('settings.html', settings = settings)
 
@@ -81,6 +83,7 @@ def settings_route():
 def tx_msg(data):
     global js8call
     msg = process_tx_msg(data['user'], data['text'], time.time())
+
     js8call.send_directed_message(msg['to'], msg['text'])
     js8call.tx_monitor.monitor(msg['text'], identifier = msg['id'])
     socketio.emit('msg', [msg])
@@ -164,23 +167,23 @@ def get_stored_conversations():
     msgs = [dict(zip(columns, msg)) for msg in msgs]
 
     for msg in msgs:
-        if msg['from'] == logged_in_username:
-            username = msg['to']
-        elif msg['to'] == logged_in_username:
+        if msg['type'] == 'rx':
             username = msg['from']
+        elif msg['type'] == 'tx':
+            username = msg['to']
         else:
             continue
             
         if username in conversations.keys():
             if conversations[username]['unread'] == False:
                 conversations[username]['unread'] = msg['unread']
-            if msg['time'] > conversations[username]['time']:
+            if msg['type'] == 'rx' and msg['time'] > conversations[username]['time']:
                 conversations[username]['time'] = msg['time']
                 
         else:
             last_heard = user_last_heard_timestamp(username)
             # no spots but msg is from user, use msg timestamp
-            if last_heard == 0 and msg['from'] == username:
+            if last_heard == 0 and msg['type'] == 'rx':
                 last_heard = msg['time']
 
             conversations[username] = {
@@ -324,7 +327,7 @@ def validate_freq(freq):
     error = None
     valid = False
 
-    if aging.isnumeric():
+    if freq.isnumeric():
         valid = True
     else:
         valid = False
@@ -356,6 +359,16 @@ def validate_setting(setting, value, settings):
             error = 'Invalid ' + setting
 
     return (valid, error)
+
+def init_settings():
+    global js8call
+    settings = get_settings()
+
+    js8call.set_station_callsign(settings['callsign']['value'])
+    js8call.set_speed(settings['speed']['value'])
+    js8call.set_station_grid(settings['grid']['value'])
+    js8call.set_freq(int(settings['freq']['value']))
+
 
 
 
@@ -405,24 +418,6 @@ def query(query, parameters=None):
         con.commit()
 
     return result
-
-
-
-
-### initialize application ###
-
-js8call = pyjs8call.Client()
-
-# configure js8call for use with portal
-if 'Portal' not in js8call.config.get_profile_list():
-    js8call.config.create_new_profile('Portal')
-
-js8call.set_config_profile('Portal')
-js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
-js8call.start()
-#TODO use channel DIG-40: 7055000
-js8call.set_freq(7078000)
-js8call.tx_monitor.tx_complete_callback(tx_complete)
 
 
 
@@ -487,11 +482,30 @@ default_settings = {
 }
 
 
-# initialize database
+### initialize database ###
 init_db()
+settings = get_settings()
+
+### initialize application ###
+js8call = pyjs8call.Client()
+
+if 'Portal' not in js8call.config.get_profile_list():
+    js8call.config.create_new_profile('Portal')
+
+js8call.set_config_profile('Portal')
+js8call.set_station_callsign(settings['callsign']['value'])
+js8call.start()
+
+js8call.set_speed(settings['speed']['value'])
+js8call.set_station_grid(settings['grid']['value'])
+#TODO use channel DIG-40: 7055000
+js8call.set_freq(int(settings['freq']['value']))
+js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
+js8call.tx_monitor.set_tx_complete_callback(tx_complete)
+
+
 
 
 if __name__ == 'main':
-    # initialize socket io
     socketio.run(app, debug=True)
 
