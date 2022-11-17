@@ -102,7 +102,7 @@
 
 			$('#new-conversation-form').submit(function (){
 				event.preventDefault();
-				username = $('#new-conversation').val().toUpperCase();
+				username = $('#new-conversation').val().trim().toUpperCase();
 				$.post('/stations', {user: username}, function() {
 					window.location = '/chat';
 				});
