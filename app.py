@@ -431,6 +431,13 @@ default_settings = {
         'required': True,
         'options': None
     },
+    'freq': {
+        'value': '7078000', 
+        'label': 'Frequency (Hz)',
+        'default': '7078000',
+        'required': True,
+        'options': None
+    },
     'grid': {
         'value': '',
         'label': 'Grid Square',
@@ -445,27 +452,12 @@ default_settings = {
         'required': False,
         'options': ['slow', 'normal', 'fast', 'turbo']
     },
-    # activity/spot aging in minutes
-    'aging': {
-        'value': '10', 
-        'label': 'Aging (minutes)',
-        'default': '10',
-        'required': True,
-        'options': None
-    },
     'theme': {
         'value': 'light', 
         'label': 'App Theme',
         'default': 'light',
         'required': False,
         'options': ['light', 'dark']
-    },
-    'size': {
-        'value': 'normal', 
-        'label': 'Font Size',
-        'default': 'normal',
-        'required': False,
-        'options': ['normal', 'large']
     },
     'tab': {
         'value': 'activity', 
@@ -474,10 +466,18 @@ default_settings = {
         'required': False,
         'options': ['activity', 'messages']
     },
-    'freq': {
-        'value': '7078000', 
-        'label': 'Frequency (Hz)',
-        'default': '7078000',
+    'size': {
+        'value': 'normal', 
+        'label': 'Font Size',
+        'default': 'normal',
+        'required': False,
+        'options': ['normal', 'large']
+    },
+    # activity/spot aging in minutes
+    'aging': {
+        'value': '10', 
+        'label': 'Aging (minutes)',
+        'default': '10',
         'required': True,
         'options': None
     }
@@ -495,7 +495,11 @@ if 'Portal' not in js8call.config.get_profile_list():
     js8call.config.create_new_profile('Portal')
 
 js8call.set_config_profile('Portal')
-js8call.set_station_callsign(settings['callsign']['value'])
+
+# allow initial startup with no callsign set
+if settings['callsign']['value'] != '':
+    js8call.set_station_callsign(settings['callsign']['value'])
+
 js8call.start()
 
 js8call.set_speed(settings['speed']['value'])
