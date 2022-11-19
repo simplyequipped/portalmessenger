@@ -14,6 +14,11 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex()
 socketio = SocketIO(app)
 
+#TODO get rid of global variable
+active_chat_username = None
+logged_in_username = None
+
+
 #TODO add ability to restore defaults, button in settings.html footer
 
 
@@ -23,55 +28,53 @@ socketio = SocketIO(app)
 @app.route('/stations', methods=['GET', 'POST'])
 @app.route('/stations.html', methods=['GET', 'POST'])
 def stations_route():
+    global active_chat_username
     settings = get_settings()
     session['logged_in_username'] = settings['callsign']['value']
     
     if request.method == 'POST':
-        session['active_chat_username'] = request.form.get('user')
+        #TODO
+        #session['active_chat_username'] = request.form.get('user')
+        active_chat_username = request.form.get('user')
         return ''
     else:
         if settings['callsign']['value'] == '':
             return redirect('/settings')
 
-        if 'active_chat_username' in session.keys():
-            del session['active_chat_username']
+        #TODO
+        #if 'active_chat_username' in session.keys():
+        #    del session['active_chat_username']
+        active_chat_username = None
 
         return render_template('stations.html', settings = settings)
 
 @app.route('/chat')
 @app.route('/chat.html')
 def chat_route():
+    global active_chat_username
     settings = get_settings()
-    username = session.get('active_chat_username')
-    return render_template('chat.html', user = username, settings = settings)
+
+    mark_user_msgs_read(active_chat_username)
+
+    return render_template('chat.html', user = active_chat_username, settings = settings)
 
 @app.route('/settings', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
 def settings_route():
     settings = get_settings()
-    errors = []
 
     if request.method == 'POST':
         # process posted settings
         for setting, value in request.form.items():
+            if setting == 'callsign' or setting == 'grid':
+                value = value.upper()
+
             if setting in settings.keys() and value != settings[setting]['value']:
-                valid, error = validate_setting(setting, value, settings)
+                valid, error = set_setting(setting, value)
                 settings[setting]['error'] = error
 
                 if valid:
-                    # store new setting value
-                    query('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
                     settings[setting]['value'] = value
-
-                    # handle settings affecting js8call
-                    if setting == 'callsign':
-                        js8call.set_station_callsign(value)
-                    if setting == 'speed':
-                        js8call.set_speed(value)
-                    if setting == 'grid':
-                        js8call.set_station_grid(value)
-                    if setting == 'freq':
-                        js8call.set_freq(value)
 
     return render_template('settings.html', settings = settings)
 
@@ -82,7 +85,7 @@ def settings_route():
 @socketio.on('msg')
 def tx_msg(data):
     global js8call
-    msg = process_tx_msg(data['user'], data['text'], time.time())
+    msg = process_tx_msg(data['user'], data['text'].upper(), time.time())
 
     js8call.send_directed_message(msg['to'], msg['text'])
     js8call.tx_monitor.monitor(msg['text'], identifier = msg['id'])
@@ -116,8 +119,12 @@ def update_conversations():
 
 @socketio.on('init-chat')
 def init_chat():
-    active_chat_username = session.get('active_chat_username')
-    logged_in_username = session.get('logged_in_username')
+    #active_chat_username = session.get('active_chat_username')
+    #logged_in_username = session.get('logged_in_username')
+    #TODO
+    global active_chat_username
+    settings = get_settings()
+    logged_in_username = settings['callsign']['value']
 
     msgs = user_chat_history(active_chat_username, logged_in_username)
     socketio.emit('msg', msgs)
@@ -133,11 +140,32 @@ def update_setting():
 ### helper functions
 
 # directed message callback
+# because this function is called via callback it does not automatically have the flask request context
 def rx_msg(msg):
-    msg = process_rx_msg(msg['from'], msg['value'], msg['time'])
+    global active_chat_username
+    msg = process_rx_msg(msg['from'], msg['text'], msg['time'])
+
     # pass messages for selected chat user to client side
-    if 'active_chat_username' in session.keys() and msg['from'] == session.get('active_chat_username'):
+    if msg['from'] == active_chat_username:
         socketio.emit('msg', [msg])
+
+    unread = bool(user_unread_count(msg['from']))
+
+    # pass conversation to client side
+    conversation = {
+        'username': msg['from'], 
+        'time': msg['time'],
+        'unread': unread
+    }
+
+    socketio.emit('conversation', [conversation])
+
+def mark_user_msgs_read(username):
+    query('UPDATE messages SET unread = 0 WHERE "from" = :user', {'user': username})
+
+def user_unread_count(username):
+    unread = query('SELECT COUNT(*) FROM messages WHERE "from" = :user AND unread = 1', {'user': username}).fetchone()
+    return int(unread[0])
 
 def user_last_heard_timestamp(username):
     spots = []
@@ -146,7 +174,7 @@ def user_last_heard_timestamp(username):
 
     if len(spots) > 0:
         spots.sort(key = lambda spot: spot['time'])
-        return spots[-1]
+        return spots[-1]['time']
     else:
         return 0
 
@@ -160,7 +188,7 @@ def user_chat_history(user_a, user_b):
     
 def get_stored_conversations():
     conversations = {}
-    logged_in_username = session.get('logged_in_username')
+    logged_in_username = get_setting('callsign')
 
     columns = ['id', 'from', 'to', 'type', 'time', 'text', 'unread', 'sent']
     msgs = query('SELECT * FROM messages WHERE "from" = :user OR "to" = :user', {'user': logged_in_username}).fetchall()
@@ -173,10 +201,12 @@ def get_stored_conversations():
             username = msg['to']
         else:
             continue
-            
+        
         if username in conversations.keys():
+            # ensure unread = True is not overwritten
             if conversations[username]['unread'] == False:
                 conversations[username]['unread'] = msg['unread']
+            # ensure latest rx timestamp is used
             if msg['type'] == 'rx' and msg['time'] > conversations[username]['time']:
                 conversations[username]['time'] = msg['time']
                 
@@ -210,6 +240,29 @@ def get_settings():
 
     return settings
 
+def get_setting(setting):
+    setting = query('SELECT value FROM settings WHERE setting = :setting', {'setting': setting}).fetchone()
+    return setting[0]
+
+def set_setting(setting, value):
+    valid, error = validate_setting(setting, value)
+
+    if valid:
+        # store new setting value
+        query('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
+
+        # handle settings affecting js8call
+        if setting == 'callsign':
+            js8call.set_station_callsign(value)
+        elif setting == 'speed':
+            js8call.set_speed(value)
+        elif setting == 'grid':
+            js8call.set_station_grid(value)
+        elif setting == 'freq':
+            js8call.set_freq(value)
+
+    return (valid, error)
+
 # new spots callback
 def heard(spots):
     # only unique spots with the latest timestamp
@@ -224,25 +277,36 @@ def heard(spots):
     for username, timestamp in heard_data.items():
         station = {
             'username': username, 
-            'time': last_heard_minutes(timestamp)
-            }
+            'time': timestamp
+        }
         heard.append(station)
 
     socketio.emit('spot', heard)
 
+# because this function is called via callback it does not automatically have the flask request context
 def process_rx_msg(callsign, text, time):
+    global active_chat_username
+    #TODO
+    logged_in_username = get_setting('callsign')
+
+    if callsign == active_chat_username:
+        unread = False
+    else:
+        unread = True
+
     msg = {
         'id': secrets.token_urlsafe(16),
         'from': callsign,
-        'to': session.get('logged_in_username'),
+        'to': logged_in_username,
         'type': 'rx',
         'time': time,
         'text': text,
-        'unread': True,
+        'unread': unread,
         'sent': None
     }
     
-    query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
+    if logged_in_username != '':
+        query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
 
     return msg
 
@@ -254,7 +318,7 @@ def process_tx_msg(callsign, text, time):
         'type': 'tx',
         'time': time,
         'text': text,
-        'unread': None,
+        'unread': False,
         'sent': 'Sending...'
     }
     
@@ -337,7 +401,8 @@ def validate_freq(freq):
 
     return (valid, error)
 
-def validate_setting(setting, value, settings):
+def validate_setting(setting, value):
+    settings = get_settings()
     error = None
     valid = False
 
@@ -495,6 +560,8 @@ if 'Portal' not in js8call.config.get_profile_list():
     js8call.config.create_new_profile('Portal')
 
 js8call.set_config_profile('Portal')
+# set max idle timeout (1440 minutes, 24 hours)
+js8call.config.set('Configuration', 'TxIdleWatchdog', 1440)
 
 # allow initial startup with no callsign set
 if settings['callsign']['value'] != '':
@@ -508,6 +575,7 @@ js8call.set_station_grid(settings['grid']['value'])
 js8call.set_freq(int(settings['freq']['value']))
 js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
 js8call.tx_monitor.set_tx_complete_callback(tx_complete)
+js8call.spot_monitor.set_new_spot_callback(heard)
 
 
 
