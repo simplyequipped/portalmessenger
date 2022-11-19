@@ -63,6 +63,8 @@
 				handleSpot(station);
 			});
 			sortStations();
+            // click selected tab to force above event handling
+            $('.tab.selected').click();
 		});
 
 		socket.on('conversation', function( data ) {
@@ -70,6 +72,8 @@
 				handleConversation(station);
 			});
 			sortStations();
+            // click selected tab to force above event handling
+            $('.tab.selected').click();
 		});
 
 		$(window).on('load', function(){
@@ -90,9 +94,6 @@
 				$('.conversation').show();
 			});
 
-            // click selected tab to force above event handling
-            $('.tab.selected').click();
-
 			$('.icon-add').click(function(){
 				$('.icon-add').hide();
                 $('#new-conversation-form').val('');
@@ -108,14 +109,12 @@
 				});
 			});
 
-			//$(window).resize(function (){
-            //    vh = window.innerHeight * 0.01;
-            //    $(':root').css('--vh', vh + 'px');
-			//});
-
 			// request station data from the server
 			socket.emit('spot');
 			socket.emit('conversation');
+
+            // click selected tab to force above event handling
+            $('.tab.selected').click();
 		});
 
 		// update last heard text and presence, client side
