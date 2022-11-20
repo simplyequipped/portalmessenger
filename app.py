@@ -63,16 +63,12 @@ def settings_route():
             if setting == 'callsign' or setting == 'grid':
                 value = value.upper()
 
-            print(setting)
-
             if setting in settings.keys() and value != settings[setting]['value']:
                 valid, error = set_setting(setting, value)
                 settings[setting]['error'] = error
 
                 if valid:
                     settings[setting]['value'] = value
-
-                print(setting, value, valid, error)
 
     return render_template('settings.html', settings = settings)
 
