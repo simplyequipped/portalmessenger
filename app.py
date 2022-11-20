@@ -560,7 +560,8 @@ init_db()
 settings = get_settings()
 
 ### initialize application ###
-js8call = pyjs8call.Client()
+# running headless requires xvfb to be installed
+js8call = pyjs8call.Client(headless = True)
 atexit.register(js8call.stop)
 
 if 'Portal' not in js8call.config.get_profile_list():
