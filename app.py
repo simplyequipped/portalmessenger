@@ -127,7 +127,7 @@ def init_chat():
     #active_chat_username = session.get('active_chat_username')
     #logged_in_username = session.get('logged_in_username')
     global active_chat_username
-    logged_in_username = get_setting'(callsign'])
+    logged_in_username = get_setting('callsign')
 
     msgs = user_chat_history(active_chat_username, logged_in_username)
     socketio.emit('msg', msgs)
