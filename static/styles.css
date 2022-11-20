@@ -67,6 +67,12 @@ body {
 	margin-left: 15px;
 }
 
+.icon-power {
+	-webkit-mask-image: url('icons/power.svg');
+	float: right;
+	margin-left: 15px;
+}
+
 .icon-add {
 	-webkit-mask-image: url('icons/add-solid.svg');
 }

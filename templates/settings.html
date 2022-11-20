@@ -60,6 +60,7 @@
 		</div>
 		<div class="footer">
 			<form><button type="submit" id="save-button">Save Settings</button></form>
+			<!--<span class="icon icon-power">&nbsp;</span>-->
 		</div>
 
     </body>
@@ -79,6 +80,13 @@
                 event.preventDefault();
                 $('#settings-form').submit()
             });
+
+            //$('.icon-power').click(function() {
+			//	socket.emit('shutdown', function() {
+			//		// on server ack, close the current tab
+			//		window.open('about:blank', '_self').close();
+			//	});
+            //});
 		
             if ( $('#error').html != '' ) {
                 $('#error').show()

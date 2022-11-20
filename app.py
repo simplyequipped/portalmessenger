@@ -33,19 +33,13 @@ def stations_route():
     session['logged_in_username'] = settings['callsign']['value']
     
     if request.method == 'POST':
-        #TODO
-        #session['active_chat_username'] = request.form.get('user')
         active_chat_username = request.form.get('user')
         return ''
     else:
         if settings['callsign']['value'] == '':
             return redirect('/settings')
 
-        #TODO
-        #if 'active_chat_username' in session.keys():
-        #    del session['active_chat_username']
         active_chat_username = None
-
         return render_template('stations.html', settings = settings)
 
 @app.route('/chat')
@@ -123,9 +117,6 @@ def update_conversations():
 
 @socketio.on('init-chat')
 def init_chat():
-    #TODO
-    #active_chat_username = session.get('active_chat_username')
-    #logged_in_username = session.get('logged_in_username')
     global active_chat_username
     logged_in_username = get_setting('callsign')
 
@@ -137,6 +128,14 @@ def update_setting():
     settings = query('SELECT setting, value FROM settings').fetchall()
     settings = dict(settings)
     socketio.emit('get-settings', settings)
+
+@socketio.on('shutdown')
+def shutdown():
+    # wait for current transactions to finish
+    time.sleep(0.1)
+    # stop js8call
+    global js8call
+    js8call.stop()
 
 
 
@@ -293,7 +292,6 @@ def heard(spots):
 
 # because this function is called via callback it does not automatically have the flask request context
 def process_rx_msg(callsign, text, time):
-    #TODO
     global active_chat_username
     logged_in_username = get_setting('callsign')
 
@@ -563,6 +561,7 @@ settings = get_settings()
 
 ### initialize application ###
 js8call = pyjs8call.Client()
+atexit.register(js8call.stop)
 
 if 'Portal' not in js8call.config.get_profile_list():
     js8call.config.create_new_profile('Portal')
@@ -586,7 +585,6 @@ js8call.start()
 
 js8call.set_speed(settings['speed']['value'])
 js8call.set_station_grid(settings['grid']['value'])
-#TODO use channel DIG-40: 7055000
 js8call.set_freq(int(settings['freq']['value']))
 js8call.register_rx_callback(rx_msg, pyjs8call.Message.RX_DIRECTED)
 js8call.tx_monitor.set_tx_complete_callback(tx_complete)
