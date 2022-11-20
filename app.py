@@ -69,12 +69,16 @@ def settings_route():
             if setting == 'callsign' or setting == 'grid':
                 value = value.upper()
 
+            print(setting)
+
             if setting in settings.keys() and value != settings[setting]['value']:
                 valid, error = set_setting(setting, value)
                 settings[setting]['error'] = error
 
                 if valid:
                     settings[setting]['value'] = value
+
+                print(setting, value, valid, error)
 
     return render_template('settings.html', settings = settings)
 
@@ -119,12 +123,11 @@ def update_conversations():
 
 @socketio.on('init-chat')
 def init_chat():
+    #TODO
     #active_chat_username = session.get('active_chat_username')
     #logged_in_username = session.get('logged_in_username')
-    #TODO
     global active_chat_username
-    settings = get_settings()
-    logged_in_username = settings['callsign']['value']
+    logged_in_username = get_setting'(callsign'])
 
     msgs = user_chat_history(active_chat_username, logged_in_username)
     socketio.emit('msg', msgs)
@@ -285,8 +288,8 @@ def heard(spots):
 
 # because this function is called via callback it does not automatically have the flask request context
 def process_rx_msg(callsign, text, time):
-    global active_chat_username
     #TODO
+    global active_chat_username
     logged_in_username = get_setting('callsign')
 
     if callsign == active_chat_username:
@@ -562,6 +565,13 @@ if 'Portal' not in js8call.config.get_profile_list():
 js8call.set_config_profile('Portal')
 # set max idle timeout (1440 minutes, 24 hours)
 js8call.config.set('Configuration', 'TxIdleWatchdog', 1440)
+# enable autoreply which allows API message tx 
+js8call.config.set('Configuration', 'AutoreplyConfirmation', 'true')
+js8call.config.set('Configuration', 'AutoreplyOnAtStartup', 'true')
+
+js8call.config.set('Configuration', 'Miles', 'true')
+# not critical to set freq here, but js8call will use this on restart
+js8call.config.set('Common', 'DialFreq', int(settings['freq']['value']))
 
 # allow initial startup with no callsign set
 if settings['callsign']['value'] != '':
