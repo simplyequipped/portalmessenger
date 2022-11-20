@@ -41,7 +41,7 @@ body {
 	background: var(--secondary-color);
 }
 
-.icon:hover, .icon:focus {
+.icon:hover {
 	background: var(--tertiary-color);
 }
 
@@ -70,7 +70,23 @@ body {
 .icon-power {
 	-webkit-mask-image: url('icons/power.svg');
 	float: right;
-	margin-left: 15px;
+	margin-right: 5px;
+}
+
+.power-on, .power-on:hover {
+	background: #43a047;
+}
+
+.power-off, .power-off:hover {
+	background: #b0120a;
+}
+
+.power-on:active, .power-off:active {
+	background: var(--tertiary-color);
+}
+
+.icon-refresh {
+	-webkit-mask-image: url('icons/refresh.svg');
 }
 
 .icon-add {
@@ -328,6 +344,10 @@ button {
 	cursor: pointer;
 	border-radius: 10px;
 	border: 1px solid var(--secondary-color);
+}
+
+#save-button {
+	margin-left:50px;
 }
 
 .original-hidden {

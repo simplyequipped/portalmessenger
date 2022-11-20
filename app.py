@@ -129,13 +129,28 @@ def update_setting():
     settings = dict(settings)
     socketio.emit('get-settings', settings)
 
-@socketio.on('shutdown')
-def shutdown():
+@socketio.on('power-on')
+def power_on():
+    global js8call
+
+    # wait for current transactions to finish
+    time.sleep(0.1)
+    # start js8call
+    if not js8call.online:
+        js8call.start()
+
+    socketio.emit('power-on')
+
+@socketio.on('power-off')
+def power_off():
+    global js8call
+
     # wait for current transactions to finish
     time.sleep(0.1)
     # stop js8call
-    global js8call
     js8call.stop()
+
+    socketio.emit('power-off')
 
 
 

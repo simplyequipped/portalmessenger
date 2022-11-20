@@ -59,20 +59,30 @@
 		    </div>
 		</div>
 		<div class="footer">
+			<span class="icon icon-power power-on">&nbsp;</span>
 			<form><button type="submit" id="save-button">Save Settings</button></form>
-			<!--<span class="icon icon-power">&nbsp;</span>-->
 		</div>
 
     </body>
 	<script>
 		var socket = io.connect('http://' + document.domain + ':' + location.port);
 	
-		socket.on('get-settings', function( settings ) {
-			Object.keys(settings).forEach(function( setting ) {
-				updateLocalSetting('setting-' + setting, settings[setting]);
-			});
+		//socket.on('get-settings', function( settings ) {
+		//	Object.keys(settings).forEach(function( setting ) {
+		//		updateLocalSetting('setting-' + setting, settings[setting]);
+		//	});
+		//
+		//	handleLocalSettings();
+		//});
 
-			handleLocalSettings();
+		socket.on('power-on', function( settings ) {
+			$('.icon-power').removeClass('power-off');
+			$('.icon-power').addClass('power-on');
+		});
+
+		socket.on('power-off', function( settings ) {
+			$('.icon-power').removeClass('power-on');
+			$('.icon-power').addClass('power-off');
 		});
 
         $(window).on('load', function(){
@@ -81,16 +91,18 @@
                 $('#settings-form').submit()
             });
 
-            //$('.icon-power').click(function() {
-			//	socket.emit('shutdown', function() {
-			//		// on server ack, close the current tab
-			//		window.open('about:blank', '_self').close();
-			//	});
-            //});
-		
-            if ( $('#error').html != '' ) {
-                $('#error').show()
-            }
+            $('.icon-power').click(function() {
+				if ( $('.icon-power').hasClass('power-on') ) {
+					socket.emit('power-off');
+				}
+				else {
+					socket.emit('power-on');	
+				}
+
+				// close the current tab
+				//var win = window.open('about:blank', '_self');
+				//win.close();
+            });
         });
 
 	</script>
