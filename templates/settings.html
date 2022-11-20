@@ -77,11 +77,13 @@
 
 		socket.on('power-on', function( settings ) {
 			$('.icon-power').removeClass('power-off');
+			$('.icon-power').removeClass('power-pending');
 			$('.icon-power').addClass('power-on');
 		});
 
 		socket.on('power-off', function( settings ) {
 			$('.icon-power').removeClass('power-on');
+			$('.icon-power').removeClass('power-pending');
 			$('.icon-power').addClass('power-off');
 		});
 
@@ -94,9 +96,20 @@
             $('.icon-power').click(function() {
 				if ( $('.icon-power').hasClass('power-on') ) {
 					socket.emit('power-off');
+					$('.icon-power').removeClass('power-on');
+					$('.icon-power').addClass('power-pending');
 				}
-				else {
+				else if ( $('.icon-power').hasClass('power-off') ) {
 					socket.emit('power-on');	
+					$('.icon-power').removeClass('power-off');
+					$('.icon-power').addClass('power-pending');
+
+					setTimeout(function () {
+						if ( $('.icon-power').hasClass('power-pending') ) {
+							$('.icon-power').removeClass('power-pending');
+							$('.icon-power').addClass('power-off');
+						}
+					}, 60 * 1000);
 				}
 
 				// close the current tab

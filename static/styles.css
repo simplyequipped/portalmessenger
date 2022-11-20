@@ -81,6 +81,10 @@ body {
 	background: #b0120a;
 }
 
+.power-pending, .power-pending:hover {
+	background: #FFFF66;
+}
+
 .power-on:active, .power-off:active {
 	background: var(--tertiary-color);
 }
