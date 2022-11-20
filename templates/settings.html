@@ -75,10 +75,10 @@
 		});
 
         $(window).on('load', function(){
-            //$('#save-button').click(function() {
-            //    event.preventDefault();
-            //    $('#settings-form').submit()
-            //});
+            $('#save-button').click(function() {
+                event.preventDefault();
+                $('#settings-form').submit()
+            });
 		
             if ( $('#error').html != '' ) {
                 $('#error').show()
