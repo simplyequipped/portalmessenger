@@ -171,15 +171,30 @@ def user_unread_count(username):
     return int(unread[0])
 
 def user_last_heard_timestamp(username):
-    spots = []
+    # get latest spot timestamp
     global js8call
     spots = js8call.get_station_spots(station = username)
+    last_spot_timestamp = None
+    last_msg_timestamp = None
 
-    if len(spots) > 0:
+    if spots != None and len(spots) > 0:
         spots.sort(key = lambda spot: spot['time'])
-        return spots[-1]['time']
-    else:
-        return 0
+        last_spot_timestamp = spots[-1]['time']
+
+    # get latest msg timestamp
+    last_msg_timestamp = query('SELECT MAX(time) FROM messages WHERE "from" = :user', {'user': username}).fetchone()
+
+    if last_msg_timestamp != None and len(last_msg_timestamp) > 0:
+        last_msg_timestamp = last_msg_timestamp[0]
+
+    if last_spot_timestamp == None:
+        last_spot_timestamp = 0
+
+    if last_msg_timestamp == None:
+        last_msg_timestamp = 0
+
+    # return the greater of the two timestamps
+    return max(last_spot_timestamp, last_msg_timestamp)
 
 def user_chat_history(user_a, user_b):
     users = {'user_a': user_a, 'user_b': user_b}
@@ -190,42 +205,32 @@ def user_chat_history(user_a, user_b):
     return msgs
     
 def get_stored_conversations():
-    conversations = {}
+    conversations = []
     logged_in_username = get_setting('callsign')
 
-    columns = ['id', 'from', 'to', 'type', 'time', 'text', 'unread', 'sent']
-    msgs = query('SELECT * FROM messages WHERE "from" = :user OR "to" = :user', {'user': logged_in_username}).fetchall()
-    msgs = [dict(zip(columns, msg)) for msg in msgs]
+    users = query('SELECT DISTINCT "from", "to" FROM messages WHERE "from" = :user OR "to" = :user', {'user': logged_in_username}).fetchall()
 
-    for msg in msgs:
-        if msg['type'] == 'rx':
-            username = msg['from']
-        elif msg['type'] == 'tx':
-            username = msg['to']
-        else:
-            continue
+    # if there are no messages to process, end processing
+    if users == None or len(users) == 0:
+        return []
         
-        if username in conversations.keys():
-            # ensure unread = True is not overwritten
-            if conversations[username]['unread'] == False:
-                conversations[username]['unread'] = msg['unread']
-            # ensure latest rx timestamp is used
-            if msg['type'] == 'rx' and msg['time'] > conversations[username]['time']:
-                conversations[username]['time'] = msg['time']
-                
-        else:
-            last_heard = user_last_heard_timestamp(username)
-            # no spots but msg is from user, use msg timestamp
-            if last_heard == 0 and msg['type'] == 'rx':
-                last_heard = msg['time']
+    # parse result row tuples into single list of unique values
+    users = list(set([user for x in users for user in (x[0], x[1])]))
+    users.remove(logged_in_username)
 
-            conversations[username] = {
-                'username': username,
-                'time': last_heard,
-                'unread': msg['unread']
-            }
+    for user in users:
+        unread = user_unread_count(user)
+        last_heard = user_last_heard_timestamp(user)
 
-    return list(conversations.values())
+        conversation = {
+            'username': user,
+            'time': last_heard,
+            'unread': bool(unread)
+        }
+
+        conversations.append(conversation)
+
+    return conversations
 
 def get_settings():
     columns = ['setting', 'value', 'label', 'default', 'required', 'options']
