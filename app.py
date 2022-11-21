@@ -155,6 +155,10 @@ def power_off():
 # directed message callback
 # because this function is called via callback it does not automatically have the flask request context
 def rx_msg(msg):
+    # filter heartbeat messages
+    if 'cmd' in msg.keys() and msg['cmd'] == 'HEARTBEAT':
+        return None
+
     global active_chat_username
     msg = process_rx_msg(msg['from'], msg['text'], msg['time'])
 
