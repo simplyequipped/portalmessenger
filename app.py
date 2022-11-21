@@ -156,7 +156,7 @@ def power_off():
 # because this function is called via callback it does not automatically have the flask request context
 def rx_msg(msg):
     # filter heartbeat messages
-    if 'cmd' in msg.keys() and msg['cmd'] == 'HEARTBEAT':
+    if 'cmd' in msg.keys() and (msg['cmd'] == 'HEARTBEAT' or msg['cmd'] == 'HEARTBEAT SNR'):
         return None
 
     global active_chat_username
