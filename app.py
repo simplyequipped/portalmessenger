@@ -98,10 +98,12 @@ def heard_user(data):
 @socketio.on('spot')
 def update_spots():
     global js8call
+    settings = get_settings()
     spots = []
 
-    # default to spots heard in last 10 minutes
-    timestamp = time.time() - (60 * 10)
+    # spots since aging setting (minutes)
+    aging = int(settings['aging']['value'])
+    timestamp = time.time() - (60 * aging)
     spots = js8call.get_station_spots(since_timestamp = timestamp)
     if len(spots) > 0:
         heard(spots)
