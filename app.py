@@ -1,6 +1,7 @@
 import json
 import secrets
 import random
+import subprocess
 import time
 import sqlite3
 import atexit
@@ -55,6 +56,7 @@ def chat_route():
 @app.route('/settings', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
 def settings_route():
+    global local_ip
     settings = get_settings()
 
     if request.method == 'POST':
@@ -70,7 +72,7 @@ def settings_route():
                 if valid:
                     settings[setting]['value'] = value
 
-    return render_template('settings.html', settings = settings)
+    return render_template('settings.html', settings = settings, ip = local_ip)
 
 
 
@@ -571,6 +573,9 @@ default_settings = {
     }
 }
 
+
+
+local_ip = subprocess.check_output(['hostname', '-I']).decode('utf-8').split(' ')[0]
 
 ### initialize database ###
 init_db()
