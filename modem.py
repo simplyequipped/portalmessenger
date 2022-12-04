@@ -77,7 +77,7 @@ class JS8CallModem:
         for station in heard:
             if station['from'] not in heard_data.keys():
                 heard_data[station['from']] = station
-            elif station['time'] > heard_data[station['from']]:
+            elif station['time'] > heard_data[station['from']]['time']:
                 heard_data[station['from']] = station
 
         heard = list(heard_data.values())
