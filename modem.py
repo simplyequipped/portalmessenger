@@ -8,6 +8,7 @@ class JS8CallModem:
         self.rx_callback = None
         self.spot_callback = None
         self.tx_complete_callback = None
+        self.identities = []
 
         self.js8call = pyjs8call.Client(headless = headless)
 
@@ -42,8 +43,13 @@ class JS8CallModem:
                 self.js8call.register_rx_callback(self.rx, pyjs8call.Message.RX_DIRECTED)
                 self.js8call.tx_monitor.set_tx_complete_callback(self.tx_complete)
                 self.js8call.spot_monitor.set_new_spot_callback(self.spotted)
+                self.identities.extend(self.js8call.config.get_groups())
 
                 self.first_start = False
+
+            callsign = self.js8call.get_station_callsign()
+            if callsign not in self.identities:
+                self.identities.append(callsign)
 
     def stop(self):
         self.js8call.stop()
@@ -53,9 +59,12 @@ class JS8CallModem:
         self.js8call.tx_monitor.monitor(text, identifier = msg['id'])
 
     def rx(self, msg):
-        # filter heartbeat messages
-        if 'cmd' in msg.keys() and (msg['cmd'] == 'HEARTBEAT' or msg['cmd'] == 'HEARTBEAT SNR'):
+        if msg['to'] not in self.identities:
             return None
+
+        # filter heartbeat messages
+        #if 'cmd' in msg.keys() and (msg['cmd'] == 'HEARTBEAT' or msg['cmd'] == 'HEARTBEAT SNR'):
+        #    return None
 
         elif self.rx_callback != None:
             self.rx_callback(msg)
