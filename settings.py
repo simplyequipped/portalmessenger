@@ -278,9 +278,9 @@ default_settings = {
     },
     # activity/spot aging in minutes
     'aging': {
-        'value': '10', 
+        'value': '15', 
         'label': 'Aging (minutes)',
-        'default': '10',
+        'default': '15',
         'required': True,
         'options': None
     }
