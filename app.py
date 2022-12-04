@@ -1,4 +1,5 @@
 import json
+import os
 import secrets
 import subprocess
 import time
@@ -103,7 +104,7 @@ def update_spots():
     spots = []
 
     # spots since aging setting (minutes)
-    aging = int(settings.get('aging')
+    aging = int(settings.get('aging'))
     timestamp = time.time() - (60 * aging)
     spots = modem.spots(since_timestamp = timestamp)
 
@@ -218,8 +219,9 @@ def user_chat_history(user_a, user_b):
     return msgs
     
 def get_stored_conversations():
+    global settings
     conversations = []
-    logged_in_username = get_setting('callsign')
+    logged_in_username = settings.get('callsign')
 
     users = query('SELECT DISTINCT "from", "to" FROM messages WHERE "from" = :user OR "to" = :user', {'user': logged_in_username}).fetchall()
 
@@ -340,18 +342,23 @@ def query(query, parameters=None):
 
 
 
-### initialize database ###
-init_db()
-
-
 ### initialize settings ###
 db_file = 'portal.db'
 settings = portal.Settings(db_file)
 
-local_ip = subprocess.check_output(['hostname', '-I']).decode('utf-8').split(' ')[0]
+try:
+    devnull = open(os.devnull, 'w')
+    local_ip = subprocess.check_output(['hostname', '-I'], stderr = devnull).decode('utf-8').split(' ')[0]
+except (FileNotFoundError, subprocess.CalledProcessError):
+    local_ip = 'IP unavailable'
+
 settings.set('ip', local_ip)
 # running headless requires xvfb to be installed
 settings.set('headless', True)
+
+
+### initialize database ###
+init_db()
 
 
 ### initialize modem ###
@@ -365,9 +372,9 @@ if modem == 'JS8Call':
     modem = portal.JS8CallModem(callsign, freq = freq, headless = headless)
     modem.start()
 
-    modem.js8call.set_speed(settings['speed']['value'])
-    modem.js8call.set_station_grid(settings['grid']['value'])
-    modem.js8call.set_freq(int(settings['freq']['value']))
+    modem.js8call.set_speed(settings.get('speed'))
+    modem.js8call.set_station_grid(settings.get('grid'))
+    modem.js8call.set_freq(int(settings.get('freq')))
 
     modem.set_rx_callback(rx_msg)
     modem.set_spot_callback(heard)

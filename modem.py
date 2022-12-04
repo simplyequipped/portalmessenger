@@ -38,7 +38,7 @@ class JS8CallModem:
         if not self.js8call.online:
             self.js8call.start()
 
-            if self.first_start = True:
+            if self.first_start == True:
                 self.js8call.register_rx_callback(self.rx, pyjs8call.Message.RX_DIRECTED)
                 self.js8call.tx_monitor.set_tx_complete_callback(self.tx_complete)
                 self.js8call.spot_monitor.set_new_spot_callback(self.spotted)
@@ -79,11 +79,11 @@ class JS8CallModem:
 
         return heard
 
-    def spotted(self, spots)
+    def spotted(self, spots):
         if self.spot_callback != None:
             self.spot_callback(spots)
 
-    def tx_complete(self, msg_id)
+    def tx_complete(self, msg_id):
         if self.tx_complete_callback != None:
             self.tx_complete_callback(msg_id)
 

@@ -36,7 +36,7 @@ class Settings:
 
             con.commit()
 
-        self.set('db_file', self.db_file)
+        self.set('db_file', self._db_file)
 
     def db_settings(self):
         with sqlite3.connect(self._db_file, detect_types=sqlite3.PARSE_DECLTYPES) as con:
@@ -84,7 +84,7 @@ class Settings:
         
         if setting in db_settings.keys():
             # set db setting
-            valid, error = validate_setting(setting, value, db_settings)
+            valid, error = self.validate_setting(setting, value, db_settings)
 
             if valid:
                 if setting in db_settings.keys():
@@ -113,7 +113,7 @@ class Settings:
             # set local setting
             self._local_settings[setting] = value
 
-    def validate_setting(setting, value, settings):
+    def validate_setting(self, setting, value, settings):
         error = None
         valid = False
 
@@ -122,22 +122,24 @@ class Settings:
             return (valid, error)
 
         if setting == 'callsign':
-            valid, error = validate_callsign(value)
+            valid, error = self.validate_callsign(value)
         elif setting == 'grid':
-            valid, error = validate_grid(value)
+            valid, error = self.validate_grid(value)
         elif setting == 'aging':
-            valid, error = validate_aging(value)
+            valid, error = self.validate_aging(value)
         elif setting == 'freq':
-            valid, error = validate_freq(value)
+            valid, error = self.validate_freq(value)
         else:
             #TODO test logic
             if not isinstance(settings[setting], dict):
+                # local setting
                 valid = True
             elif (
+                # db setting
                 isinstance(settings[setting], dict) and
                 settings[setting]['options'] != None and
                 value in settings[setting]['options']
-            }:
+            ):
                 valid = True
             else:
                 valid = False
@@ -145,7 +147,7 @@ class Settings:
 
         return (valid, error)
 
-    def validate_callsign(callsign):
+    def validate_callsign(self, callsign):
         error = None
         valid = False
 
@@ -167,7 +169,7 @@ class Settings:
 
         return (valid, error)
 
-    def validate_grid(grid):
+    def validate_grid(self, grid):
         error = None
         valid = False
 
@@ -190,7 +192,7 @@ class Settings:
 
         return (valid, error)
 
-    def validate_aging(aging):
+    def validate_aging(self, aging):
         error = None
         valid = False
 
@@ -202,7 +204,7 @@ class Settings:
 
         return (valid, error)
 
-    def validate_freq(freq):
+    def validate_freq(self, freq):
         error = None
         valid = False
 
