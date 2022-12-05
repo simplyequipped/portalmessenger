@@ -70,7 +70,7 @@ class JS8CallModem:
         #    return None
 
         elif self.rx_callback != None:
-            self.rx_callback(msg)
+            self.rx_callback(msg.dict())
 
     def spots(self, station=None, since_timestamp=0, from_only=False):
         heard = self.js8call.get_station_spots(station=station, since_timestamp=since_timestamp, from_only=from_only)
