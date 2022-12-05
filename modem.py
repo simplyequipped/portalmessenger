@@ -54,12 +54,13 @@ class JS8CallModem:
     def stop(self):
         self.js8call.stop()
 
+    #TODO
     def tx(self, msg):
         self.js8call.send_directed_message(msg['to'], msg['text'])
         self.js8call.tx_monitor.monitor(text, identifier = msg['id'])
 
     def rx(self, msg):
-        if msg['to'] not in self.identities:
+        if msg.destination not in self.identities:
             return None
 
         # filter heartbeat messages
@@ -92,9 +93,9 @@ class JS8CallModem:
         if self.spot_callback != None:
             self.spot_callback(spots)
 
-    def tx_complete(self, msg_id):
+    def tx_complete(self, msg):
         if self.tx_complete_callback != None:
-            self.tx_complete_callback(msg_id)
+            self.tx_complete_callback(msg.id)
 
     def set_rx_callback(self, func):
         self.rx_callback = func
