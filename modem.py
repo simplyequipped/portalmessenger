@@ -8,6 +8,7 @@ class JS8CallModem:
         self.rx_callback = None
         self.spot_callback = None
         self.tx_complete_callback = None
+        self.tx_failed_callback = None
         self.identities = []
 
         self.js8call = pyjs8call.Client(headless = headless)
@@ -42,6 +43,7 @@ class JS8CallModem:
             if self.first_start == True:
                 self.js8call.register_rx_callback(self.rx, pyjs8call.Message.RX_DIRECTED)
                 self.js8call.tx_monitor.set_tx_complete_callback(self.tx_complete)
+                self.js8call.tx_monitor.set_tx_failed_callback(self.tx_failed)
                 self.js8call.spot_monitor.set_new_spot_callback(self.spotted)
                 self.identities.extend(self.js8call.config.get_groups())
 
@@ -96,6 +98,10 @@ class JS8CallModem:
     def tx_complete(self, msg):
         if self.tx_complete_callback != None:
             self.tx_complete_callback(msg.id)
+            
+    def tx_failed(self, msg):
+        if self.tx_failed_callback != None:
+            self.tx_failed_callback(msg.id)
 
     def set_rx_callback(self, func):
         self.rx_callback = func
@@ -106,3 +112,5 @@ class JS8CallModem:
     def set_tx_complete_callback(self, func):
         self.tx_complete_callback = func
 
+    def set_tx_failed_callback(self, func):
+        self.tx_failed_callback = func
