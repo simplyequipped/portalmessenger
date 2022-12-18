@@ -58,16 +58,18 @@
 			msgs.forEach(function ( msg ) {
 				newChatMessage(msg)
 			});
-			sortChat();
-			scrollChat();
 
-			//if ( msg.type == 'rx' ) {
-			//	setLastHeard(msg.time);
-			//}
+			// sort first loading msgs
+			if (msgs.length > 1) {
+				sortChat();
+			}
+
+			scrollChat();
         });
 
-		socket.on('remove-tx-status', function ( id ) {
-			removeTxStatus(id);
+		socket.on('update-tx-status', function ( data ) {
+			setTxStatus(data.id, data.status);
+			//removeTxStatus(id);
 		});
 
 		socket.on('heard-user', function ( last_heard ) {
@@ -86,7 +88,6 @@
 		});
 
 		setInterval(function (){
-			//socket.emit('heard-user', {user: $('.chat-name').html()});
 			setLastHeard( parseInt( $('.last-heard').attr('data-last-heard') ) );
 		}, 1000 * 60);
 	</script>

@@ -7,11 +7,11 @@
             newMsg.find('.chat-time').html(timeString(msg.time));
             newMsg.find('.chat-msg').html(msg.text);
 
-            if ( msg.sent == null ) {
+            if ( msg.status == 'sent' ) {
                 newMsg.find('.chat-status').remove();
             }
             else {
-                newMsg.find('.chat-status').html(msg.sent);
+                newMsg.find('.chat-status').html(msg.status);
             }
 
             newMsg.removeClass("original-hidden");
@@ -19,10 +19,19 @@
         }
 
         function setTxStatus(id, tx_status) {
+			upperCaseStatus = tx_status.charAt(0).toUpperCase() + tx_status.slice(1).toLowerCase();
+
 			if ( $('#' + id).find('.chat-status').length == 0 ) {
-				$('.original-hidden').find('.chat-status').clone().appendTo('#' + id)
+				$('.original-hidden').find('.chat-status').clone().appendTo('#' + id);
 			}
-            $('#'+ id).find('.chat-status').html(tx_status);
+
+            $('#'+ id).find('.chat-status').html(upperCaseStatus);
+
+			if ( tx_status == 'sent' ) {
+				setInterval(function () {
+					removeTxStatus(id);
+				}, 5000);
+			}
         }
 
         function removeTxStatus(id) {

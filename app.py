@@ -1,12 +1,11 @@
 import json
 import os
-import secrets
 import subprocess
 import time
 import sqlite3
+import secrets
 
 import portal
-import pyjs8call
 
 from flask import Flask, render_template, request, session, redirect
 from flask_socketio import SocketIO
@@ -14,13 +13,6 @@ from flask_socketio import SocketIO
 app = Flask(__name__)
 app.secret_key = secrets.token_hex()
 socketio = SocketIO(app)
-
-#TODO get rid of global variable
-active_chat_username = None
-logged_in_username = None
-
-
-#TODO add ability to restore defaults, button in settings.html footer
 
 
 ### flask routes and template handling
@@ -82,9 +74,9 @@ def settings_route():
 @socketio.on('msg')
 def tx_msg(data):
     global modem
-    msg = process_tx_msg(data['user'], data['text'].upper(), time.time())
+    #msg = process_tx_msg(data['user'], data['text'].upper(), time.time())
 
-    modem.tx(msg['to'], msg['text'])
+    msg = process_msg( modem.tx(data['user'], data['text']) )
     socketio.emit('msg', [msg])
     
 @socketio.on('log')
@@ -103,10 +95,9 @@ def update_spots():
     global settings
     spots = []
 
-    # spots since aging setting (minutes)
-    aging = int(settings.get('aging'))
-    timestamp = time.time() - (60 * aging)
-    spots = modem.spots(since_timestamp = timestamp)
+    # spots since aging setting
+    age = 60 * int(settings.get('aging')) # convert minutes to seconds
+    spots = modem.spots(max_age = age)
 
     if len(spots) > 0:
         heard(spots)
@@ -160,17 +151,18 @@ def power_off():
 def rx_msg(msg):
     global settings
     active_chat_username = settings.get('active_chat_username')
-    msg = process_rx_msg(msg['from'], msg['text'], msg['time'])
+    #msg = process_rx_msg(msg['from'], msg['text'], msg['time'])
+    msg = process_msg(msg)
 
-    # pass messages for selected chat user to client side
-    if msg['from'] == active_chat_username:
+    # pass messages for active chat user to client side
+    if msg['origin'] == active_chat_username:
         socketio.emit('msg', [msg])
 
-    unread = bool(user_unread_count(msg['from']))
+    unread = bool(user_unread_count(msg['origin']))
 
     # pass conversation to client side
     conversation = {
-        'username': msg['from'], 
+        'username': msg['origin'], 
         'time': msg['time'],
         'unread': unread
     }
@@ -178,10 +170,10 @@ def rx_msg(msg):
     socketio.emit('conversation', [conversation])
 
 def mark_user_msgs_read(username):
-    query('UPDATE messages SET unread = 0 WHERE "from" = :user', {'user': username})
+    query('UPDATE messages SET unread = 0 WHERE origin = :user', {'user': username})
 
 def user_unread_count(username):
-    unread = query('SELECT COUNT(*) FROM messages WHERE "from" = :user AND unread = 1', {'user': username}).fetchone()
+    unread = query('SELECT COUNT(*) FROM messages WHERE origin = :user AND unread = 1', {'user': username}).fetchone()
     return int(unread[0])
 
 def user_last_heard_timestamp(username):
@@ -192,11 +184,11 @@ def user_last_heard_timestamp(username):
     last_msg_timestamp = None
 
     if spots != None and len(spots) > 0:
-        spots.sort(key = lambda spot: spot['time'])
-        last_spot_timestamp = spots[-1]['time']
+        spots.sort(key = lambda spot: spot.timestamp)
+        last_spot_timestamp = spots[-1].timestamp
 
     # get latest msg timestamp
-    last_msg_timestamp = query('SELECT MAX(time) FROM messages WHERE "from" = :user', {'user': username}).fetchone()
+    last_msg_timestamp = query('SELECT MAX(time) FROM messages WHERE origin = :user', {'user': username}).fetchone()
 
     if last_msg_timestamp != None and len(last_msg_timestamp) > 0:
         last_msg_timestamp = last_msg_timestamp[0]
@@ -213,8 +205,8 @@ def user_last_heard_timestamp(username):
 def user_chat_history(user_a, user_b):
     users = {'user_a': user_a, 'user_b': user_b}
     # select both sides of the conversation for the given users
-    columns = ['id', 'from', 'to', 'type', 'time', 'text', 'unread', 'sent']
-    msgs = query('SELECT * FROM messages WHERE ("from" = :user_a AND "to" = :user_b) OR ("from" = :user_b AND "to" = :user_a)', users).fetchall()
+    columns = ['id', 'origin', 'destination', 'type', 'time', 'text', 'unread', 'status']
+    msgs = query('SELECT * FROM messages WHERE (origin = :user_a AND destination = :user_b) OR (origin = :user_b AND destination = :user_a)', users).fetchall()
     msgs = [dict(zip(columns, msg)) for msg in msgs]
     return msgs
     
@@ -223,7 +215,7 @@ def get_stored_conversations():
     conversations = []
     logged_in_username = settings.get('callsign')
 
-    users = query('SELECT DISTINCT "from", "to" FROM messages WHERE "from" = :user OR "to" = :user', {'user': logged_in_username}).fetchall()
+    users = query('SELECT DISTINCT origin, destination FROM messages WHERE origin = :user OR destination = :user', {'user': logged_in_username}).fetchall()
 
     # if there are no messages to process, end processing
     if users == None or len(users) == 0:
@@ -252,63 +244,90 @@ def heard(spots):
     heard = []
     for spot in spots:
         station = {
-            'username': spot['from'], 
-            'time': spot['time']
+            'username': spot.origin, 
+            'time': spot.timestamp
         }
         heard.append(station)
 
     socketio.emit('spot', heard)
 
 # because this function is called via callback it does not automatically have the flask request context
-def process_rx_msg(callsign, text, time):
-    global settings
-    active_chat_username = settings.get('active_chat_username')
-    logged_in_username = settings.get('callsign')
+#def process_rx_msg(callsign, text, time):
+#    global settings
+#    active_chat_username = settings.get('active_chat_username')
+#    logged_in_username = settings.get('callsign')
+#
+#    if callsign == active_chat_username:
+#        unread = False
+#    else:
+#        unread = True
+#
+#    msg = {
+#        'id': secrets.token_urlsafe(16),
+#        'from': callsign,
+#        'to': logged_in_username,
+#        'type': 'rx',
+#        'time': time,
+#        'text': text,
+#        'unread': unread,
+#        'sent': None
+#    }
+#    
+#    if logged_in_username != '':
+#        query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
+#
+#    return msg
 
-    if callsign == active_chat_username:
-        unread = False
-    else:
-        unread = True
+def process_msg(msg):
+    global settings
 
     msg = {
-        'id': secrets.token_urlsafe(16),
-        'from': callsign,
-        'to': logged_in_username,
-        'type': 'rx',
-        'time': time,
-        'text': text,
-        'unread': unread,
-        'sent': None
-    }
-    
-    if logged_in_username != '':
-        query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
-
-    return msg
-
-def process_tx_msg(callsign, text, time):
-    global settings
-
-    msg = {
-        'id': secrets.token_urlsafe(16),
-        'from': settings.get('logged_in_username'),
-        'to': callsign,
-        'type': 'tx',
-        'time': time,
-        'text': text,
+        'id': msg.id,
+        'origin': msg.origin,
+        'destination': msg.destination,
+        'type': msg.type[0:2].lower(), # RX.DIRECTED = 'rx', TX.SEND_MESSAGE = 'tx'
+        'time': msg.timestamp,
+        'text': msg.text,
         'unread': False,
-        'sent': 'Sending...'
-    }
+        'status': None
+        }
+
+    if msg['type'] == 'rx' and msg['origin'] != settings.get('active_chat_username'):
+        msg['unread'] = True
+
+    # prevent displaying initial 'created' msg status
+    if msg['type'] == 'tx':
+        msg['origin'] = settings.get('callsign')
+        msg['status'] = 'queued'
     
-    query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
+    query('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status)', msg)
 
     return msg
 
-def tx_complete(identifier):
-    # works inconsistently without this delay, root cause unknown
+#def process_tx_msg(callsign, text, time):
+#    global settings
+#
+#    msg = {
+#        'id': secrets.token_urlsafe(16),
+#        'from': settings.get('logged_in_username'),
+#        'to': callsign,
+#        'type': 'tx',
+#        'time': time,
+#        'text': text,
+#        'unread': False,
+#        'sent': 'Sending...'
+#    }
+#    
+#    query('INSERT INTO messages VALUES (:id, :from, :to, :type, :time, :text, :unread, :sent)', msg)
+#
+#    return msg
+
+def tx_status_change(msg):
+    #TODO works inconsistently without this delay, root cause unknown
     time.sleep(0.001)
-    query('UPDATE messages SET sent = NULL WHERE id = :id', {'id': identifier})
-    socketio.emit('remove-tx-status', identifier)
+    query('UPDATE messages SET status = :status WHERE id = :id', {'id': msg.id, 'status': msg.status})
+    #TODO update client side socket event name
+    socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
 
 
 
@@ -319,9 +338,7 @@ def init_db():
         tables = [tables[i][0] for i in range(len(tables))]
 
         if 'messages' not in tables:
-            query('CREATE TABLE messages(id, "from", "to", type, time, text, unread, sent)')
-        if 'spots' not in tables:
-            query('CREATE TABLE spots(callsign, time)')
+            query('CREATE TABLE messages(id, origin, destination, type, time, text, unread, status)')
         
 def query(query, parameters=None):
     global settings
@@ -365,11 +382,13 @@ init_db()
 modem = settings.get('modem')
 
 if modem == 'JS8Call':
+    from portal.modem.js8callmodem import JS8CallModem as JS8CallModem
+
     callsign = settings.get('callsign')
     headless = settings.get('headless')
     freq = settings.get('freq')
 
-    modem = portal.JS8CallModem(callsign, freq = freq, headless = headless)
+    modem = JS8CallModem(callsign, freq = freq, headless = headless)
     modem.start()
 
     modem.js8call.set_speed(settings.get('speed'))
@@ -378,10 +397,13 @@ if modem == 'JS8Call':
 
     modem.set_rx_callback(rx_msg)
     modem.set_spot_callback(heard)
-    modem.set_tx_complete_callback(tx_complete)
+    modem.set_tx_status_callback(tx_status_change)
 
 elif modem == 'FSKModem':
     pass
+
+elif modem == 'DemoModem':
+    modem = portal.DemoModem()
 
 
 
