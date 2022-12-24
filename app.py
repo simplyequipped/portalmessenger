@@ -184,7 +184,7 @@ def user_last_heard_timestamp(username):
     last_msg_timestamp = None
 
     if spots != None and len(spots) > 0:
-        spots.sort(key = lambda spot: spot.timestamp)
+        spots.sort()
         last_spot_timestamp = spots[-1].timestamp
 
     # get latest msg timestamp

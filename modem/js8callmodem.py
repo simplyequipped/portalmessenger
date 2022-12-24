@@ -65,23 +65,23 @@ class JS8CallModem:
             self.rx_callback(msg)
 
     def spots(self, station=None, max_age=0):
-        heard = self.js8call.get_station_spots(station = station, max_age = max_age)
+        spotted = self.js8call.get_station_spots(station = station, max_age = max_age)
 
         # remove duplicates, keeping the most recent spot
-        heard_data = {}
-        for station in heard:
-            if station['from'] not in heard_data.keys():
-                heard_data[station['from']] = station
-            elif station['time'] > heard_data[station['from']]['time']:
-                heard_data[station['from']] = station
+        spot_data = {}
+        for spot in spotted:
+            if spot.origin not in spot_data.keys():
+                spot_data[spot.origin] = spot
+            elif spot.age() > spot_data[spot.origin].age():
+                spot_data[spot.origin] = spot
 
-        heard = list(heard_data.values())
+        spotted = list(spot_data.values())
                 
         # sort by spot timestamp
-        if heard != None and len(heard) > 1:
-            heard.sort(key = lambda spot: spot['time'])
+        if spotted != None and len(spotted) > 1:
+            spotted.sort()
 
-        return heard
+        return spotted
 
     def spotted(self, spots):
         if self.spot_callback != None:
