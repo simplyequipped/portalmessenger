@@ -86,15 +86,18 @@ class Settings:
             # set db setting
             valid, error = self.validate_setting(setting, value, db_settings)
 
+            #TODO
+            print(str(setting) + ' -> ' + str(value) + ', valid:' + str(valid))
+            print(modem.name)
+
             if valid:
-                if setting in db_settings.keys():
-                    # update setting in db
-                    with sqlite3.connect(self._db_file, detect_types=sqlite3.PARSE_DECLTYPES) as con:
-                        sqlite3.register_adapter(bool, int)
-                        sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
-                        db = con.cursor()
-                        db.execute('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
-                        con.commit()
+                # update setting in db
+                with sqlite3.connect(self._db_file, detect_types=sqlite3.PARSE_DECLTYPES) as con:
+                    sqlite3.register_adapter(bool, int)
+                    sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
+                    db = con.cursor()
+                    db.execute('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
+                    con.commit()
 
                 if 'modem' in db_settings.keys() and db_settings['modem'] == 'js8call':
                     # update setting in js8call
