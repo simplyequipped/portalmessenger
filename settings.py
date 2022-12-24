@@ -71,8 +71,8 @@ class Settings:
 
         if setting in self._local_settings.keys():
             return self._local_settings[setting]
-        else:
-            db_settings = self.settings()
+        
+        db_settings = self.settings()
 
         if setting in db_settings.keys():
             return db_settings[setting]
@@ -86,10 +86,6 @@ class Settings:
             # set db setting
             valid, error = self.validate_setting(setting, value, db_settings)
 
-            #TODO
-            print(str(setting) + ' -> ' + str(value) + ', valid:' + str(valid))
-            print(modem.name)
-
             if valid:
                 # update setting in db
                 with sqlite3.connect(self._db_file, detect_types=sqlite3.PARSE_DECLTYPES) as con:
@@ -98,17 +94,6 @@ class Settings:
                     db = con.cursor()
                     db.execute('UPDATE settings SET value = :value WHERE setting = :setting', {'setting': setting, 'value': value})
                     con.commit()
-
-                if 'modem' in db_settings.keys() and db_settings['modem'] == 'js8call':
-                    # update setting in js8call
-                    if setting == 'callsign':
-                        modem.js8call.set_station_callsign(value)
-                    elif setting == 'speed':
-                        modem.js8call.set_speed(value)
-                    elif setting == 'grid':
-                        modem.js8call.set_station_grid(value)
-                    elif setting == 'freq':
-                        modem.js8call.set_freq(value)
 
             return (valid, error)
 

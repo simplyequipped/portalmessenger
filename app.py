@@ -49,6 +49,7 @@ def chat_route():
 @app.route('/settings.html', methods=['GET', 'POST'])
 def settings_route():
     global settings
+    global modem
     db_settings = settings.db_settings()
     local_ip = settings.get('ip')
 
@@ -64,6 +65,17 @@ def settings_route():
 
                 if valid:
                     db_settings[setting]['value'] = value
+
+                    if settings.get('modem') == 'js8call':
+                        # update settings in js8call
+                        if setting == 'callsign':
+                            modem.js8call.set_station_callsign(value)
+                        elif setting == 'speed':
+                            modem.js8call.set_speed(value)
+                        elif setting == 'grid':
+                            modem.js8call.set_station_grid(value)
+                        elif setting == 'freq':
+                            modem.js8call.set_freq(value)
 
     return render_template('settings.html', settings = db_settings, ip = local_ip)
 
