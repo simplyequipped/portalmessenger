@@ -16,6 +16,7 @@ app.secret_key = secrets.token_hex()
 socketio = SocketIO(app)
 
 
+
 ### flask routes and template handling
 
 @app.route('/')
@@ -67,7 +68,7 @@ def settings_route():
                 if valid:
                     db_settings[setting]['value'] = value
 
-                    if settings.get('modem') == 'js8call':
+                    if settings.get('modem').lower() == 'js8call':
                         # update settings in js8call
                         if setting == 'callsign':
                             modem.js8call.set_station_callsign(value)
@@ -374,18 +375,18 @@ def query(query, parameters=None):
 
 ### arg parsing ###
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--headless', type=bool, action='store_true', help='show or hide the JS8Ccall app using xvfb', default=True)
-#TODO parser.add_argument('-d', '--demo', type=bool, action='store_true', help='run without requiring a modem app to be installed', default=False)
-#TODO parser.add_argument('-i', '--incognito', type=bool, action='store_true', help='use sqlite in memory only, no data is stored after exit', default=False)
-args = parser.parse_args()
+#parser = argparse.ArgumentParser()
+#parser.add_argument('--headless', type=bool, action='store', help='show or hide the JS8Ccall app using xvfb', default=True)
+#TODO parser.add_argument('-d', '--demo', action='store_true', help='run without requiring a modem app to be installed')
+#TODO parser.add_argument('-i', '--incognito', action='store_true', help='use sqlite in memory only, no data is stored after exit')
+#args = parser.parse_args()
 
 
 
 ### initialize settings ###
 db_file = 'portal.db'
 settings = portal.Settings(db_file)
-settings.set('headless', args.headless)
+settings.set('headless', True)
 
 try:
     devnull = open(os.devnull, 'w')
@@ -397,7 +398,6 @@ settings.set('ip', local_ip)
 
 ### initialize database ###
 init_db()
-
 
 ### initialize modem ###
 modem = settings.get('modem')
@@ -429,5 +429,6 @@ elif modem == 'DemoModem':
 
 
 if __name__ == 'main':
+    app.run(host='0.0.0.0')
     socketio.run(app, debug=True)
 
