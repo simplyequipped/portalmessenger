@@ -12,6 +12,7 @@ class JS8CallModem:
 
         self.js8call = pyjs8call.Client(headless = headless)
         self.js8call.callback.register_incoming(self.incoming_callback)
+        self.js8call.callback.outgoing = self.outgoing_callback
         self.js8call.callback.spots = self.spots_callback
         self.js8call.callback.inbox = self.inbox_callback
 
@@ -33,6 +34,8 @@ class JS8CallModem:
         if not self.js8call.online:
             self.js8call.start()
 
+        self.js8call.idle.enable_monitoring()
+
     def stop(self):
         self.js8call.stop()
 
@@ -45,8 +48,8 @@ class JS8CallModem:
     def send(self, destination, text):
         return self.js8call.send_directed_message(destination, text)
 
-    def get_spots(self, station=None, group=None, age=0):
-        all_spots = self.js8call.get_station_spots(station=station, group=group, age=age)
+    def get_spots(self, **kwargs):
+        all_spots = self.js8call.spots.filter(**kwargs)
 
         # remove duplicates, keeping the most recent spot
         spots = {}
@@ -56,14 +59,14 @@ class JS8CallModem:
             elif spot.age() > spots[spot.origin].age():
                 spots[spot.origin] = spot
 
-        return list(spot_data.values()).sort()
+        return list(spots.values()).sort()
                 
     def incoming_callback(self, msg):
-        if msg.destination not in self.identities:
+        if msg.destination not in self.js8call.identities():
             return None
 
-        elif self.rx_callback != None:
-            self.rx_callback(msg)
+        elif self.incoming != None:
+            self.incoming(msg)
 
     def outgoing_callback(self, msg):
         if self.outgoing is not None:
