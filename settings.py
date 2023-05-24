@@ -139,12 +139,14 @@ class Settings:
         error = None
         valid = False
 
-        if any([char.isdigit() for char in callsign]):
+        # JS8Call groups begin with '@' and do not require a digit
+        if callsign[0] == '@' or any([char.isdigit() for char in callsign]):
             valid = True
         else:
             valid = False
             error = 'Callsign must contain at least one digit [0-9]'
 
+        # JS8Call max group length is 8 characters plus leading '@', total of 9 characters
         if len(callsign) <=9:
             if valid:
                 valid = True
