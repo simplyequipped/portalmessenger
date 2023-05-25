@@ -117,8 +117,9 @@ def update_spots():
     spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
     socketio.emit('spot', spots)
 
-    if len(spots) > 0:
-        heard(spots)
+    #TODO test, no longer needed?
+    #if len(spots) > 0:
+    #    heard(spots)
 
 @socketio.on('conversation')
 def update_conversations():
