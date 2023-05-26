@@ -9,8 +9,9 @@ class JS8CallModem:
         self.outgoing = None
         self.spots = None
         self.inbox = None
+        self.headless = headless
 
-        self.js8call = pyjs8call.Client(headless = headless)
+        self.js8call = pyjs8call.Client()
         self.js8call.callback.register_incoming(self.incoming_callback)
         self.js8call.callback.outgoing = self.outgoing_callback
         self.js8call.callback.spots = self.spots_callback
@@ -32,7 +33,7 @@ class JS8CallModem:
 
     def start(self):
         if not self.js8call.online:
-            self.js8call.start()
+            self.js8call.start(headless = self.headless)
 
         self.js8call.idle.enable_monitoring()
 
