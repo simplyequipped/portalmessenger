@@ -176,7 +176,7 @@
 		function stationClick() {
 		    var username = $(this).attr('name');
             $.post('/stations', {user: username}, function() {
-            	window.location = '/chat';
+            	window.location = '/chat?' + $('.tab.selected').attr('id');
 			});
 		}
 

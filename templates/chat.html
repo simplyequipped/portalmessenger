@@ -54,6 +54,8 @@
         //    socket.emit('log', {msg: 'Connected to socket'});
         //});
 
+        $('span.icon-list').parent().attr('href', '/stations' + window.location.search.substring(0))
+
         socket.on('msg', function( msgs ) {
 			msgs.forEach(function ( msg ) {
 				newChatMessage(msg)
@@ -69,7 +71,6 @@
 
 		socket.on('update-tx-status', function ( data ) {
 			setTxStatus(data.id, data.status);
-			//removeTxStatus(id);
 		});
 
 		socket.on('heard-user', function ( last_heard ) {

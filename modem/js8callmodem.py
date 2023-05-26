@@ -21,15 +21,15 @@ class JS8CallModem:
         if 'Portal' not in self.js8call.config.get_profile_list():
             self.js8call.config.create_new_profile('Portal')
 
-        self.js8call.set_config_profile('Portal')
+        self.js8call.settings.set_profile('Portal')
 
         # set max idle timeout (1440 minutes, 24 hours)
-        self.js8call.config.set('Configuration', 'TxIdleWatchdog', 1440)
+        self.js8call.settings.set_idle_timeout(1440)
         self.js8call.config.set('Configuration', 'Miles', 'true')
 
         # handle first Portal app start with callsign = ''
         if callsign not in (None, ''):
-            self.js8call.set_station_callsign(callsign)
+            self.js8call.settings.set_station_callsign(callsign)
 
     def start(self):
         if not self.js8call.online:
@@ -60,7 +60,12 @@ class JS8CallModem:
             elif spot.age() > spots[spot.origin].age():
                 spots[spot.origin] = spot
 
-        return list(spots.values()).sort()
+        spots = list(spots.values()).sort()
+
+        if spots is None:
+            return []
+        else:
+            return spots
                 
     def incoming_callback(self, msg):
         if msg.destination not in self.js8call.identities():

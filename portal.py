@@ -94,9 +94,8 @@ def settings_route():
 @socketio.on('msg')
 def tx_msg(data):
     global modem
-    #msg = process_tx_msg(data['user'], data['text'].upper(), time.time())
 
-    msg = process_msg( modem.tx(data['user'], data['text']) )
+    msg = process_msg( modem.send(data['user'], data['text']) )
     socketio.emit('msg', [msg])
     
 @socketio.on('log')
@@ -118,8 +117,10 @@ def update_spots():
     # spots since aging setting
     age = 60 * int(settings.get('aging')) # convert minutes to seconds
     spots = modem.get_spots(age = age)
-    spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
-    socketio.emit('spot', spots)
+
+    if len(spots) > 0:
+        spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
+        socketio.emit('spot', spots)
 
     #TODO test, no longer needed?
     #if len(spots) > 0:
@@ -215,7 +216,7 @@ def user_last_heard_timestamp(username):
     global modem
 
     # get user spots
-    spots = modem.get_spots(station = username)
+    spots = modem.get_spots(origin = username)
 
     if spots is not None and len(spots) > 0:
         last_spot_timestamp = spots[-1].timestamp
@@ -225,7 +226,7 @@ def user_last_heard_timestamp(username):
     # get latest msg timestamp
     last_msg_timestamp = query('SELECT MAX(time) FROM messages WHERE origin = :user', {'user': username}).fetchone()
 
-    if last_msg_timestamp is not None and len(last_msg_timestamp) > 0:
+    if last_msg_timestamp not in [None, (None,)] and len(last_msg_timestamp) > 0:
         last_msg_timestamp = last_msg_timestamp[0]
     else:
         last_msg_timestamp = 0
@@ -277,6 +278,10 @@ def new_spots(spots):
 def process_msg(msg):
     global settings
 
+    #TODO remove this and use msg.text normally after pyjs8call 0.2.1 release
+    if msg.text is None:
+        msg.set('text', msg.value)
+
     msg = {
         'id': msg.id,
         'origin': msg.origin,
@@ -291,7 +296,6 @@ def process_msg(msg):
     if msg['type'] == 'rx' and msg['origin'] != settings.get('active_chat_username'):
         msg['unread'] = True
 
-    # prevent displaying initial 'created' msg status
     if msg['type'] == 'tx':
         msg['origin'] = settings.get('callsign')
         msg['status'] = 'queued'
@@ -304,7 +308,6 @@ def outgoing_status(msg):
     #TODO works inconsistently without this delay, root cause unknown
     time.sleep(0.001)
     query('UPDATE messages SET status = :status WHERE id = :id', {'id': msg.id, 'status': msg.status})
-    #TODO update client side socket event name
     socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
 
 
@@ -338,16 +341,19 @@ def query(query, parameters=None):
 
 
 ### parse args ###
-parser = argparse.ArgumentParser()
-parser.add_argument('--headless', action='store_true', help='show or hide the JS8Ccall app using xvfb')
-parser.add_argument('-d', '--demo', action='store_true', help='run without requiring a modem app to be installed')
+#parser = argparse.ArgumentParser()
+#parser.add_argument('--headless', action='store_true', help='show or hide the JS8Ccall app using xvfb')
+#parser.add_argument('-d', '--demo', action='store_true', help='run without requiring a modem app to be installed')
+#parser.add_argument('--app')
+#parser.add_argument('run')
 #TODO parser.add_argument('-i', '--incognito', action='store_true', help='use sqlite in memory only, no data is stored after exit')
-args = parser.parse_args()
+#args = parser.parse_args()
 
 ### initialize settings ###
 db_file = 'portal.db'
 settings = portal.Settings(db_file)
-settings.set('headless', args.headless)
+#settings.set('headless', args.headless)
+settings.set('headless', True)
 
 # get local IP address
 try:
@@ -362,17 +368,20 @@ settings.set('ip', local_ip)
 init_db()
 
 ### initialize modem ###
-if args.demo:
-    modem = 'DemoModem'
-else:
-    modem = settings.get('modem')
+#if args.demo:
+#    modem = 'DemoModem'
+#else:
+modem = settings.get('modem')
+
+#TODO force demo modem
+#modem = 'DemoModem'
 
 if modem == 'JS8Call':
     from portal.modem.js8callmodem import JS8CallModem
 
     modem = JS8CallModem(settings.get('callsign'), headless=settings.get('headless'))
     # initialize config settings before start
-    modem.js8call.set_speed(settings.get('speed'))
+    modem.js8call.settings.set_speed(settings.get('speed'))
     # set callback functions
     modem.incoming = incoming_msg
     modem.spots = new_spots
@@ -381,8 +390,8 @@ if modem == 'JS8Call':
     modem.start()
 
     # initialize settings with running application
-    modem.js8call.set_station_grid(settings.get('grid'))
-    modem.js8call.set_freq(int(settings.get('freq')))
+    modem.js8call.settings.set_station_grid(settings.get('grid'))
+    modem.js8call.settings.set_freq(int(settings.get('freq')))
 
 elif modem == 'FSKModem':
     pass

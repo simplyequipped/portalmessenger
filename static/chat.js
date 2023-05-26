@@ -10,8 +10,9 @@
             if ( msg.status == 'sent' ) {
                 newMsg.find('.chat-status').remove();
             }
-            else {
-                newMsg.find('.chat-status').html(msg.status);
+            else if ( msg.status != null) {
+			    upperCaseStatus = msg.status.charAt(0).toUpperCase() + msg.status.slice(1).toLowerCase();
+                newMsg.find('.chat-status').html(upperCaseStatus);
             }
 
             newMsg.removeClass("original-hidden");

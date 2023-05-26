@@ -105,7 +105,7 @@
 				event.preventDefault();
 				username = $('#new-conversation').val().trim().toUpperCase();
 				$.post('/stations', {user: username}, function() {
-					window.location = '/chat';
+					window.location = '/chat?' + $('.tab.selected').attr('id');
 				});
 			});
 
@@ -114,7 +114,13 @@
 			socket.emit('conversation');
 
             // click selected tab to force above event handling
-            $('.tab.selected').click();
+            // return to previously selected tab if returning from another page
+            if ( window.location.search.substring(1) == '' ) {
+                $('.tab.selected').click();
+            }
+            else {
+                $('#' + window.location.search.substring(1)).click();
+            }
 		});
 
 		// update last heard text and presence, client side

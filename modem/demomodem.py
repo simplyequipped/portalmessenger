@@ -12,39 +12,40 @@ class DemoMessage:
         # msg_type = 'rx' or 'tx'
         
         self.id = secrets.token_hex(16)
+        self.type = msg_type
+        self.time = time.time()
+        self.timestamp = time.time()
         
         if origin is None:
             self.origin = ''.join(random.choices(string.ascii_uppercase, k=2)) + str(random.randint(1,9)) + ''.join(random.choices(string.ascii_uppercase, k=3))
         else:
-            self.origin = origin
+            self.origin = origin.upper()
         
         if destination is None:
             self.destination = ''.join(random.choices(string.ascii_uppercase, k=2)) + str(random.randint(1,9)) + ''.join(random.choices(string.ascii_uppercase, k=3))
         else:
-            self.destination = destination
+            self.destination = destination.upper()
             
-        self.type = msg_type
-        self.time = time.time()
-        
         if text is None:
-            self.text = ''.join(random.choices(string.ascii_lowercase + '     ', k=random.randint(25, 250)))
+            self.text = ''.join(random.choices(string.ascii_uppercase + ' '*10, k=random.randint(25, 250)))
         else:
-            self.text = text
+            self.text = text.upper()
             
         if self.type == 'rx':
             self.status = 'received'
-        elif self.type = 'tx':
+        elif self.type == 'tx':
             self.status = 'queued'
         
         
 class DemoModem:
-     def __init__(self, callsign):
+    def __init__(self, callsign):
         self.name = 'demo'
         self.incoming = None
         self.outgoing = None
         self.spots = None
         self.inbox = None
         self.callsign = callsign
+        self._spots = []
         
         thread = threading.Thread(target=self._spots_simulation)
         thread.daemon = True
@@ -75,21 +76,20 @@ class DemoModem:
         
         return msg
 
-    def get_spots(self, **kwargs):
-        all_spots = self.js8call.spots.filter(**kwargs)
+    def get_spots(self, origin=None, age=0):
+        spots = []
 
-        # remove duplicates, keeping the most recent spot
-        spots = {}
-        for spot in all_spots:
-            if spot.origin not in spots:
-                spots[spot.origin] = spot
-            elif spot.age() > spots[spot.origin].age():
-                spots[spot.origin] = spot
+        for spot in self._spots:
+            if (
+                (age == 0 or (time.time() - spot.time) <= age) and
+                (origin is None or origin.upper() == spot.origin)
+            ):
+                spots.append(spot)
 
-        return list(spots.values()).sort()
+        return spots
                 
     def incoming_callback(self, msg):
-        elif self.incoming != None:
+        if self.incoming != None:
             self.incoming(msg)
 
     def outgoing_callback(self, msg):
@@ -108,16 +108,19 @@ class DemoModem:
         while True:
             time.sleep(random.choice(range(30, 180, 10)))
             
-            msg = DemoMessage('rx')
-            self.spots_callback(msg)
+            new_spots = [DemoMessage('rx') for i in range(random.randint(0, 2))]
+            self._spots.extend(new_spots)
+            self.spots_callback(new_spots)
     
     def _rx_simulation(self):
         while True:
-            time.sleep(random.choice(range(60, 180, 10)))
+            time.sleep(random.choice(range(30, 180, 10)))
             
             if random.choice([True, False]):
                 msg = DemoMessage('rx', destination = self.callsign)
-                self.spots_callback(msg)
+                self._spots.append(msg)
+                self.spots_callback([msg])
+                self.incoming_callback(msg)
             
     def _tx_simulation(self, msg):
         time.sleep(random.randint(8, 17))
