@@ -337,20 +337,17 @@ def query(query, parameters=None):
 
 
 
-### arg parsing ###
-
-#parser = argparse.ArgumentParser()
-#parser.add_argument('--headless', type=bool, action='store', help='show or hide the JS8Ccall app using xvfb', default=True)
-#TODO parser.add_argument('-d', '--demo', action='store_true', help='run without requiring a modem app to be installed')
+### parse args ###
+parser = argparse.ArgumentParser()
+parser.add_argument('--headless', action='store_true', help='show or hide the JS8Ccall app using xvfb')
+parser.add_argument('-d', '--demo', action='store_true', help='run without requiring a modem app to be installed')
 #TODO parser.add_argument('-i', '--incognito', action='store_true', help='use sqlite in memory only, no data is stored after exit')
-#args = parser.parse_args()
-
-
+args = parser.parse_args()
 
 ### initialize settings ###
 db_file = 'portal.db'
 settings = portal.Settings(db_file)
-settings.set('headless', True)
+settings.set('headless', args.headless)
 
 # get local IP address
 try:
@@ -365,7 +362,10 @@ settings.set('ip', local_ip)
 init_db()
 
 ### initialize modem ###
-modem = settings.get('modem')
+if args.demo:
+    modem = 'DemoModem'
+else:
+    modem = settings.get('modem')
 
 if modem == 'JS8Call':
     from portal.modem.js8callmodem import JS8CallModem
@@ -397,8 +397,7 @@ elif modem == 'DemoModem':
     modem.outgoing = outgoing_status
 
 
-
+    
 if __name__ == 'main':
     app.run(host='0.0.0.0')
     socketio.run(app, debug=True)
-
