@@ -80,6 +80,10 @@ def settings_route():
                             modem.js8call.set_station_grid(value)
                         elif setting == 'freq':
                             modem.js8call.set_freq(value)
+                            
+                    elif modem.name.lower() == 'demo':
+                        if setting == 'callsign':
+                            modem.callsign = value
 
     return render_template('settings.html', settings = db_settings, ip = local_ip)
 
@@ -364,7 +368,6 @@ init_db()
 modem = settings.get('modem')
 
 if modem == 'JS8Call':
-    #TODO removed 'as JS8CallModem', not sure if needed?
     from portal.modem.js8callmodem import JS8CallModem
 
     modem = JS8CallModem(settings.get('callsign'), headless=settings.get('headless'))
@@ -385,7 +388,13 @@ elif modem == 'FSKModem':
     pass
 
 elif modem == 'DemoModem':
-    modem = portal.DemoModem()
+    from portal.modem.demomodem import DemoModem
+    
+    modem = DemoModem(settings.get('callsign'))
+    # set callback functions
+    modem.incoming = incoming_msg
+    modem.spots = new_spots
+    modem.outgoing = outgoing_status
 
 
 
