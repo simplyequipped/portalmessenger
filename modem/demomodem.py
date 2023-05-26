@@ -8,14 +8,6 @@ import threading
 
 
 class DemoMessage:
-    STATUS_CREATED          = 'created'
-    STATUS_QUEUED           = 'queued'
-    STATUS_SENDING          = 'sending'
-    STATUS_SENT             = 'sent'
-    STATUS_FAILED           = 'failed'
-    STATUS_RECEIVED         = 'received'
-    STATUS_ERROR            = 'error'
-    
     def __init__(self, msg_type, origin = None, destination = None, text = None):
         # msg_type = 'rx' or 'tx'
         
