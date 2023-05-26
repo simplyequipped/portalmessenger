@@ -11,7 +11,7 @@ class DemoMessage:
     def __init__(self, msg_type, origin = None, destination = None, text = None):
         # msg_type = 'rx' or 'tx'
         
-        self.id = secrets.hex_token(16)
+        self.id = secrets.token_hex(16)
         
         if origin is None:
             self.origin = ''.join(random.choices(string.ascii_uppercase, k=2)) + str(random.randint(1,9)) + ''.join(random.choices(string.ascii_uppercase, k=3))
