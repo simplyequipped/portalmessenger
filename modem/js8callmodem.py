@@ -60,12 +60,9 @@ class JS8CallModem:
             elif spot.age() > spots[spot.origin].age():
                 spots[spot.origin] = spot
 
-        spots = list(spots.values()).sort()
-
-        if spots is None:
-            return []
-        else:
-            return spots
+        spots = list(spots.values())
+        spots.sort()
+        return spots
                 
     def incoming_callback(self, msg):
         if msg.destination not in self.js8call.identities():
