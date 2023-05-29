@@ -83,8 +83,6 @@ def settings_route():
                         elif setting == 'freq':
                             modem.js8call.settings.set_freq(value)
 
-                        if settings in ['callsign', 'speed']:
-                            
                     elif modem.name.lower() == 'demo':
                         if setting == 'callsign':
                             modem.callsign = value
