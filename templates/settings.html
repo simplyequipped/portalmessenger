@@ -87,6 +87,12 @@
 			$('.icon-power').addClass('power-off');
 		});
 
+		socket.on('power-pending', function( settings ) {
+			$('.icon-power').removeClass('power-on');
+			$('.icon-power').removeClass('power-off');
+			$('.icon-power').addClass('power-pending');
+		});
+
         $(window).on('load', function(){
             $('#save-button').click(function() {
                 event.preventDefault();
