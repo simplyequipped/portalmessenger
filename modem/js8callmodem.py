@@ -33,7 +33,8 @@ class JS8CallModem:
 
     def start(self):
         if not self.js8call.online:
-            self.js8call.start(headless = self.headless)
+            # delay for raspberry pi
+            self.js8call.start(headless = self.headless, delay=20)
 
         self.js8call.idle.enable_monitoring()
 
