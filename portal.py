@@ -56,6 +56,8 @@ def settings_route():
     local_ip = settings.get('ip')
 
     if request.method == 'POST':
+        restart = False
+
         # process posted settings
         for setting, value in request.form.items():
             if setting == 'callsign' or setting == 'grid':
@@ -71,19 +73,25 @@ def settings_route():
                     if modem.name.lower() == 'js8call':
                         # update settings in js8call
                         if setting == 'callsign':
-                            modem.js8call.set_station_callsign(value)
+                            modem.js8call.settings.set_station_callsign(value)
+                            restart = True
                         elif setting == 'speed':
-                            modem.js8call.set_speed(value)
-                            #TODO is this the right place to restart? should client side drive this?
-                            modem.restart()
+                            modem.js8call.settings.set_speed(value)
+                            restart = True
                         elif setting == 'grid':
-                            modem.js8call.set_station_grid(value)
+                            modem.js8call.settings.set_station_grid(value)
                         elif setting == 'freq':
-                            modem.js8call.set_freq(value)
+                            modem.js8call.settings.set_freq(value)
+
+                        if settings in ['callsign', 'speed']:
                             
                     elif modem.name.lower() == 'demo':
                         if setting == 'callsign':
                             modem.callsign = value
+
+        if modem.name.lower() == 'js8call' and restart:
+            #TODO is this the right place to restart? should client side drive this?
+            modem.restart()
 
     return render_template('settings.html', settings = db_settings, ip = local_ip)
 
