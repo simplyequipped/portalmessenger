@@ -82,6 +82,11 @@ def settings_route():
                             modem.js8call.settings.set_station_grid(value)
                         elif setting == 'freq':
                             modem.js8call.settings.set_freq(value)
+                        elif setting == 'encryption':
+                            if value == 'enable':
+                                modem.enable_encryption()
+                            else:
+                                modem.disable_encryption()
 
                     elif modem.name.lower() == 'demo':
                         if setting == 'callsign':
@@ -390,6 +395,9 @@ if modem == 'JS8Call':
     modem.incoming = incoming_msg
     modem.spots = new_spots
     modem.outgoing = outgoing_status
+    
+    if settings.get('encryption') == 'enable':
+        modem.enable_encryption()
 
     modem.start()
 
@@ -398,6 +406,8 @@ if modem == 'JS8Call':
     modem.js8call.settings.set_freq(int(settings.get('freq')))
 
 elif modem == 'FSKModem':
+    # start QDX CAT control module
+    # start fskmodem
     pass
 
 elif modem == 'DemoModem':
