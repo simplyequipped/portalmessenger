@@ -49,12 +49,11 @@ class JS8CallModem:
             if self.idm is None:
                 self.idm = ecc.IdentityManager()
                 
-            if self._identity is None:
-                self._identity = self.idm.identity_from_file(self.callsign)
+            self._identity = self.idm.identity_from_file(self.callsign)
 
-                if not self._identity.loaded_from_file:
-                    self._identity = self.idm.new_identity(self.callsign)
-                    self._identity.to_file()
+            if not self._identity.loaded_from_file:
+                self._identity = self.idm.new_identity(self.callsign)
+                self._identity.to_file()
 
             self.js8call.js8call.process_incoming = self.process_incoming
             self.js8call.js8call.process_outgoing = self.process_outgoing
@@ -75,6 +74,8 @@ class JS8CallModem:
         self.idm = None
         del self._identity
         self._identity = None
+        
+        return not self.encryption
                 
     def start(self):
         if not self.js8call.online:
