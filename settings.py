@@ -1,11 +1,18 @@
 import json
 import sqlite3
 
+try:
+    import ecc
+    encryption_available = True
+except ImportError:
+    encryption_available = False
 
+    
 class Settings:
     def __init__(self, db_file):
         self._db_file = db_file
         self._local_settings = {}
+        
 
         #TODO initialize local app settings
 
@@ -23,12 +30,17 @@ class Settings:
 
             settings = self.db_settings()
             global default_settings
+            global encryption_available
 
             for default_setting, default_data in default_settings.items():
                 if default_setting not in settings.keys():
                     new_setting = default_data
                     new_setting['setting'] = default_setting
 
+                    if default_setting == 'encryption' and not encryption_available:
+                        new_setting['options'].remove('enable')
+                        new_setting['value'] = 'disable'
+                        
                     if isinstance(new_setting['options'], list):
                         new_setting['options'] = json.dumps(new_setting['options'])
 
@@ -43,6 +55,7 @@ class Settings:
             sqlite3.register_adapter(bool, int)
             sqlite3.register_converter('BOOLEAN', lambda v: v != '0')
             db = con.cursor()
+            global encryption_available
 
             columns = ['setting', 'value', 'label', 'default', 'required', 'options']
             settings = db.execute('SELECT * FROM settings').fetchall()
@@ -51,9 +64,13 @@ class Settings:
             if len(settings) > 0:
                 settings = {setting['setting']: setting for setting in settings}
 
-                for setting in settings.keys():
+                for setting in settings:
                     if settings[setting]['options'] != None:
                         settings[setting]['options'] = json.loads(settings[setting]['options'])
+                        
+                    if setting == 'encryption' and 'enable' in settings[setting]['options'] and not encryption_available:
+                        settings[setting]['options'].remove('enable')
+                        settings[setting]['value'] = 'disable'
             else:
                 settings = {}
 
@@ -82,7 +99,7 @@ class Settings:
     def set(self, setting, value):
         db_settings = self.db_settings()
         
-        if setting in db_settings.keys():
+        if setting in db_settings:
             # set db setting
             valid, error = self.validate_setting(setting, value, db_settings)
 
@@ -105,7 +122,7 @@ class Settings:
         error = None
         valid = False
 
-        if setting not in settings.keys():
+        if setting not in settings:
             error = 'Invalid setting'
             return (valid, error)
 
@@ -271,6 +288,14 @@ default_settings = {
         'default': '15',
         'required': True,
         'options': None
+    },
+    # ECC/AES-256 encryption
+    'encryption': {
+        'value': 'disable', 
+        'label': 'Encryption',
+        'default': 'disable',
+        'required': False,
+        'options': ['enable', 'disable']
     }
 }
 
