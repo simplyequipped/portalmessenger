@@ -55,8 +55,8 @@ class JS8CallModem:
                 self._identity = self.idm.new_identity(self.callsign)
                 self._identity.to_file()
 
-            self.js8call.js8call.process_incoming = self.process_incoming
-            self.js8call.js8call.process_outgoing = self.process_outgoing
+            self.js8call.process_incoming = self.process_incoming
+            self.js8call.process_outgoing = self.process_outgoing
             
             self.encryption = True
             
@@ -64,8 +64,8 @@ class JS8CallModem:
             
     def disable_encryption(self, write_to_file=True):
         self.encryption = False
-        self.js8call.js8call.process_incoming = None
-        self.js8call.js8call.process_outgoing = None
+        self.js8call.process_incoming = None
+        self.js8call.process_outgoing = None
         
         if write_to_file:
             self.idm.to_file()
