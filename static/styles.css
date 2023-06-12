@@ -97,6 +97,15 @@ body {
 	-webkit-mask-image: url('icons/add-solid.svg');
 }
 
+.encrypted-icon {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	mask-size: cover;
+	background: var(--secondary-color);
+	-webkit-mask-image: url('icons/lock-small.svg');
+}
+
 .details {
 	border: 2px solid var(--primary-color);
 	padding: 10px 15px 10px 15px;
