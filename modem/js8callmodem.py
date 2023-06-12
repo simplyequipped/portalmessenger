@@ -1,5 +1,11 @@
 import pyjs8call
 
+try:
+    import ecc
+    encryption_available = True
+except ImportError:
+    encryption_available = False
+
 
 class JS8CallModem:
     def __init__(self, callsign, headless=True):
@@ -10,6 +16,12 @@ class JS8CallModem:
         self.spots = None
         self.inbox = None
         self.headless = headless
+        
+        # encryption variables
+        global encryption_available
+        self.encryption = encryption_available
+        self.idm = None
+        self._identity = None
 
         self.js8call = pyjs8call.Client()
         self.js8call.callback.register_incoming(self.incoming_callback)
@@ -18,24 +30,33 @@ class JS8CallModem:
         self.js8call.callback.inbox = self.inbox_callback
 
         # set app specific profile
-        if 'Portal' not in self.js8call.config.get_profile_list():
+        if 'Portal' not in self.js8call.settings.get_profile_list():
             self.js8call.config.create_new_profile('Portal')
 
         self.js8call.settings.set_profile('Portal')
 
-        # set max idle timeout (1440 minutes, 24 hours)
-        self.js8call.settings.set_idle_timeout(1440)
-        self.js8call.config.set('Configuration', 'Miles', 'true')
+        # disable idle timeout
+        self.js8call.settings.set_idle_timeout(0)
+        self.js8call.settings.set_distance_units_miles(True)
 
         # handle first Portal app start with callsign = ''
         if callsign not in (None, ''):
             self.js8call.settings.set_station_callsign(callsign)
-
+           
+        if self.encryption:
+            self.idm = ecc.IdentityManager()
+            self._identity = idm.identity_from_file(callsign)
+            
+            if not self._identity.loaded_from_file:
+                self._identity = idm.new_identity(callsign)
+                self._identity.to_file()
+                
+            self.js8call.js8call.process_incoming = self.process_incoming
+            self.js8call.js8call.process_outgoing = self.process_outgoing
+                
     def start(self):
         if not self.js8call.online:
             self.js8call.start(headless = self.headless)
-
-        self.js8call.idle.enable_monitoring()
 
     def stop(self):
         self.js8call.stop()
@@ -49,8 +70,8 @@ class JS8CallModem:
     def send(self, destination, text):
         return self.js8call.send_directed_message(destination, text)
 
-    def get_spots(self, **kwargs):
-        all_spots = self.js8call.spots.filter(**kwargs)
+    def get_spots(self, *args, **kwargs):
+        all_spots = self.js8call.spots.filter(*args, **kwargs)
 
         # remove duplicates, keeping the most recent spot
         spots = {}
@@ -66,7 +87,7 @@ class JS8CallModem:
                 
     def incoming_callback(self, msg):
         if msg.destination not in self.js8call.identities():
-            return None
+            return
 
         elif self.incoming != None:
             self.incoming(msg)
@@ -83,3 +104,20 @@ class JS8CallModem:
         if self.inbox is not None:
             self.inbox(msgs)
             
+    def process_incoming(self, msg):
+        try:
+            msg.set('text', self._identity.decrypt(msg.text))
+            msg.set('encrypted', True)
+        except ValueError:
+            msg.set('error', 'decrypt failed')
+            
+        return msg
+    
+    def process_outgoing(self, msg):
+        try:
+            msg.set('value', self.idm.encrypt(msg.value, msg.destination))
+            msg.set('encrypted', True)
+        except LookupError:
+            msg.set('error', 'public key unavailable')
+            
+        return msg
