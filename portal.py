@@ -243,7 +243,7 @@ def user_last_heard_timestamp(username):
 def user_chat_history(user_a, user_b):
     users = {'user_a': user_a, 'user_b': user_b}
     # select both sides of the conversation for the given users
-    columns = ['id', 'origin', 'destination', 'type', 'time', 'text', 'unread', 'status']
+    columns = ['id', 'origin', 'destination', 'type', 'time', 'text', 'unread', 'status', 'error', 'encrypted']
     msgs = query('SELECT * FROM messages WHERE (origin = :user_a AND destination = :user_b) OR (origin = :user_b AND destination = :user_a)', users).fetchall()
     msgs = [dict(zip(columns, msg)) for msg in msgs]
     return msgs
@@ -284,10 +284,6 @@ def new_spots(spots):
 def process_msg(msg):
     global settings
 
-    #TODO remove this and use msg.text normally after pyjs8call 0.2.1 release
-    if msg.text is None:
-        msg.set('text', msg.value)
-
     msg = {
         'id': msg.id,
         'origin': msg.origin,
@@ -295,6 +291,8 @@ def process_msg(msg):
         'type': msg.type[0:2].lower(), # RX.DIRECTED = 'rx', TX.SEND_MESSAGE = 'tx'
         'time': msg.timestamp,
         'text': msg.text,
+        'encrypted': msg.get('encrypted'),
+        'error': msg.error,
         'unread': False,
         'status': None
         }
@@ -306,12 +304,12 @@ def process_msg(msg):
         msg['origin'] = settings.get('callsign')
         msg['status'] = 'queued'
     
-    query('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status)', msg)
+    query('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status, :error, :encrypted)', msg)
 
     return msg
 
 def outgoing_status(msg):
-    #TODO works inconsistently without this delay, root cause unknown
+    # works inconsistently without this delay, root cause unknown
     time.sleep(0.001)
     query('UPDATE messages SET status = :status WHERE id = :id', {'id': msg.id, 'status': msg.status})
     socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
@@ -325,7 +323,7 @@ def init_db():
         tables = [tables[i][0] for i in range(len(tables))]
 
         if 'messages' not in tables:
-            query('CREATE TABLE messages(id, origin, destination, type, time, text, unread, status)')
+            query('CREATE TABLE messages(id, origin, destination, type, time, text, unread, status, error, encrypted)')
         
 def query(query, parameters=None):
     global settings
