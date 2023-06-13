@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/simplyequipped/portal",
     packages=setuptools.find_packages(),
-    install_requires=['flask', 'flask-socketio', 'pyjs8call>=0.2.1'],
+    install_requires=['flask', 'flask-socketio', 'pyjs8call>=0.2.1', 'pyshortcuts'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
