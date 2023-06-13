@@ -6,7 +6,7 @@ import time
 import sqlite3
 import secrets
 
-import portal
+import portalmessenger
 
 from flask import Flask, render_template, request, session, redirect
 from flask_socketio import SocketIO
@@ -299,7 +299,7 @@ def process_msg(msg):
         'encrypted': msg.get('encrypted'),
         'error': msg.error,
         'unread': False,
-        'status': None
+        'status': msg.status
         }
 
     if msg['type'] == 'rx' and msg['origin'] != settings.get('active_chat_username'):
@@ -307,7 +307,9 @@ def process_msg(msg):
 
     if msg['type'] == 'tx':
         msg['origin'] = settings.get('callsign')
-        msg['status'] = 'queued'
+
+        if msg['status'] != 'failed':
+            msg['status'] = 'queued'
     
     query('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status, :error, :encrypted)', msg)
 
@@ -316,6 +318,7 @@ def process_msg(msg):
 def outgoing_status(msg):
     # works inconsistently without this delay, root cause unknown
     time.sleep(0.001)
+
     query('UPDATE messages SET status = :status WHERE id = :id', {'id': msg.id, 'status': msg.status})
     socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
 
@@ -360,7 +363,7 @@ def query(query, parameters=None):
 
 ### initialize settings ###
 db_file = 'portal.db'
-settings = portal.Settings(db_file)
+settings = portalmessenger.Settings(db_file)
 #settings.set('headless', args.headless)
 settings.set('headless', True)
 
@@ -386,7 +389,7 @@ modem = settings.get('modem')
 #modem = 'DemoModem'
 
 if modem == 'JS8Call':
-    from portal.modem.js8callmodem import JS8CallModem
+    from portalmessenger.modem.js8callmodem import JS8CallModem
 
     modem = JS8CallModem(settings.get('callsign'), headless=settings.get('headless'))
     # initialize config settings before start
@@ -411,7 +414,7 @@ elif modem == 'FSKModem':
     pass
 
 elif modem == 'DemoModem':
-    from portal.modem.demomodem import DemoModem
+    from portalmessenger.modem.demomodem import DemoModem
     
     modem = DemoModem(settings.get('callsign'))
     # set callback functions
