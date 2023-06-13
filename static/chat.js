@@ -8,10 +8,10 @@ function newChatMessage(msg) {
 	
 	if ( msg.encrypted != null ) {
 		if ( msg.type == 'rx' ) {
-			newMsg.find('.chat-time').append('<span class="encrypted-icon">&nbsp;</span>');
+			newMsg.find('.chat-time').prepend('<span class="encrypted-icon">&nbsp;</span>');
 		}
 		else if ( msg.type == 'tx' ) {
-			newMsg.find('.chat-time').prepend('<span class="encrypted-icon">&nbsp;</span>');
+			newMsg.find('.chat-time').append('<span class="encrypted-icon">&nbsp;</span>');
 		}
 	}
 
