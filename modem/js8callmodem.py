@@ -3,7 +3,7 @@ import pyjs8call
 try:
     import ecc
     encryption_available = True
-except ImportError:
+except ModuleNotFoundError:
     encryption_available = False
 
 
@@ -39,8 +39,12 @@ class JS8CallModem:
         # set distance units
         self.js8call.settings.set_distance_units_miles(True)
         # handle callsign not set
-        if self.callsign not in (None, ''):
-            self.js8call.settings.set_station_callsign(self.callsign)
+        if self._callsign not in (None, ''):
+            self.js8call.settings.set_station_callsign(self._callsign)
+
+        #TODO
+        #global encryption_available
+        #print('encryption available: ' + str(encryption_available))
         
     def enable_encryption(self):
         global encryption_available
@@ -49,17 +53,17 @@ class JS8CallModem:
             if self.idm is None:
                 self.idm = ecc.IdentityManager()
                 
-            self._identity = self.idm.identity_from_file(self.callsign)
+            self._identity = self.idm.identity_from_file(self._callsign)
 
             if not self._identity.loaded_from_file:
-                self._identity = self.idm.new_identity(self.callsign)
+                self._identity = self.idm.new_identity(self._callsign)
                 self._identity.to_file()
 
             self.js8call.process_incoming = self.process_incoming
             self.js8call.process_outgoing = self.process_outgoing
             
             self.encryption = True
-            
+
         return self.encryption
             
     def disable_encryption(self, write_to_file=True):
@@ -143,10 +147,16 @@ class JS8CallModem:
         if not self.encryption:
             return msg
         
+        # msg.text is overwritten when setting msg.value
+        text = msg.text
+
         try:
             msg.set('value', self.idm.encrypt(msg.value, msg.destination))
             msg.set('encrypted', True)
         except LookupError:
             msg.set('error', 'public key unavailable')
+
+        # restore msg.text
+        msg.set('text', text)
             
         return msg
