@@ -4,7 +4,7 @@ import sqlite3
 try:
     import ecc
     encryption_available = True
-except ImportError:
+except ModuleNotFoundError:
     encryption_available = False
 
     
