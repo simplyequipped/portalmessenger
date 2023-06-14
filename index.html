@@ -133,11 +133,11 @@
 
             // click selected tab to force above event handling
             // return to previously selected tab if returning from another page
-            if ( window.location.search.substring(1) == '' ) {
+            if ( window.location.search.substring(1).split('&')[0] == '' ) {
                 $('.tab.selected').click();
             }
             else {
-                $('#' + window.location.search.substring(1)).click();
+                $('#' + window.location.search.substring(1).split('&')[0]).click();
             }
 		});
 
