@@ -15,7 +15,7 @@
     <body>
 	    <div class="header">
 			PORTAL MESSENGER
-		    <a href="simplyequipped.github.io/portalmessenger/settings.html"><span class="icon icon-settings">&nbsp;</span></a>
+		    <a href="/portalmessenger/settings.html"><span class="icon icon-settings">&nbsp;</span></a>
 		</div>
 		<div class="details tab-container">
 			<div class="details-name tab selected" id="tab-activity">Activity</div>
@@ -26,25 +26,25 @@
 		<div class="viewport">
 			<div class="content">
 
-				<div class="station spot">
+				<div class="station spot" name="OH8STN">
 					<div class="presence-indicator presence-active">&nbsp;</div>
 					<div class="chat-name">OH8STN</div>
 					<div class="last-heard">2 minutes</div>
 				</div>
 
-				<div class="station spot">
+				<div class="station spot"name="KT7RUN">
 					<div class="presence-indicator presence-active">&nbsp;</div>
 					<div class="chat-name">KT7RUN</div>
 					<div class="last-heard">8 minutes</div>
 				</div>
 				
-				<div class="station spot">
+				<div class="station spot" name="@AMRRON">
 					<div class="presence-indicator presence-inactive">&nbsp;</div>
 					<div class="chat-name">@AMRRON</div>
 					<div class="last-heard">22 hours</div>
 				</div>
 
-				<div class="station original-hidden">
+				<div class="station spot" name="N0GQ">
 					<div class="presence-indicator presence-unknown">&nbsp;</div>
 					<div class="chat-name">N0GQ</div>
 					<div class="last-heard">&nbsp;</div>
@@ -119,7 +119,7 @@
 				event.preventDefault();
 				username = $('#new-conversation').val().trim().toUpperCase();
 				//$.post('/stations', {user: username}, function() {
-					window.location = 'simplyequipped.github.io/portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username;
+					window.location = '/portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username;
 				//});
 			});
             
