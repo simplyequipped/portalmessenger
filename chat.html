@@ -16,7 +16,7 @@
 	    <div class="header">
 			PORTAL MESSENGER
 			<!--<a href="/settings.html"><span class="icon icon-settings">&nbsp;</span></a>-->
-		    <a href="simplyequipped.github.io/portalmessenger/stations.html"><span class="icon icon-list">&nbsp;</span></a>
+		    <a href="/portalmessenger/stations.html"><span class="icon icon-list">&nbsp;</span></a>
 		</div>
 		<div class="details chat-details">
 			<div class="presence-indicator presence-unknown">&nbsp;</div>
@@ -49,7 +49,7 @@
         //    socket.emit('log', {msg: 'Connected to socket'});
         //});
 
-        $('span.icon-list').parent().attr('href', 'simplyequipped.github.io/portalmessenger/index.html?' + window.location.search.substring(0))
+        $('span.icon-list').parent().attr('href', '/portalmessenger/index.html?' + window.location.search.substring(0))
 
         //socket.on('msg', function( msgs ) {
 		//	msgs.forEach(function ( msg ) {
@@ -81,7 +81,10 @@
 		$(window).on('load', function(){
 			//socket.emit('init-chat');
 			//socket.emit('heard-user', {user: $('.chat-name').html()});
-			$('.chat-name').val(window.location.search.substring(1)));
+			console.log(window.location.search.substring(1));
+			console.log(window.location.search.substring(2));
+			
+			$('.chat-name').html(window.location.search.substring(1)));
 			setPresence(window.location.search.substring(2)));
 		});
 
