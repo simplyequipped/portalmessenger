@@ -2,22 +2,14 @@
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
-		<link rel="stylesheet" type="text/css" href="../static/styles.css">
-		<link rel="stylesheet" type="text/css" href="../static/media.css">
-		{% if settings['theme']['value'] == 'dark' %}
-		<link rel="stylesheet" type="text/css" href="../static/dark.css">
-		{% endif %}
-		{% if settings['size']['value'] == 'large' %}
-		<link rel="stylesheet" type="text/css" href="../static/large-font.css">
-		{% endif %}
-		<link rel="stylesheet" type="text/css" href="../static/jquery-ui.min.css">
-		<link rel="stylesheet" type="text/css" href="../static/jquery-ui.theme.min.css">
-		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
-		<script src="../static/jquery.min.js"></script>
-		<script src="../static/jquery-ui.min.js"></script>
-		<script src="../static/socket.io.min.js"></script>
-		<script src="../static/common.js"></script>
-		<script src="../static/stations.js"></script>
+		<link rel="stylesheet" type="text/css" href="static/styles.css">
+		<link rel="stylesheet" type="text/css" href="static/media.css">
+		<link rel="stylesheet" type="text/css" href="static/dark.css">
+		<link rel="icon" type="image/x-icon" href="static/icons/double_arrow.svg">
+		<script src="static/jquery.min.js"></script>
+		<script src="static/socket.io.min.js"></script>
+		<script src="static/common.js"></script>
+		<script src="static/stations.js"></script>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
     <body>
@@ -26,34 +18,36 @@
 		    <a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>
 		</div>
 		<div class="details tab-container">
-			<div class="details-name tab {% if settings['tab']['value'] == 'activity' %} selected {% endif %}" 
-				 id="tab-activity" data-aging="{{ settings['aging']['value'] }}">Activity</div>
-			<div class="details-name tab {% if settings['tab']['value'] == 'messages' %} selected {% endif %}" 
-				id="tab-conversations">Messages
+			<div class="details-name tab selected" id="tab-activity">Activity</div>
+			<div class="details-name tab" id="tab-conversations">Messages
 				<span id="unread-count" data-unread-count="0">&nbsp;</span>
 			</div>
 		</div>
 		<div class="viewport">
 			<div class="content">
 
-                <!--- tooltip testing
-				<div class="station spot" title="Hearing:&#013;&#010;KC3WNC, KC3WPA">
-					<div class="presence-indicator presence-unknown">&nbsp;</div>
-					<div class="chat-name">KC3WFL</div>
+				<div class="station spot">
+					<div class="presence-indicator presence-active">&nbsp;</div>
+					<div class="chat-name">OH8STN</div>
 					<div class="last-heard">2 minutes</div>
 				</div>
 
-				<div class="station spot" title="Hearing:<br/>KC3WFL, KC3WPA, KC3KVT">
-					<div class="presence-indicator presence-unknown">&nbsp;</div>
-					<div class="chat-name">KC3WNC</div>
-					<div class="last-heard">12 minutes</div>
+				<div class="station spot">
+					<div class="presence-indicator presence-active">&nbsp;</div>
+					<div class="chat-name">KT7RUN</div>
+					<div class="last-heard">8 minutes</div>
 				</div>
-                --->
+				
+				<div class="station spot">
+					<div class="presence-indicator presence-inactive">&nbsp;</div>
+					<div class="chat-name">@AMRRON</div>
+					<div class="last-heard">22 hours</div>
+				</div>
 
 				<!-- hidden element for cloning -->
 				<div class="station original-hidden">
 					<div class="presence-indicator presence-unknown">&nbsp;</div>
-					<div class="chat-name">&nbsp;</div>
+					<div class="chat-name">N0GQ</div>
 					<div class="last-heard">&nbsp;</div>
 				</div>
 
@@ -70,36 +64,25 @@
 
     </body>
 	<script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        //var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        //socket.on('connect', function() {
-        //});
+		//socket.on('spot', function( data ) {
+		//	data.forEach(function( station ) {
+		//		handleSpot(station);
+		//	});
+		//	sortStations();
+        //    // click selected tab to force above event handling
+        //    $('.tab.selected').click();
+		//});
 
-        //$('.station').on('contextmenu', function(e) {
-        //    e.preventDefault();
-        //    e.stopImmediatePropogation();
-        //    $( this ).trigger('hover');
-        //});
-
-        //$( document ).tooltip();
-
-		socket.on('spot', function( data ) {
-			data.forEach(function( station ) {
-				handleSpot(station);
-			});
-			sortStations();
-            // click selected tab to force above event handling
-            $('.tab.selected').click();
-		});
-
-		socket.on('conversation', function( data ) {
-			data.forEach(function( station ) {
-				handleConversation(station);
-			});
-			sortStations();
-            // click selected tab to force above event handling
-            $('.tab.selected').click();
-		});
+		//socket.on('conversation', function( data ) {
+		//	data.forEach(function( station ) {
+		//		handleConversation(station);
+		//	});
+		//	sortStations();
+        //    // click selected tab to force above event handling
+        //    $('.tab.selected').click();
+		//});
 
 		$(window).on('load', function(){
 			// setup click callbacks
@@ -135,8 +118,8 @@
 			});
 
 			// request station data from the server
-			socket.emit('spot');
-			socket.emit('conversation');
+			//socket.emit('spot');
+			//socket.emit('conversation');
 
             // click selected tab to force above event handling
             // return to previously selected tab if returning from another page
