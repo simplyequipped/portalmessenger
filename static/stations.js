@@ -175,8 +175,9 @@
 		// on click event handler for stations div
 		function stationClick() {
 		    var username = $(this).attr('name');
-            $.post('/stations', {user: username}, function() {
-            	window.location = '/chat?' + $('.tab.selected').attr('id');
+			var presence = getPresence(username);
+            //$.post('/stations', {user: username}, function() {
+            	window.location = '/chat?' + $('.tab.selected').attr('id') + '&' + username + '&' + presence;
 			});
 		}
 
