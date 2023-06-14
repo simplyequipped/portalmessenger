@@ -99,12 +99,11 @@
 				//});
 			});
 			
-            newStation( {'username': 'OH8STN', 'time': String( (Date.now() / 1000) - (2 * 60) )} );
-			newStation( {'username': 'KT7RUN', 'time': String( (Date.now() / 1000) - (8 * 60) )} );
-			newStation( {'username': '@AMRRON', 'time': String( (Date.now() / 1000) - (22 * 60 * 60) )} );
-			newStation( {'username': 'N0GQ', 'time': String( 0 )} );
-			findStation('KT7RUN').addClass('conversation');
-			markUnread('KT7RUN');
+            handleSpot( {'username': 'OH8STN', 'time': String( (Date.now() / 1000) - (2 * 60) )} );
+			handleSpot( {'username': 'KT7RUN', 'time': String( (Date.now() / 1000) - (8 * 60) )} );
+			handleSpot( {'username': '@AMRRON', 'time': String( (Date.now() / 1000) - (22 * 60 * 60) )} );
+			handleSpot( {'username': 'N0GQ', 'time': String( 0 )} );
+			handleConversation( {'username': 'KT7RUN', 'time': String( (Date.now() / 1000) - (8 * 60) ), 'unread': true} );
 
 			// request station data from the server
 			//socket.emit('spot');
