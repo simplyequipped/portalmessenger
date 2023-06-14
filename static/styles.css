@@ -63,10 +63,14 @@ body {
 
 /*NEW menu code*/
 .icon-hamburger {
+	display: block;
 	-webkit-mask-image: url('icons/list-hollow.svg');
-	float: right;
-	margin-left: 15px;
+	width: 45px;
+	margin-top: -37px;
+	margin-left: auto;
+	margin-right: 0px;
 }
+
 .icon-back {
 	-webkit-mask-image: url('icons/arrow-left.svg');
 	float: right;
