@@ -177,8 +177,8 @@
 		    var username = $(this).attr('name');
 			var presence = getPresence(username);
             //$.post('/stations', {user: username}, function() {
-            	window.location = '/chat?' + $('.tab.selected').attr('id') + '&' + username + '&' + presence;
-			});
+            window.location = '/chat?' + $('.tab.selected').attr('id') + '&' + username + '&' + presence;
+			//});
 		}
 
 		function conversationHover() {
