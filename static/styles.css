@@ -67,27 +67,6 @@ body {
 	float: right;
 	margin-left: 15px;
 }
-
-/*NEW menu code*/
-.menu {
-	border: 10px solid var(--primary-color);
-}
-
-/*NEW menu code*/
-.menu-item {
-	font-size: var(--heading-font-size);
-	cursor: pointer;
-	padding: 10px 15px 10px 15px;
-	background-color: var(--secondary-color);
-	color: var(--primary-color);
-}
-
-/*NEW menu code*/
-.menu-item-sub {
-	padding-left: 25px;
-	font-size: var(--normal-font-size);
-}
-
 .icon-back {
 	-webkit-mask-image: url('icons/arrow-left.svg');
 	float: right;
@@ -131,6 +110,44 @@ body {
 	mask-size: cover;
 	background: var(--secondary-color);
 	-webkit-mask-image: url('icons/lock-small.svg');
+}
+
+/*NEW menu code*/
+.menu {
+	padding: 15px;
+	background-color: var(--secondary-color);
+	border-radius: 0px 0px 15px 15px;
+	width: 250px;
+	margin-top: 0px; 
+	margin-left: auto;
+	margin-right: 15px;
+	margin-bottom: 15px;
+}
+
+/*NEW menu code*/
+.menu-item:hover, .menu-item:active {
+	background-color: var(--tertiary-color);
+}
+
+/*NEW menu code*/
+.menu-item {
+	font-size: var(--heading-font-size);
+	cursor: pointer;
+	padding: 10px 15px 10px 25px;
+	background-color: var(--secondary-color);
+	color: var(--primary-color);
+	border-radius: 5px;
+}
+
+/*NEW menu code*/
+.menu a:link, .menu a:active, .menu a:hover, .menu a:visited {
+	text-decoration: none;
+}
+
+/*NEW menu code*/
+.menu-item-sub {
+	padding-left: 50px;
+	font-size: var(--normal-font-size);
 }
 
 .chat-msg-tx .encrypted-icon {
