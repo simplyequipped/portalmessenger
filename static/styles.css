@@ -61,6 +61,34 @@ body {
 	margin-left: 15px;
 }
 
+/*NEW menu code*/
+.icon-hamburger {
+	-webkit-mask-image: url('icons/list-hollow.svg');
+	float: right;
+	margin-left: 15px;
+}
+
+/*NEW menu code*/
+.menu {
+	border: 10px solid var(--primary-color);
+}
+
+/*NEW menu code*/
+.menu-item {
+	display: inline-block;
+	font-size: var(--heading-font-size);
+	cursor: pointer;
+	padding: 10px 15px 10px 15px;
+	background-color: var(--secondary-color);
+	color: var(--primary-color);
+}
+
+/*NEW menu code*/
+.menu-item-sub {
+	padding-left: 25px;
+	font-size: var(--normal-font-size);
+}
+
 .icon-back {
 	-webkit-mask-image: url('icons/arrow-left.svg');
 	float: right;
