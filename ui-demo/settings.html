@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Portal Messenger</title>
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<link rel="stylesheet" type="text/css" href="../static/media.css">
+		{% if settings['theme']['value'] == 'dark' %}
+		<link rel="stylesheet" type="text/css" href="../static/dark.css">
+		{% endif %}
+		{% if settings['size']['value'] == 'large' %}
+		<link rel="stylesheet" type="text/css" href="../static/large-font.css">
+		{% endif %}
+		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
+		<script src="../static/common.js"></script>
+		<script src="../static/jquery.min.js"></script>
+		<script src="../static/socket.io.min.js"></script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+    </head>
+    <body>
+	    <div class="header">
+		    PORTAL MESSENGER
+		    <a href="/stations"><span class="icon icon-list">&nbsp;</span></a>
+		    <!--<a href="javascript:history.back()"><span class="icon icon-back">&nbsp;</span></a>-->
+	    </div>
+		<div class="details">
+			<div class="details-name">Settings&nbsp;&nbsp;&nbsp;({{ ip }})</div>
+		</div>
+		<div class="viewport">
+			<div class="content">
+				<br/>
+                
+			    <form id="settings-form" action="/settings" method="post">
+
+                {% for setting, data in settings.items() %}
+				<div class="setting-row">
+                    <label for="{{ setting }}">{{ data['label'] }}</label>
+                    {% if data['options'] == None %}
+                    <input type="text" id="{{ setting }}" name="{{ setting }}" value="{{ data['value'] }}"
+                    {% if data['required'] and data['value'] == '' %} class="required" {% endif %}
+                    >
+                    {% else %}
+				    <select type="text" id="{{ setting }}" name="{{ setting }}">
+                        {% for option in data['options'] %}
+					    <option value="{{ option }}"
+                        {% if option == data['value'] %} selected {% endif %}
+                        >{{ option[0]|upper }}{{ option[1:] }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+
+                {% if 'error' in data.keys() and data['error'] != None %}
+                <div class="error">{{ data['error'] }}</div>
+                {% endif %}
+
+                </div>
+                {% endfor %}
+			    </form>
+
+		    </div>
+		</div>
+		<div class="footer">
+			<span class="icon icon-power power-on">&nbsp;</span>
+			<form><button type="submit" id="save-button">Save Settings</button></form>
+		</div>
+
+    </body>
+	<script>
+		var socket = io.connect('http://' + document.domain + ':' + location.port);
+	
+		//socket.on('get-settings', function( settings ) {
+		//	Object.keys(settings).forEach(function( setting ) {
+		//		updateLocalSetting('setting-' + setting, settings[setting]);
+		//	});
+		//
+		//	handleLocalSettings();
+		//});
+
+		socket.on('power-on', function( settings ) {
+			$('.icon-power').removeClass('power-off');
+			$('.icon-power').removeClass('power-pending');
+			$('.icon-power').addClass('power-on');
+		});
+
+		socket.on('power-off', function( settings ) {
+			$('.icon-power').removeClass('power-on');
+			$('.icon-power').removeClass('power-pending');
+			$('.icon-power').addClass('power-off');
+		});
+
+		socket.on('power-pending', function( settings ) {
+			$('.icon-power').removeClass('power-on');
+			$('.icon-power').removeClass('power-off');
+			$('.icon-power').addClass('power-pending');
+		});
+
+        $(window).on('load', function(){
+            $('#save-button').click(function() {
+                event.preventDefault();
+                $('#settings-form').submit()
+            });
+
+            $('.icon-power').click(function() {
+				if ( $('.icon-power').hasClass('power-on') ) {
+					socket.emit('power-off');
+					$('.icon-power').removeClass('power-on');
+					$('.icon-power').addClass('power-pending');
+				}
+				else if ( $('.icon-power').hasClass('power-off') ) {
+					socket.emit('power-on');	
+					$('.icon-power').removeClass('power-off');
+					$('.icon-power').addClass('power-pending');
+
+					setTimeout(function () {
+						if ( $('.icon-power').hasClass('power-pending') ) {
+							$('.icon-power').removeClass('power-pending');
+							$('.icon-power').addClass('power-off');
+						}
+					}, 60 * 1000);
+				}
+
+				// close the current tab
+				//var win = window.open('about:blank', '_self');
+				//win.close();
+            });
+        });
+
+	</script>
+</html>
