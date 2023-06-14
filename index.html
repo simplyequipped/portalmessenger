@@ -20,7 +20,7 @@
 		<div class="details tab-container">
 			<div class="details-name tab selected" id="tab-activity">Activity</div>
 			<div class="details-name tab" id="tab-conversations">Messages
-				<span id="unread-count" data-unread-count="0">&nbsp;</span>
+				<span id="unread-count" data-unread-count="1">(1)</span>
 			</div>
 		</div>
 		<div class="viewport">
@@ -32,7 +32,7 @@
 					<div class="last-heard">2 minutes</div>
 				</div>
 
-				<div class="station spot"name="KT7RUN">
+				<div class="station spot conversation"name="KT7RUN">
 					<div class="presence-indicator presence-active">&nbsp;</div>
 					<div class="chat-name">KT7RUN</div>
 					<div class="last-heard">8 minutes</div>
@@ -122,7 +122,7 @@
 					window.location = '/portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username + '&unknown';
 				//});
 			});
-            
+			
             $('.station').each(function() {
                 $(this).click(stationClick)
             });
