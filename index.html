@@ -15,7 +15,7 @@
     <body>
 	    <div class="header">
 			PORTAL MESSENGER
-		    <a href="/portalmessenger/settings.html"><span class="icon icon-hamburger">&nbsp;</span></a>
+		    <span class="icon icon-hamburger">&nbsp;</span>
 		</div>
 		<!--NEW menu code-->
 		<div class="menu">
@@ -100,6 +100,10 @@
 				$('#new-conversation-form').val('');
 				$('#new-conversation-form').show();
 				$('#new-conversation').focus();
+			});
+
+			$('.icon-hamburger').click(function(){
+				$('.menu').toggle();
 			});
 
 			$('#new-conversation-form').submit(function (){
