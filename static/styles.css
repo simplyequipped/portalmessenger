@@ -75,7 +75,6 @@ body {
 
 /*NEW menu code*/
 .menu-item {
-	display: inline-block;
 	font-size: var(--heading-font-size);
 	cursor: pointer;
 	padding: 10px 15px 10px 15px;
