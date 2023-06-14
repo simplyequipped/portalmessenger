@@ -20,7 +20,7 @@
 		<div class="details tab-container">
 			<div class="details-name tab selected" id="tab-activity">Activity</div>
 			<div class="details-name tab" id="tab-conversations">Messages
-				<span id="unread-count" data-unread-count="1">(1)</span>
+				<span id="unread-count" data-unread-count="0"></span>
 			</div>
 		</div>
 		<div class="viewport">
@@ -104,6 +104,7 @@
 			newStation( {'username': '@AMRRON', 'time': String( (Date.now() / 1000) - (22 * 60 * 60) )} );
 			newStation( {'username': 'N0GQ', 'time': String( 0 )} );
 			findStation('KT7RUN').addClass('conversation');
+			markUnread('KT7RUN');
 				
 			]
 
