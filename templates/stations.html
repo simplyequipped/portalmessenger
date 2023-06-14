@@ -10,8 +10,11 @@
 		{% if settings['size']['value'] == 'large' %}
 		<link rel="stylesheet" type="text/css" href="../static/large-font.css">
 		{% endif %}
+		<link rel="stylesheet" type="text/css" href="../static/jquery-ui.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/jquery-ui.theme.min.css">
 		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
 		<script src="../static/jquery.min.js"></script>
+		<script src="../static/jquery-ui.min.js"></script>
 		<script src="../static/socket.io.min.js"></script>
 		<script src="../static/common.js"></script>
 		<script src="../static/stations.js"></script>
@@ -32,6 +35,20 @@
 		</div>
 		<div class="viewport">
 			<div class="content">
+
+                <!--- tooltip testing
+				<div class="station spot" title="Hearing:&#013;&#010;KC3WNC, KC3WPA">
+					<div class="presence-indicator presence-unknown">&nbsp;</div>
+					<div class="chat-name">KC3WFL</div>
+					<div class="last-heard">2 minutes</div>
+				</div>
+
+				<div class="station spot" title="Hearing:<br/>KC3WFL, KC3WPA, KC3KVT">
+					<div class="presence-indicator presence-unknown">&nbsp;</div>
+					<div class="chat-name">KC3WNC</div>
+					<div class="last-heard">12 minutes</div>
+				</div>
+                --->
 
 				<!-- hidden element for cloning -->
 				<div class="station original-hidden">
@@ -57,6 +74,14 @@
 
         //socket.on('connect', function() {
         //});
+
+        //$('.station').on('contextmenu', function(e) {
+        //    e.preventDefault();
+        //    e.stopImmediatePropogation();
+        //    $( this ).trigger('hover');
+        //});
+
+        //$( document ).tooltip();
 
 		socket.on('spot', function( data ) {
 			data.forEach(function( station ) {
