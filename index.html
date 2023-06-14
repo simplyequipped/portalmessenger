@@ -15,7 +15,15 @@
     <body>
 	    <div class="header">
 			PORTAL MESSENGER
-		    <a href="/portalmessenger/settings.html"><span class="icon icon-settings">&nbsp;</span></a>
+		    <a href="/portalmessenger/settings.html"><span class="icon icon-hamburger">&nbsp;</span></a>
+		</div>
+		<!--NEW menu code-->
+		<div class="menu">
+		    <a href="/portalmessenger/index.html"><span class="menu-item">Activity</span></a>
+		    <a href="/portalmessenger/network.html"><span class="menu-item">Network</span></a>
+		    	<a href="/portalmessenger/index.html"><span class="menu-item menu-item-sub">Sub Item A</span></a>
+		    	<a href="/portalmessenger/index.html"><span class="menu-item menu-item-sub">Sub Item B</span></a>
+		    <a href="/portalmessenger/settings.html"><span class="menu-item">Settings</span></a>
 		</div>
 		<div class="details tab-container">
 			<div class="details-name tab selected" id="tab-activity">Activity</div>
@@ -46,6 +54,9 @@
 
     </body>
 	<script>
+		//NEW menu code
+		$('.menu').hide();
+		
         //var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 		//socket.on('spot', function( data ) {
