@@ -176,7 +176,7 @@ function stationClick() {
 	var username = $(this).find('.chat-name').html();
 	var presence = getPresence(username);
 	//$.post('/stations', {user: username}, function() {
-	window.location = 'chat.html?' + $('.tab.selected').attr('id') + '&' + username + '&' + presence;
+	window.location = 'portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username + '&' + presence;
 	//});
 }
 
