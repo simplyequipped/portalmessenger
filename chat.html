@@ -83,6 +83,13 @@
 			//socket.emit('heard-user', {user: $('.chat-name').html()});
 			$('.chat-name').html( window.location.search.substring(1).split('&')[1] );
 			setPresence( window.location.search.substring(1).split('&')[2] );
+			
+			rx_msg = {'id': 'abc123', 'type': 'chat-msg-rx', 'time': String( (Date.now() / 1000) - 120), 'text': 'NEW VIDEO ON YOUTUBE', 'status': null, 'error': null};
+			tx_msg = {'id': '123abc', 'type': 'chat-msg-tx', 'time': String( (Date.now() / 1000)), 'text': 'GREAT NEWS THX', 'status': 'sending', 'error': null};
+			newChatMessage(rx_msg);
+			newChatMessage(tx_msg);
+			sortChat();
+			scrollChat();
 		});
 
 		//setInterval(function (){
