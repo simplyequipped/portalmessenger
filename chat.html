@@ -2,19 +2,14 @@
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
-		<link rel="stylesheet" type="text/css" href="../static/styles.css">
-		<link rel="stylesheet" type="text/css" href="../static/media.css">
-		{% if settings['theme']['value'] == 'dark' %}
-		<link rel="stylesheet" type="text/css" href="../static/dark.css">
-		{% endif %}
-		{% if settings['size']['value'] == 'large' %}
-		<link rel="stylesheet" type="text/css" href="../static/large-font.css">
-		{% endif %}
-		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
-		<script src="../static/jquery.min.js"></script>
-		<script src="../static/socket.io.min.js"></script>
-		<script src="../static/common.js"></script>
-		<script src="../static/chat.js"></script>
+		<link rel="stylesheet" type="text/css" href="static/styles.css">
+		<link rel="stylesheet" type="text/css" href="static/media.css">
+		<link rel="stylesheet" type="text/css" href="static/dark.css">
+		<link rel="icon" type="image/x-icon" href="static/icons/double_arrow.svg">
+		<script src="static/jquery.min.js"></script>
+		<script src="static/socket.io.min.js"></script>
+		<script src="static/common.js"></script>
+		<script src="static/chat.js"></script>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
     <body>
@@ -25,7 +20,7 @@
 		</div>
 		<div class="details chat-details">
 			<div class="presence-indicator presence-unknown">&nbsp;</div>
-			<div class="chat-name">{{ user }}</div>
+			<div class="chat-name">&nbsp;</div>
 			<div class="last-heard">&nbsp;</div>
 		</div>
 		<div class="viewport">
@@ -48,7 +43,7 @@
 
     </body>
 	<script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        //var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         //socket.on('connect', function() {
         //    socket.emit('log', {msg: 'Connected to socket'});
@@ -56,40 +51,42 @@
 
         $('span.icon-list').parent().attr('href', '/stations' + window.location.search.substring(0))
 
-        socket.on('msg', function( msgs ) {
-			msgs.forEach(function ( msg ) {
-				newChatMessage(msg)
-			});
+        //socket.on('msg', function( msgs ) {
+		//	msgs.forEach(function ( msg ) {
+		//		newChatMessage(msg)
+		//	});
+		//
+		//	// sort first loading msgs
+		//	if (msgs.length > 1) {
+		//		sortChat();
+		//	}
+		//
+		//	scrollChat();
+        //});
 
-			// sort first loading msgs
-			if (msgs.length > 1) {
-				sortChat();
-			}
+		//socket.on('update-tx-status', function ( data ) {
+		//	setTxStatus(data.id, data.status);
+		//});
 
-			scrollChat();
-        });
-
-		socket.on('update-tx-status', function ( data ) {
-			setTxStatus(data.id, data.status);
-		});
-
-		socket.on('heard-user', function ( last_heard ) {
-			setLastHeard(last_heard);
-		});
+		//socket.on('heard-user', function ( last_heard ) {
+		//	setLastHeard(last_heard);
+		//});
 
 		$('#chat-text-form').submit(function( event ){
 			event.preventDefault();
-			socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
+			//socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
 			$('#chat-text').val('');
 		});
 
 		$(window).on('load', function(){
-			socket.emit('init-chat');
-			socket.emit('heard-user', {user: $('.chat-name').html()});
+			//socket.emit('init-chat');
+			//socket.emit('heard-user', {user: $('.chat-name').html()});
+			$('.chat-name').val(window.location.search.substring(1)));
+			setPresence(window.location.search.substring(2)));
 		});
 
-		setInterval(function (){
-			setLastHeard( parseInt( $('.last-heard').attr('data-last-heard') ) );
-		}, 1000 * 60);
+		//setInterval(function (){
+		//	setLastHeard( parseInt( $('.last-heard').attr('data-last-heard') ) );
+		//}, 1000 * 60);
 	</script>
 </html>
