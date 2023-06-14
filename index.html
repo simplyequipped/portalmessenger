@@ -116,6 +116,10 @@
 					window.location = '/chat?' + $('.tab.selected').attr('id') + '&' + username;
 				//});
 			});
+            
+            $('.station').each(function() {
+                $(this).click(stationClick)
+            });
 
 			// request station data from the server
 			//socket.emit('spot');
