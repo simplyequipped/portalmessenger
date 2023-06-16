@@ -143,7 +143,7 @@
         //NEW menu code
         // hide menu when clicking off menu
         $(document).on("click", function(event) {
-            var $trigger = $('.menu');
+            var $trigger = $('.icon-hamburger');
             if($trigger !== event.target && !$trigger.has(event.target).length){
                 $('.menu').slideUp();
             }
