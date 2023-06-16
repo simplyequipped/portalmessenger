@@ -81,8 +81,10 @@
 		$(window).on('load', function(){
 			//socket.emit('init-chat');
 			//socket.emit('heard-user', {user: $('.chat-name').html()});
-			$('.chat-name').html( window.location.search.substring(1).split('&')[1] );
-			setPresence( window.location.search.substring(1).split('&')[2] );
+            urlParam = window.location.search.substring(1).split('&');
+			$('.chat-name').html( urlParam[1] );
+			setPresence( urlParam[2] );
+		    setLastHeard( urlParam[3] );
 			
 			if ( $('.chat-name').html() == 'KT7RUN' ) {
 				rx_msg = {'id': 'abc123', 'type': 'rx', 'time': String( (Date.now() / 1000) - 120), 'text': 'NEW VIDEO ON YOUTUBE', 'status': null, 'error': null};
