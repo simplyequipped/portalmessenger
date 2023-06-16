@@ -128,9 +128,18 @@
             //NEW menu code
             $('.menu-item').click(function (){
                 $('#chat-text-form').attr('data-cmd', true);
-                $('#chat-text')$(this).attr('value')
-            });
-		});
+                $('#chat-text').val( $(this).attr('value') );
+                $('#chat-text').focus();
+
+                if (typeof $('#chat-text').selectionStart != "undefined") {
+                    startPos = $('#chat-text').val().indexOf('[');
+                    endPos = $('#chat-text').val().indexOf(']', startPos);
+                    if ( startPos != -1 ) {
+                        $('#chat-text').selectionStart = startPos;
+                        $('#chat-text').selectionEnd = endPos;
+                    }
+                });
+		    });
 
 		setInterval(function (){
 			setLastHeard( parseInt( $('.last-heard').attr('data-last-heard') ) );
