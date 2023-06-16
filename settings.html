@@ -14,8 +14,10 @@
     <body>
 	    <div class="header">
 		    PORTAL MESSENGER
-		    <a href="/stations"><span class="icon icon-list">&nbsp;</span></a>
-		    <!--<a href="javascript:history.back()"><span class="icon icon-back">&nbsp;</span></a>-->
+		    <!--
+            <a href="/portalmessenger/index.html"><span class="icon icon-list">&nbsp;</span></a>
+            -->
+		    <a href="javascript:history.back()"><span class="icon icon-back">&nbsp;</span></a>
 	    </div>
 		<div class="details">
 			<div class="details-name">Settings</div>
@@ -26,29 +28,43 @@
                 
 			    <form id="settings-form" action="/settings" method="post">
 
-                {% for setting, data in settings.items() %}
 				<div class="setting-row">
-                    <label for="{{ setting }}">{{ data['label'] }}</label>
-                    {% if data['options'] == None %}
-                    <input type="text" id="{{ setting }}" name="{{ setting }}" value="{{ data['value'] }}"
-                    {% if data['required'] and data['value'] == '' %} class="required" {% endif %}
-                    >
-                    {% else %}
-				    <select type="text" id="{{ setting }}" name="{{ setting }}">
-                        {% for option in data['options'] %}
-					    <option value="{{ option }}"
-                        {% if option == data['value'] %} selected {% endif %}
-                        >{{ option[0]|upper }}{{ option[1:] }}</option>
-                        {% endfor %}
+                    <label for="modem">Modem</label>
+				    <select type="text" id="modem" name="modem">
+					    <option value="js8call" selected >JS8Call</option>
                     </select>
-                    {% endif %}
-
-                {% if 'error' in data.keys() and data['error'] != None %}
-                <div class="error">{{ data['error'] }}</div>
-                {% endif %}
-
                 </div>
-                {% endfor %}
+
+				<div class="setting-row">
+                    <label for="callsign">Callsign</label>
+                    <input type="text" id="callsign" name="callsign" value="">
+                </div>
+
+				<div class="setting-row">
+                    <label for="freq">Frequency (Hz)</label>
+                    <input type="text" id="freq" name="freq" value="7078000">
+                </div>
+
+				<div class="setting-row">
+                    <label for="grid">Grid Square</label>
+                    <input type="text" id="grid" name="grid" value="">
+                </div>
+
+				<div class="setting-row">
+                    <label for="speed">Modem Speed</label>
+				    <select type="text" id="speed" name="speed">
+					    <option value="slow">Slow</option>
+					    <option value="normal" selected >Normal</option>
+					    <option value="fast">Fast</option>
+					    <option value="turbo">Turbo</option>
+                    </select>
+                </div>
+
+				<div class="setting-row">
+                    <label for="aging">Aging (minutes)</label>
+                    <input type="text" id="aging" name="aging" value="15">
+                </div>
+
 			    </form>
 
 		    </div>
