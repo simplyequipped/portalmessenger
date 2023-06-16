@@ -18,7 +18,7 @@
 		    <a href="javascript:window.location = document.referrer;"><span class="icon icon-back icon-back-chat">&nbsp;</span></a>
 		    <span class="icon icon-vertical-ellipsis">&nbsp;</span>
 		</div>
-        <div class="menu-container"><div class=menu">
+        <div class="menu-container"><div class="menu">
             <div class="menu-item" value="MSG [text]">Inbox Message</div>
             <div class="menu-item" value="MSG TO:[callsign] [text]">Store Inbox Message</div>
             <div class="menu-item" value="QUERY MSGS?">Query Messages</div>
@@ -61,7 +61,10 @@
         //    socket.emit('log', {msg: 'Connected to socket'});
         //});
 
-        $('span.icon-list').parent().attr('href', '/portalmessenger/index.html?' + window.location.search.substring(1).split('&')[0])
+        //NEW menu code
+        $('.menu').hide();
+
+        $('span.icon-back-chat').parent().attr('href', '/portalmessenger/index.html?' + window.location.search.substring(1).split('&')[0])
 
         //socket.on('msg', function( msgs ) {
 		//	msgs.forEach(function ( msg ) {
