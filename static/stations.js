@@ -174,10 +174,9 @@ function selectedTab() {
 // on click event handler for stations div
 function stationClick() {
 	var username = $(this).find('.chat-name').html();
-	var presence = getPresence(username);
     var lastHeard = $(this).find('.last-heard').attr('data-last-heard');
 	//$.post('/stations', {user: username}, function() {
-	window.location = '/portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username + '&' + presence + '&' + lastHeard;
+	window.location = '/portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username + '&' + lastHeard;
 	//});
 }
 
