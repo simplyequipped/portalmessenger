@@ -81,10 +81,26 @@ body {
 	right: 12px
 }
 
+/*
 .icon-back {
 	-webkit-mask-image: url('icons/arrow-left.svg');
 	float: right;
 	margin-left: 15px;
+}
+*/
+
+/*NEW menu code*/
+.icon-back {
+	position: absolute;
+	display: block;
+	-webkit-mask-image: url('icons/arrow-left.svg');
+	width: 45px;
+	top: 5px;
+	right: 12px
+}
+
+.icon-back-chat {
+    right: 75px;
 }
 
 .icon-power {
