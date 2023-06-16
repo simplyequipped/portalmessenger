@@ -140,6 +140,15 @@
             $('.menu').hide();
 		});
 
+        //NEW menu code
+        // hide menu when clicking off menu
+        $(document).on("click", function(event) {
+            var $trigger = $('.menu');
+            if($trigger !== event.target && !$trigger.has(event.target).length){
+                $('.menu').slideUp();
+            }
+        });
+
 		// update last heard text and presence, client side
 		setInterval(function() {
 			$('.station').not('.original-hidden').each(function() {
