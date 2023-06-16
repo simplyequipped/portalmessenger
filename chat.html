@@ -90,7 +90,7 @@
 		$('#chat-text-form').submit(function( event ){
 			event.preventDefault();
             //NEW menu code
-            cmd = Boolean$('#chat-text-form').attr('data-cmd');
+            cmd = Boolean($('#chat-text-form').attr('data-cmd'));
             //TODO handle directed command on server side
 			//socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
 			$('#chat-text').val('');
@@ -129,16 +129,8 @@
             $('.menu-item').click(function (){
                 $('#chat-text-form').attr('data-cmd', true);
                 $('#chat-text').val( $(this).attr('value') );
+                #('.menu').slideUp();
                 $('#chat-text').focus();
-
-                if (typeof $('#chat-text').selectionStart != "undefined") {
-                    startPos = $('#chat-text').val().indexOf('[');
-                    endPos = $('#chat-text').val().indexOf(']', startPos);
-                    if ( startPos != -1 ) {
-                        $('#chat-text').selectionStart = startPos;
-                        $('#chat-text').selectionEnd = endPos;
-                    }
-                }
             });
 		});
 
