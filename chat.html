@@ -15,10 +15,21 @@
     <body>
 	    <div class="header">
 			PORTAL MESSENGER
-			<!--<a href="/settings.html"><span class="icon icon-settings">&nbsp;</span></a>-->
 		    <a href="javascript:window.location = document.referrer;"><span class="icon icon-back">&nbsp;</span></a>
 		    <span class="icon icon-vertical-ellipsis">&nbsp;</span>
 		</div>
+        <div class="menu-container"><div class=menu">
+            <div class="menu-item" value="MSG [text]">Inbox Message</div>
+            <div class="menu-item" value="MSG TO:[callsign] [text]">Store Inbox Message</div>
+            <div class="menu-item" value="QUERY MSGS?">Query Messages</div>
+            <div class="menu-item" value="QUERY MSG [ID]">Query Message ID</div>
+            <div class="menu-item" value="SNR?">Query SNR</div>
+            <div class="menu-item" value="HEARING?">Query Hearing</div>
+            <div class="menu-item" value="QUERY CALL [callsign]">Query Callsign</div>
+            <div class="menu-item" value="GRID?">Query Grid Square</div>
+            <div class="menu-item" value="INFO?">Query Info</div>
+            <div class="menu-item" value="STATUS?">Query Status</div>
+        </div></div>
 		<div class="details chat-details">
 			<div class="presence-indicator presence-unknown">&nbsp;</div>
 			<div class="chat-name">&nbsp;</div>
@@ -75,8 +86,19 @@
 
 		$('#chat-text-form').submit(function( event ){
 			event.preventDefault();
+            //NEW menu code
+            cmd = Boolean$('#chat-text-form').attr('data-cmd');
+            //TODO handle directed command on server side
 			//socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
 			$('#chat-text').val('');
+
+            msgId = parseInt(Math.random() * 100000000000000000);
+			tx_msg = {'id': msgId, 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': $('#chat-text').val(), 'status': 'sending', 'error': null};
+			newChatMessage(tx_msg);
+
+            setTimeout(function (){
+                updateTxStatus(msgId, 'sent');
+            }, 12);
 		});
 
 		$(window).on('load', function(){
@@ -88,7 +110,7 @@
 			
 			if ( $('.chat-name').html() == 'KT7RUN' ) {
 				rx_msg = {'id': 'abc123', 'type': 'rx', 'time': String( (Date.now() / 1000) - 120), 'text': 'NEW VIDEO ON YOUTUBE', 'status': null, 'error': null};
-				tx_msg = {'id': '123abc', 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': 'GREAT NEWS THX', 'status': 'sending', 'error': null};
+				tx_msg = {'id': '123abc', 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': 'GREAT NEWS THX', 'status': null, 'error': null};
 				newChatMessage(rx_msg);
 				newChatMessage(tx_msg);
 				sortChat();
@@ -96,8 +118,14 @@
 			}
 
             //NEW menu code
-            #('.icon-vertical-ellipsis').click(function (){
+            $('.icon-vertical-ellipsis').click(function (){
                 $('.menu').slideToggle();
+            });
+
+            //NEW menu code
+            $('.menu-item').click(function (){
+                $('#chat-text-form').attr('data-cmd', true);
+                $('#chat-text')$(this).attr('value')
             });
 		});
 
