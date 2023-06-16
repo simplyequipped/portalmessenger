@@ -394,11 +394,11 @@ body {
 	border-width: 0px;
     border-radius: 5px;
     color: black;
-    padding: 5px;
+    padding: 5px 10px;
 }
 
 .setting-row input {
-    width: 165px;
+    width: 155px;
 }
 
 .setting-row select {
