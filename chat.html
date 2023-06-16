@@ -95,7 +95,7 @@
 			//socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
 
             msgId = parseInt(Math.random() * 100000000000000000);
-			tx_msg = {'id': msgId, 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': $('#chat-text').val(), 'status': 'sending', 'error': null};
+			tx_msg = {'id': msgId, 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': $('#chat-text').val().toUpperCase(), 'status': 'sending', 'error': null};
 			newChatMessage(tx_msg);
 			$('#chat-text').val('');
 
