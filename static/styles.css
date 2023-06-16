@@ -125,7 +125,7 @@ body {
 .menu {
 	position: absolute;
 	z-index: 2;
-	top: -16px;
+	top: -12px;
 	right: 16px;
 	padding: 15px;
 	background-color: var(--secondary-color);
