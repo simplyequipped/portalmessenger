@@ -120,6 +120,14 @@
 				scrollChat();
 			}
 
+	        //NEW menu code
+	        // hide menu when clicking off menu
+	        $(document).on('click', function(event) {
+	            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+	                $('.menu').slideUp();
+	            }
+	        });
+
             //NEW menu code
             $('.icon-vertical-ellipsis').click(function (){
                 $('.menu').slideToggle();
