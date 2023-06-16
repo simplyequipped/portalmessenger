@@ -81,14 +81,6 @@ body {
 	right: 12px
 }
 
-/*
-.icon-back {
-	-webkit-mask-image: url('icons/arrow-left.svg');
-	float: right;
-	margin-left: 15px;
-}
-*/
-
 /*NEW menu code*/
 .icon-back {
 	position: absolute;
@@ -257,10 +249,6 @@ body {
 
 #tab-activity {
 	width: 80px;
-}
-
-#tab-conversations {
-	/*width: 155px;*/
 }
 
 #unread-count {
@@ -442,12 +430,12 @@ button {
 	padding: 9px;
 	font-size: var(--large-font-size);
 	cursor: pointer;
-	border-radius: 10px;
+	border-radius: 5px;
 	border: 1px solid var(--secondary-color);
 }
 
 #save-button {
-	margin-left:50px;
+	margin-left: 50px;
 }
 
 .original-hidden {
