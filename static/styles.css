@@ -71,6 +71,16 @@ body {
 	right: 12px
 }
 
+/*NEW menu code*/
+.icon-vertical-ellipsis {
+	position: absolute;
+	display: block;
+	-webkit-mask-image: url('icons/vertical-ellipsis.svg');
+	width: 45px;
+	top: 5px;
+	right: 12px
+}
+
 .icon-back {
 	-webkit-mask-image: url('icons/arrow-left.svg');
 	float: right;
