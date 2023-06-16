@@ -112,10 +112,18 @@
 		    setLastHeard( urlParam[2] );
 			
 			if ( $('.chat-name').html() == 'KT7RUN' ) {
-				rx_msg = {'id': 'abc123', 'type': 'rx', 'time': String( (Date.now() / 1000) - 120), 'text': 'NEW VIDEO ON YOUTUBE', 'status': null, 'error': null};
-				tx_msg = {'id': '123abc', 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': 'GREAT NEWS THX', 'status': null, 'error': null};
+                msgId = parseInt(Math.random() * 100000000000000000);
+				rx_msg = {'id': msgId, 'type': 'rx', 'time': String( (Date.now() / 1000) - (5 * 50)), 'text': 'NEW VIDEO ON YOUTUBE', 'status': null, 'error': null};
 				newChatMessage(rx_msg);
+
+                msgId = parseInt(Math.random() * 100000000000000000);
+				tx_msg = {'id': msgId, 'type': 'tx', 'time': String( (Date.now() / 1000) - (2 * 60)), 'text': 'GREAT NEWS THX', 'status': null, 'error': null};
 				newChatMessage(tx_msg);
+
+                msgId = parseInt(Math.random() * 100000000000000000);
+				rx_msg = {'id': msgId, 'type': 'rx', 'time': String( (Date.now() / 1000)), 'text': '73', 'status': null, 'error': null};
+				newChatMessage(rx_msg);
+
 				sortChat();
 				scrollChat();
 			}
