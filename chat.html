@@ -93,14 +93,14 @@
             cmd = Boolean($('#chat-text-form').attr('data-cmd'));
             //TODO handle directed command on server side
 			//socket.emit('msg', {user: $('.chat-name').html(), text: $('#chat-text').val()})
-			$('#chat-text').val('');
 
             msgId = parseInt(Math.random() * 100000000000000000);
 			tx_msg = {'id': msgId, 'type': 'tx', 'time': String( (Date.now() / 1000)), 'text': $('#chat-text').val(), 'status': 'sending', 'error': null};
 			newChatMessage(tx_msg);
+			$('#chat-text').val('');
 
             setTimeout(function (){
-                updateTxStatus(msgId, 'sent');
+                setTxStatus(msgId, 'sent');
             }, 12);
 		});
 
