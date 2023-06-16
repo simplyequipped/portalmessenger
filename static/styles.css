@@ -65,7 +65,7 @@ body {
 .icon-hamburger {
 	position: absolute;
 	display: block;
-	-webkit-mask-image: url('icons/list-hollow.svg');
+	-webkit-mask-image: url('icons/hamburger.svg');
 	width: 45px;
 	top: 3px;
 	right: 12px
