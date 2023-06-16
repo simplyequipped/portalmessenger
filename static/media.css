@@ -42,10 +42,10 @@
 	}
 	.header {
 		margin-top: 10px;
-		border-radius: 15px 15px 0px 0px;
+		border-radius: 10px 10px 0px 0px;
 	}
 	.footer {
-		border-radius: 0px 0px 15px 15px;
+		border-radius: 0px 0px 10px 10px;
 		padding: 35px 25px 35px 25px;
 	}
 	.conversation {
