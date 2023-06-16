@@ -139,11 +139,11 @@
 
         //NEW menu code
         // hide menu when clicking off menu
-        //$(document).on('click', function(event) {
-        //    if ( !$(event.target).hasClass('.icon-hamburger') && !$(event.target).hasClass('.menu') ){
-        //        $('.menu').slideUp();
-        //    }
-        //});
+        $(document).on('click', function(event) {
+            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+                $('.menu').slideUp();
+            }
+        });
 
         // update last heard text and presence, client side
         setInterval(function() {
