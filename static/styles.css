@@ -180,9 +180,15 @@ body {
 	margin-right: 10px;
     position: relative;
     top: 2px;
+	border: 1px solid var(--secondary-color);
 }
 
-.conversation .presence-indicator {
+.station:hover, .station:focus {
+	border-color: var(--primary-color);
+}
+
+.station .presence-indicator {
+	margin-top: 1px;
 }
 
 .presence-active {
@@ -335,14 +341,6 @@ body {
 	padding: 10px 15px 10px 15px;
 	color: black; 
 	cursor: pointer;
-}
-
-.station:hover, .station:focus {
-	border-color: var(--primary-color);
-}
-
-.station .presence-indicator {
-	border: 2px solid var(--secondary-color);
 }
 
 .unread {
