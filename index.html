@@ -145,7 +145,7 @@
         $(document).on('click', function(event) {
             var $icon = $('.icon-hamburger');
             var $menu = $('.menu');
-            if ( $icon !== event.target && $menu !== event.target ){
+            if ( $icon != event.target && $menu != event.target ){
                 $('.menu').slideUp();
             }
         });
