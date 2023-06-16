@@ -17,8 +17,8 @@
 			PORTAL MESSENGER
 			<!--<a href="/settings.html"><span class="icon icon-settings">&nbsp;</span></a>-->
 		    <a href="javascript:window.location = document.referrer;"><span class="icon icon-back">&nbsp;</span></a>
-		</div>
 		    <span class="icon icon-vertical-ellipsis">&nbsp;</span>
+		</div>
 		<div class="details chat-details">
 			<div class="presence-indicator presence-unknown">&nbsp;</div>
 			<div class="chat-name">&nbsp;</div>
@@ -94,6 +94,11 @@
 				sortChat();
 				scrollChat();
 			}
+
+            //NEW menu code
+            #('.icon-vertical-ellipsis').click(function (){
+                $('.menu').slideToggle();
+            });
 		});
 
 		setInterval(function (){
