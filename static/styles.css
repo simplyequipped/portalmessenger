@@ -67,8 +67,8 @@ body {
 	display: block;
 	-webkit-mask-image: url('icons/hamburger.svg');
 	width: 45px;
-	top: 3px;
-	right: 12px
+	top: 10px;
+	right: 17px
 }
 
 .icon-back {
