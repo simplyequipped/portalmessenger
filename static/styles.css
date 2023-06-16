@@ -95,7 +95,7 @@ body {
 	display: block;
 	-webkit-mask-image: url('icons/arrow-left.svg');
 	width: 45px;
-	top: 10px;
+	top: 5px;
 	right: 12px
 }
 
