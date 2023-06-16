@@ -126,12 +126,12 @@
 
             // click selected tab to force above event handling
             // return to previously selected tab if returning from another page
-            urlTab = window.location.search.substring(1).split('&')[0]
+            urlTab = window.location.search.substring(1);
             if ( urlTab == '' ) {
                 $('.tab.selected').click();
             }
             else {
-                $( urlTab ).click();
+                $( '#' + urlTab ).click();
             }
 
             $('.menu').hide();
