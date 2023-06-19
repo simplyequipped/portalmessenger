@@ -55,6 +55,11 @@ body {
 	-webkit-mask-image: url('icons/chat-hollow.svg');
 }
 
+.icon-dropdown {
+	-webkit-mask-image: url('icons/dropdown-arrow.svg');
+    display: inline-block;
+}
+
 .icon-list {
 	-webkit-mask-image: url('icons/list-hollow.svg');
 	float: right;
@@ -186,10 +191,6 @@ body {
     margin-right: 10px;
 }
 
-.chat-details {
-	padding-bottom: 15px;
-}
-
 .presence-indicator {
     float: left;
 	height: 22px;
@@ -227,14 +228,30 @@ body {
 	background-color: var(--primary-color);
 }
 
-.tab-container {
-	padding-bottom: 0px;
-	border: none;
+.chat-details {
+	padding-bottom: 15px;
 }
 
 .details-name, .chat-name {
 	font-size: var(--heading-font-size);
 	display: inline-block;
+}
+
+.selected {
+	font-weight: bold;
+	border-color: var(--secondary-color);
+}
+
+.last-heard {
+	display: inline-block;
+	font-size: var(--small-font-size);
+	float: right;
+	padding-top: 4px;
+}
+
+.tab-container {
+	padding-bottom: 0px;
+	border: none;
 }
 
 .tab {
@@ -254,18 +271,6 @@ body {
 #unread-count {
 	margin-left: 5px;
 	display: none;
-}
-
-.selected {
-	font-weight: bold;
-	border-color: var(--secondary-color);
-}
-
-.last-heard {
-	display: inline-block;
-	font-size: var(--small-font-size);
-	float: right;
-	padding-top: 4px;
 }
 
 /*https://jsfiddle.net/ajiths4u/u9dzyvct/*/
