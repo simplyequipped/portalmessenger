@@ -111,6 +111,17 @@ class JS8CallModem:
         spots = list(spots.values())
         spots.sort()
         return spots
+
+    def get_call_activity(self, age=None):
+        call_activity = self.js8call.get_call_activity(age = age)
+
+        for activity in call_activity.copy():
+            call_activity[activity]['snr'] = '{}dB'.format(call_activity[activity]['snr'])
+            call_activity[activity]['hearing'] = ', '.join(call_activity[activity]['hearing'])
+            call_activity[activity]['heard_by'] = ', '.join(call_activity[activity]['heard_by'])
+            call_activity[activity]['distance'] = '{0[0]:,} {0[1]}'.format(call_activity[activity]['distance'])
+
+        return call_activity
                 
     def incoming_callback(self, msg):
         if msg.destination not in self.js8call.identities():
