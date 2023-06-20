@@ -3,7 +3,7 @@ function newStation(station) {
 	stationElement = $('.station.original-hidden').clone();
 	stationElement.attr('name', station.username)
 	stationElement.find('.chat-name').html(station.username);
-	stationElement.click(stationClick)
+	//stationElement.click(stationClick)
 	stationElement.removeClass('original-hidden');
 	stationElement.appendTo('.content');
 	setLastHeard(station.username, station.time);
