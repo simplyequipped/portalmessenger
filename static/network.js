@@ -45,11 +45,7 @@ function setLastHeard(username, lastHeard) {
 
 // on click event handler for stations div
 function stationClick() {
-	var username = $(this).find('.chat-name').html();
-    var lastHeard = $(this).find('.last-heard').attr('data-last-heard');
-	//$.post('/stations', {user: username}, function() {
-	window.location = '/portalmessenger/chat.html?' + $('.tab.selected').attr('id') + '&' + username + '&' + lastHeard;
-	//});
+	$(this).find('.station-details').toggle();
 }
 
 // sort stations in ascending order by last heard time
