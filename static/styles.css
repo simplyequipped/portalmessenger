@@ -237,6 +237,14 @@ body {
 	display: inline-block;
 }
 
+.station-details table{
+	width: 100%;
+}
+
+.station-details td {
+	padding-top: 5px;
+}
+
 .selected {
 	font-weight: bold;
 	border-color: var(--secondary-color);
