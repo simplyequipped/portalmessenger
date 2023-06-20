@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ode<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Portal Messenger</title>
@@ -108,7 +108,7 @@
 			//socket.emit('init-chat');
 			//socket.emit('heard-user', {user: $('.chat-name').html()});
             urlParam = window.location.search.substring(1).split('&');
-			$('.chat-name').html( urlParam[1] );
+			$('.chat-name').html( decodeURI(urlParam[1]) );
 		    setLastHeard( urlParam[2] );
 			
 			if ( $('.chat-name').html() == 'KT7RUN' ) {
