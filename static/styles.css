@@ -216,14 +216,6 @@ body {
 	border-color: var(--primary-color);
 }
 
-.station-network {
-	cursor: default;
-}
-
-.station-network:hover, .station-network:focus {
-	border-color: var(--tertiary-color);
-}
-
 .station .presence-indicator {
 	margin-top: 1px;
 }
@@ -257,10 +249,20 @@ body {
 
 .station-details table{
 	width: 100%;
+	margin-top: 5px;
+    border-top: 1px solid var(--primary-color);
 }
 
 .station-details td {
 	padding-top: 5px;
+}
+
+.station-network {
+	cursor: default;
+}
+
+.station-network:hover, .station-network:focus {
+	border-color: var(--tertiary-color);
 }
 
 .selected {
