@@ -202,8 +202,26 @@ body {
 	border: 1px solid var(--secondary-color);
 }
 
+.station {
+	background-color: var(--tertiary-color);
+	border: 2px solid var(--tertiary-color);
+	border-radius: 5px;
+	margin: 15px 5px 15px 5px;
+	padding: 10px 15px 10px 15px;
+	color: black; 
+	cursor: pointer;
+}
+
 .station:hover, .station:focus {
 	border-color: var(--primary-color);
+}
+
+.station-network {
+	cursor: default;
+}
+
+.station-network:hover, .station-network:focus {
+	border-color: var(--tertiary-color);
 }
 
 .station .presence-indicator {
@@ -358,16 +376,6 @@ body {
 	margin-right: 5px;
 	color: var(--primary-color);
 	clear: both;
-}
-
-.station {
-	background-color: var(--tertiary-color);
-	border: 2px solid var(--tertiary-color);
-	border-radius: 5px;
-	margin: 15px 5px 15px 5px;
-	padding: 10px 15px 10px 15px;
-	color: black; 
-	cursor: pointer;
 }
 
 .unread {
