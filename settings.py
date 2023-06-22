@@ -34,12 +34,13 @@ class Settings:
 
             for default_setting, default_data in default_settings.items():
                 if default_setting not in settings.keys():
+                    # do not add encryption option if module not installed
+                    if default_setting == 'encryption' and not encryption_available:
+                        continue
+                        
+                    # flatten to single level dict
                     new_setting = default_data
                     new_setting['setting'] = default_setting
-
-                    if default_setting == 'encryption' and not encryption_available:
-                        new_setting['options'].remove('enable')
-                        new_setting['value'] = 'disable'
                         
                     if isinstance(new_setting['options'], list):
                         new_setting['options'] = json.dumps(new_setting['options'])
@@ -62,15 +63,16 @@ class Settings:
             settings = [dict(zip(columns, setting)) for setting in settings]
     
             if len(settings) > 0:
+                # flatten to single level dict
                 settings = {setting['setting']: setting for setting in settings}
 
-                for setting in settings:
+                for setting in settings.keys():
                     if settings[setting]['options'] != None:
                         settings[setting]['options'] = json.loads(settings[setting]['options'])
-                        
-                    if setting == 'encryption' and 'enable' in settings[setting]['options'] and not encryption_available:
-                        settings[setting]['options'].remove('enable')
-                        settings[setting]['value'] = 'disable'
+                    
+                    # do not add encryption option if module not installed
+                    if setting == 'encryption' and not encryption_available:
+                        settings.pop(setting)
             else:
                 settings = {}
 
