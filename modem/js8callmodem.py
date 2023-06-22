@@ -146,9 +146,10 @@ class JS8CallModem:
         if not self.encryption:
             return msg
         
+        msg.set('encrypted', True)
+            
         try:
             msg.set('text', self._identity.decrypt(msg.text))
-            msg.set('encrypted', True)
         except ValueError:
             msg.set('error', 'decrypt failed')
             
