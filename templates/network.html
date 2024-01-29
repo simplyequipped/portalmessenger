@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Portal Messenger</title>
+        <link rel="stylesheet" type="text/css" href="static/styles.css">
+        <link rel="stylesheet" type="text/css" href="static/media.css">
+        <link rel="stylesheet" type="text/css" href="static/dark.css">
+        <link rel="icon" type="image/x-icon" href="static/icons/double_arrow.svg">
+        <script src="static/jquery.min.js"></script>
+        <script src="static/socket.io.min.js"></script>
+        <script src="static/common.js"></script>
+        <script src="static/network.js"></script>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    </head>
+    <body tabindex="-1">
+        <div class="header">
+            PORTAL MESSENGER
+            <a href="javascript:window.location = document.referrer"><span class="icon icon-back">&nbsp;</span></a>
+        </div>
+        <div class="details">
+            <div class="details-name">Network</div>
+        </div>
+        <div class="viewport">
+            <div class="content">
+                
+                <!-- hidden element for cloning -->
+                <div class="station station-network original-hidden">
+                    <div class="chat-name">&nbsp;</div>
+                    <div class="last-heard">&nbsp;</div>
+                    <div class="icon-dropdown">&nbsp;</div>
+                    <div class="station-details">
+                        <table>
+                            <tr><td><b>Grid:</b> FM17 (10,237 mi)</td><td><b>SNR:</b> -17dB</td></tr>
+                            <tr><td><b>Last Heard:</b> 09:58:15L</td><td><b>Speed:</b> Normal</td></tr>
+                            <tr><td colspan="2"><b>Hearing:</b> KI6NAZ, KT7RUN, OH8STN, KI6NAZ, KT7RUN, OH8STN</td></tr>
+                            <tr><td colspan="2"><b>Heard By:</b> OH8STN</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="footer">&nbsp;</div>
+
+    </body>
+    <script>
+        //var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        //socket.on('spot', function( data ) {
+        //  data.forEach(function( station ) {
+        //      handleSpot(station);
+        //  });
+        //  sortStations();
+        //    // click selected tab to force above event handling
+        //    $('.tab.selected').click();
+        //});
+
+        //socket.on('conversation', function( data ) {
+        //  data.forEach(function( station ) {
+        //      handleConversation(station);
+        //  });
+        //  sortStations();
+        //    // click selected tab to force above event handling
+        //    $('.tab.selected').click();
+        //});
+
+        $(window).on('load', function(){
+            handleStation( {'username': 'OH8STN', 'time': String( (Date.now() / 1000) - (2 * 60) )} );
+            handleStation( {'username': 'KT7RUN', 'time': String( (Date.now() / 1000) - (8 * 60) )} );
+            handleStation( {'username': '@AMRRON', 'time': String( (Date.now() / 1000) - (59 * 60) )} );
+
+            // request station data from the server
+            //socket.emit('spot');
+            //socket.emit('conversation');
+
+            // click selected tab to force above event handling
+            // return to previously selected tab if returning from another page
+        });
+
+        // update last heard text and presence, client side
+        setInterval(function() {
+            $('.station').not('.original-hidden').each(function() {
+                username = $(this).attr('name');
+                timestamp = parseInt( $(this).find('.last-heard').attr('data-last-heard') );
+                setLastHeard(username, timestamp);
+            });
+        }, 1000 * 60);
+
+    </script>
+</html>
+
