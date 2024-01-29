@@ -36,6 +36,14 @@ def stations_route():
         settings.set('active_chat_username', None)
         return render_template('stations.html', settings = db_settings)
 
+@app.route('/network')
+@app.route('/network.html')
+def network_route():
+    global settings
+    db_settings = settings.db_settings()
+
+    return render_template('network.html', settings = db_settings)
+
 @app.route('/chat')
 @app.route('/chat.html')
 def chat_route():
