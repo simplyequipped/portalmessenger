@@ -4,7 +4,7 @@ import pyjs8call
 
 class JS8CallModem(BaseModem):
     def __init__(self, callsign, headless=True):
-        parent().__init__('js8call')
+        parent().__init__('JS8Call')
         self.callsign = callsign
         self.headless = headless
 
