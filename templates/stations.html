@@ -20,11 +20,19 @@
 		<script src="../static/stations.js"></script>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
-    <body>
+    <body tabindex="-1">
 	    <div class="header">
 			PORTAL MESSENGER
-		    <a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>
+            <span class="icon icon-hamburger">&nbsp;</span>
 		</div>
+		
+        <div class='menu-container'><div class="menu">
+            <a href="/portalmessenger/index.html"><div class="menu-item">Activity</div></a>
+            <a href="/portalmessenger/network.html"><div class="menu-item">Network</div></a>
+            <a href="/portalmessenger/settings.html"><div class="menu-item">Settings</div></a>
+            <a href="/portalmessenger/index.html"><div class="menu-item">Close Portal</div></a>
+        </div></div>
+		
 		<div class="details tab-container">
 			<div class="details-name tab {% if settings['tab']['value'] == 'activity' %} selected {% endif %}" 
 				 id="tab-activity" data-aging="{{ settings['aging']['value'] }}">Activity</div>
@@ -35,20 +43,6 @@
 		</div>
 		<div class="viewport">
 			<div class="content">
-
-                <!--- tooltip testing
-				<div class="station spot" title="Hearing:&#013;&#010;KC3WNC, KC3WPA">
-					<div class="presence-indicator presence-unknown">&nbsp;</div>
-					<div class="chat-name">KC3WFL</div>
-					<div class="last-heard">2 minutes</div>
-				</div>
-
-				<div class="station spot" title="Hearing:<br/>KC3WFL, KC3WPA, KC3KVT">
-					<div class="presence-indicator presence-unknown">&nbsp;</div>
-					<div class="chat-name">KC3WNC</div>
-					<div class="last-heard">12 minutes</div>
-				</div>
-                --->
 
 				<!-- hidden element for cloning -->
 				<div class="station original-hidden">
@@ -70,6 +64,7 @@
 
     </body>
 	<script>
+        $('.menu').hide();
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         //socket.on('connect', function() {
@@ -126,6 +121,10 @@
 				$('#new-conversation').focus();
 			});
 
+            $('.icon-hamburger').click(function(){
+                $('.menu').slideToggle();
+            });
+			
 			$('#new-conversation-form').submit(function (){
 				event.preventDefault();
 				username = $('#new-conversation').val().trim().toUpperCase();
@@ -147,6 +146,13 @@
                 $('#' + window.location.search.substring(1)).click();
             }
 		});
+		
+        // hide menu when clicking off menu
+        $(document).on('click', function(event) {
+            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+                $('.menu').slideUp();
+            }
+        });
 
 		// update last heard text and presence, client side
 		setInterval(function() {
