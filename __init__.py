@@ -1,3 +1,3 @@
 from portalmessenger.settings import Settings
-from portalmessenger import portal
-from portalmessenger import modem
+from portalmessenger.modem import JS8CallModem
+from portalmessenger.modem import DemoModem
