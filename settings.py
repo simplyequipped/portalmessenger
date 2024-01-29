@@ -291,13 +291,20 @@ default_settings = {
         'required': True,
         'options': None
     },
-    # ECC/AES-256 encryption
-    'encryption': {
-        'value': 'disable', 
-        'label': 'Encryption',
-        'default': 'disable',
+    'heartbeat': {
+        'value': 'disabled', 
+        'label': 'Heartbeat Net',
+        'default': 'disabled',
         'required': False,
-        'options': ['enable', 'disable']
+        'options': ['enabled', 'disabled']
     }
+#    # ECC/AES-256 encryption
+#    'encryption': {
+#        'value': 'disable', 
+#        'label': 'Encryption',
+#        'default': 'disable',
+#        'required': False,
+#        'options': ['enable', 'disable']
+#    }
 }
 
