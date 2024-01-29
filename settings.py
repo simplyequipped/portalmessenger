@@ -292,11 +292,11 @@ default_settings = {
         'options': None
     },
     'heartbeat': {
-        'value': 'disabled', 
+        'value': 'disable', 
         'label': 'Heartbeat Net',
-        'default': 'disabled',
+        'default': 'disable',
         'required': False,
-        'options': ['enabled', 'disabled']
+        'options': ['enable', 'disable']
     }
 #    # ECC/AES-256 encryption
 #    'encryption': {
