@@ -4,7 +4,7 @@
 #except ModuleNotFoundError:
 #    encryption_available = False
 
-class Modem:
+class BaseModem:
     def __init__(self, modem_name):
         self.name = modem_name
         self.incoming = None
