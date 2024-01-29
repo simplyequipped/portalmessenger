@@ -1,8 +1,8 @@
-import modem.Modem
+from modem import BaseModem
 import pyjs8call
 
 
-class JS8CallModem(Modem):
+class JS8CallModem(BaseModem):
     def __init__(self, callsign, headless=True):
         parent().__init__('js8call')
         self.callsign = callsign
