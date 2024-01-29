@@ -6,10 +6,10 @@ import time
 import sqlite3
 import secrets
 
-import portalmessenger
-
 from flask import Flask, render_template, request, session, redirect
 from flask_socketio import SocketIO
+
+import portalmessenger
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex()
@@ -395,9 +395,7 @@ modem = settings.get('modem')
 #modem = 'DemoModem'
 
 if modem == 'JS8Call':
-    from modem import JS8CallModem
-
-    modem = JS8CallModem(settings.get('callsign'), headless=settings.get('headless'))
+    modem = portalmessenger.JS8CallModem(settings.get('callsign'), headless=settings.get('headless'))
     # initialize config settings before start
     modem.js8call.settings.set_speed( settings.get('speed') )
     # set callback functions
@@ -415,7 +413,7 @@ if modem == 'JS8Call':
         modem.js8call.heartbeat.enable()
 
 elif modem == 'FSKModem':
-    # from modem import FSKModem
+    # modem = portalmessenger.FSKModem()
 
     # TODO
     # start QDX CAT control module
@@ -424,9 +422,7 @@ elif modem == 'FSKModem':
     pass
 
 elif modem == 'DemoModem':
-    from modem import DemoModem
-    
-    modem = DemoModem( settings.get('callsign') )
+    modem = portalmessenger.DemoModem( settings.get('callsign') )
     # set callback functions
     modem.incoming = incoming_msg
     modem.spots = new_spots
@@ -438,3 +434,10 @@ if __name__ == 'main':
     app.run(host='0.0.0.0')
     # TODO turn off debugging in final release
     socketio.run(app, debug=True)
+
+    # exit once application is stopped from web app
+    while not modem.js8call.restarting and modem.js8call.online:
+        time.sleep(1)
+    
+    modem.js8call.stop()
+    
