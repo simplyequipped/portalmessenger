@@ -1,6 +1,4 @@
-import os
 import setuptools
-import pyshortcuts
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -15,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/simplyequipped/portalmessenger",
     packages=setuptools.find_packages(),
-    install_requires=['flask', 'flask-socketio', 'pyjs8call>=0.2.1', 'pyshortcuts'],
+    install_requires=['flask', 'flask-socketio', 'pyjs8call>=0.2.2', 'pyshortcuts'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -24,6 +22,9 @@ setuptools.setup(
     python_requires='>=3.7.1',
 )
 
-# install desktop and start menu shortcuts to './run' script
-cmd = os.path.abspath(os.path.join(os.getcwd(), 'run'))
+import sys
+import pyshortcuts
+
+# install desktop and start menu shortcuts
+cmd = '{} -m portalmessenger'.format(sys.executable)
 pyshortcuts.make_shortcut(cmd, name='Portal Messenger')
