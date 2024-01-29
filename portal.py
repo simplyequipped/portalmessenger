@@ -82,11 +82,17 @@ def settings_route():
                             modem.js8call.settings.set_station_grid(value)
                         elif setting == 'freq':
                             modem.js8call.settings.set_freq(value)
-                        elif setting == 'encryption':
+                        elif setting == 'heartbeat':
                             if value == 'enable':
-                                modem.enable_encryption()
+                                modem.js8call.heartbeat.enable()
                             else:
-                                modem.disable_encryption()
+                                modem.js8call.heartbeat.disable()
+                        # TODO
+                        #elif setting == 'encryption':
+                        #    if value == 'enable':
+                        #        modem.enable_encryption()
+                        #    else:
+                        #        modem.disable_encryption()
 
                     elif modem.name.lower() == 'demo':
                         if setting == 'callsign':
@@ -404,6 +410,9 @@ if modem == 'JS8Call':
     # initialize settings with running application
     modem.js8call.settings.set_station_grid( settings.get('grid') )
     modem.js8call.settings.set_freq( int( settings.get('freq') ) )
+
+    if settings.get('heartbeat') == 'enable':
+        modem.js8call.heartbeat.enable()
 
 elif modem == 'FSKModem':
     # from modem import FSKModem
