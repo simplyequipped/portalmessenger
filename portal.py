@@ -389,34 +389,35 @@ modem = settings.get('modem')
 #modem = 'DemoModem'
 
 if modem == 'JS8Call':
-    from portalmessenger.modem.js8callmodem import JS8CallModem
+    from modem import JS8CallModem
 
     modem = JS8CallModem(settings.get('callsign'), headless=settings.get('headless'))
     # initialize config settings before start
-    modem.js8call.settings.set_speed(settings.get('speed'))
+    modem.js8call.settings.set_speed( settings.get('speed') )
     # set callback functions
     modem.incoming = incoming_msg
     modem.spots = new_spots
     modem.outgoing = outgoing_status
     
-    if settings.get('encryption') == 'enable':
-        modem.enable_encryption()
-
     modem.start()
 
     # initialize settings with running application
-    modem.js8call.settings.set_station_grid(settings.get('grid'))
-    modem.js8call.settings.set_freq(int(settings.get('freq')))
+    modem.js8call.settings.set_station_grid( settings.get('grid') )
+    modem.js8call.settings.set_freq( int( settings.get('freq') ) )
 
 elif modem == 'FSKModem':
+    # from modem import FSKModem
+
+    # TODO
     # start QDX CAT control module
     # start fskmodem
+    
     pass
 
 elif modem == 'DemoModem':
-    from portalmessenger.modem.demomodem import DemoModem
+    from modem import DemoModem
     
-    modem = DemoModem(settings.get('callsign'))
+    modem = DemoModem( settings.get('callsign') )
     # set callback functions
     modem.incoming = incoming_msg
     modem.spots = new_spots
@@ -426,4 +427,5 @@ elif modem == 'DemoModem':
     
 if __name__ == 'main':
     app.run(host='0.0.0.0')
+    # TODO turn off debugging in final release
     socketio.run(app, debug=True)
