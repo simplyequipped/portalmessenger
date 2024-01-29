@@ -1,10 +1,10 @@
 import pyjs8call
 
-try:
-    import ecc
-    encryption_available = True
-except ModuleNotFoundError:
-    encryption_available = False
+#try:
+#    import ecc
+#    encryption_available = True
+#except ModuleNotFoundError:
+#    encryption_available = False
 
 
 class JS8CallModem:
@@ -13,15 +13,15 @@ class JS8CallModem:
         self._callsign = callsign
         self.headless = headless
         self.first_start = True
-        self.incoming = None
-        self.outgoing = None
+        #self.incoming = None
+        #self.outgoing = None
         self.spots = None
         self.inbox = None
         
         # encryption variables
-        self.encryption = False
-        self.idm = None
-        self._identity = None
+        #self.encryption = False
+        #self.idm = None
+        #self._identity = None
 
         # initialize pyjs8call client and callback functions
         self.js8call = pyjs8call.Client()
@@ -42,44 +42,40 @@ class JS8CallModem:
         if self._callsign not in (None, ''):
             self.js8call.settings.set_station_callsign(self._callsign)
 
-        #TODO
-        #global encryption_available
-        #print('encryption available: ' + str(encryption_available))
-        
-    def enable_encryption(self):
-        global encryption_available
-        
-        if encryption_available:
-            if self.idm is None:
-                self.idm = ecc.IdentityManager()
-                
-            self._identity = self.idm.identity_from_file(self._callsign)
-
-            if not self._identity.loaded_from_file:
-                self._identity = self.idm.new_identity(self._callsign)
-                self._identity.to_file()
-
-            self.js8call.process_incoming = self.process_incoming
-            self.js8call.process_outgoing = self.process_outgoing
-            
-            self.encryption = True
-
-        return self.encryption
-            
-    def disable_encryption(self, write_to_file=True):
-        self.encryption = False
-        self.js8call.process_incoming = None
-        self.js8call.process_outgoing = None
-        
-        if write_to_file:
-            self.idm.to_file()
-            
-        del self.idm
-        self.idm = None
-        del self._identity
-        self._identity = None
-        
-        return not self.encryption
+#    def enable_encryption(self):
+#        global encryption_available
+#        
+#        if encryption_available:
+#            if self.idm is None:
+#                self.idm = ecc.IdentityManager()
+#                
+#            self._identity = self.idm.identity_from_file(self._callsign)
+#
+#            if not self._identity.loaded_from_file:
+#                self._identity = self.idm.new_identity(self._callsign)
+#                self._identity.to_file()
+#
+#            self.js8call.process_incoming = self.process_incoming
+#            self.js8call.process_outgoing = self.process_outgoing
+#            
+#            self.encryption = True
+#
+#        return self.encryption
+#            
+#    def disable_encryption(self, write_to_file=True):
+#        self.encryption = False
+#        self.js8call.process_incoming = None
+#        self.js8call.process_outgoing = None
+#        
+#        if write_to_file:
+#            self.idm.to_file()
+#            
+#        del self.idm
+#        self.idm = None
+#        del self._identity
+#        self._identity = None
+#        
+#        return not self.encryption
                 
     def start(self):
         if not self.js8call.online:
@@ -124,15 +120,18 @@ class JS8CallModem:
         return call_activity
                 
     def incoming_callback(self, msg):
-        if msg.destination not in self.js8call.identities():
-            return
+        pass
 
-        elif self.incoming != None:
-            self.incoming(msg)
+#        if msg.destination not in self.js8call.identities():
+#            return
+#        elif self.incoming != None:
+#            self.incoming(msg)
 
     def outgoing_callback(self, msg):
-        if self.outgoing is not None:
-            self.outgoing(msg)
+        pass
+
+#        if self.outgoing is not None:
+#            self.outgoing(msg)
 
     def spots_callback(self, spots):
         if self.spots is not None:
@@ -142,33 +141,33 @@ class JS8CallModem:
         if self.inbox is not None:
             self.inbox(msgs)
             
-    def process_incoming(self, msg):
-        if not self.encryption:
-            return msg
-        
-        msg.set('encrypted', True)
-            
-        try:
-            msg.set('text', self._identity.decrypt(msg.text))
-        except ValueError:
-            msg.set('error', 'decrypt failed')
-            
-        return msg
-    
-    def process_outgoing(self, msg):
-        if not self.encryption:
-            return msg
-        
-        # msg.text is overwritten when setting msg.value
-        text = msg.text
-
-        try:
-            msg.set('value', self.idm.encrypt(msg.value, msg.destination))
-            msg.set('encrypted', True)
-        except LookupError:
-            msg.set('error', 'public key unavailable')
-
-        # restore msg.text
-        msg.set('text', text)
-            
-        return msg
+#    def process_incoming(self, msg):
+#        if not self.encryption:
+#            return msg
+#        
+#        msg.set('encrypted', True)
+#            
+#        try:
+#            msg.set('text', self._identity.decrypt(msg.text))
+#        except ValueError:
+#            msg.set('error', 'decrypt failed')
+#            
+#        return msg
+#    
+#    def process_outgoing(self, msg):
+#        if not self.encryption:
+#            return msg
+#        
+#        # msg.text is overwritten when setting msg.value
+#        text = msg.text
+#
+#        try:
+#            msg.set('value', self.idm.encrypt(msg.value, msg.destination))
+#            msg.set('encrypted', True)
+#        except LookupError:
+#            msg.set('error', 'public key unavailable')
+#
+#        # restore msg.text
+#        msg.set('text', text)
+#            
+#        return msg
