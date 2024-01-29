@@ -42,7 +42,7 @@ function setTxStatus(id, tx_status) {
 	$('#'+ id).find('.chat-status').html(upperCaseStatus);
 
 	if ( tx_status == 'sent' ) {
-		setInterval(function () {
+		setTimeout(function () {
 			removeTxStatus(id);
 		}, 5000);
 	}
