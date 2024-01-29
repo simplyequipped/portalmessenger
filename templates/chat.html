@@ -17,12 +17,24 @@
 		<script src="../static/chat.js"></script>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
     </head>
-    <body>
+    <body tabindex="-1">
 	    <div class="header">
 			PORTAL MESSENGER
-			<!--<a href="/settings"><span class="icon icon-settings">&nbsp;</span></a>-->
-		    <a href="/stations"><span class="icon icon-list">&nbsp;</span></a>
+		    <a href="javascript:window.location = document.referrer;"><span class="icon icon-back icon-back-chat">&nbsp;</span></a>
+		    <span class="icon icon-vertical-ellipsis">&nbsp;</span>
 		</div>
+        <div class="menu-container"><div class="menu">
+            <div class="menu-item" value="MSG [text]">Inbox Message</div>
+            <div class="menu-item" value="MSG TO:[callsign] [text]">Store Inbox Message</div>
+            <div class="menu-item" value="QUERY MSGS?">Query Messages</div>
+            <div class="menu-item" value="QUERY MSG [ID]">Query Message ID</div>
+            <div class="menu-item" value="SNR?">Query SNR</div>
+            <div class="menu-item" value="HEARING?">Query Hearing</div>
+            <div class="menu-item" value="QUERY CALL [callsign]">Query Callsign</div>
+            <div class="menu-item" value="GRID?">Query Grid Square</div>
+            <div class="menu-item" value="INFO?">Query Info</div>
+            <div class="menu-item" value="STATUS?">Query Status</div>
+        </div></div>
 		<div class="details chat-details">
 			<div class="presence-indicator presence-unknown">&nbsp;</div>
 			<div class="chat-name">{{ user }}</div>
@@ -48,6 +60,7 @@
 
     </body>
 	<script>
+        $('.menu').hide();
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         //socket.on('connect', function() {
@@ -86,6 +99,24 @@
 		$(window).on('load', function(){
 			socket.emit('init-chat');
 			socket.emit('heard-user', {user: $('.chat-name').html()});
+		});
+
+		// hide menu when clicking off menu
+		$(document).on('click', function(event) {
+			if ( !$(event.target).hasClass('icon-vertical-ellipsis') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+				$('.menu').slideUp();
+			}
+		});
+
+		$('.icon-vertical-ellipsis').click(function (){
+			$('.menu').slideToggle();
+		});
+
+		$('.menu-item').click(function (){
+			$('#chat-text-form').attr('data-cmd', true);
+			$('#chat-text').val( $(this).attr('value') );
+			$('.menu').slideUp();
+			$('#chat-text').focus();
 		});
 
 		setInterval(function (){
