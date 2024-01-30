@@ -165,6 +165,37 @@ def init_chat():
     msgs = user_chat_history(active_chat_username, logged_in_username)
     socketio.emit('msg', msgs)
     
+@socketio.on('network')
+def network_data():
+    global settings
+    global modem
+    spots = []
+    network_spots = []
+    network = []
+
+    # spots since aging setting
+    age = 60 * int(settings.get('aging')) # convert minutes to seconds
+    spots = modem.get_spots(age = age)
+
+    #TODO only latest spot per station
+
+    for spot in spots: 
+        net = {
+            'username': spot.origin,
+            'grid': spot.grid,
+            'distance': '({:,} {})'.format(spot.distance, spot.distance_units)
+            'time': spot.timestamp,
+            'time_str': spot.local_time_str,
+            'snr': '{}dB'.format(spot.snr),
+            'hearing': ', '.join(modem.js8call.station_hearing(spot.origin))
+            'heard_by': ', '.join(modem.js8call.station_heard_by(spot.origin))
+        }
+
+        network.append(net)
+
+
+
+
 @socketio.on('get-settings')
 def update_setting():
     global settings

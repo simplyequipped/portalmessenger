@@ -35,10 +35,10 @@
                     <div class="icon-dropdown">&nbsp;</div>
                     <div class="station-details">
                         <table>
-                            <tr><td><b>Grid:</b> FM17 (10,237 mi)</td><td><b>SNR:</b> -17dB</td></tr>
-                            <tr><td><b>Last Heard:</b> 09:58:15L</td><td><b>Speed:</b> Normal</td></tr>
-                            <tr><td colspan="2"><b>Hearing:</b> KI6NAZ, KT7RUN, OH8STN, KI6NAZ, KT7RUN, OH8STN</td></tr>
-                            <tr><td colspan="2"><b>Heard By:</b> OH8STN</td></tr>
+                            <tr><td><b>Grid:</b> <span class="grid">&nbsp;</span> <span class="distance">&nbsp;</span></td><td><b>SNR:</b> <span class="snr">&nbsp;</span></td></tr>
+                            <tr><td><b>Last Heard:</b> <span class="time-str">&nbsp;</span></td><td><b>Speed:</b> <span class="speed">&nbsp;</span></td></tr>
+                            <tr><td colspan="2"><b>Hearing:</b> <span class="hearing">&nbsp;</span></td></tr>
+                            <tr><td colspan="2"><b>Heard By:</b> <span class="heard-by">&nbsp;</span></td></tr>
                         </table>
                     </div>
                 </div>
@@ -52,27 +52,24 @@
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         socket.on('spot', function( data ) {
-          data.forEach(function( station ) {
-              handleSpot(station);
-          });
-          sortStations();
-             click selected tab to force above event handling
-            $('.tab.selected').click();
+            socket.emit('network');
         });
 
         socket.on('conversation', function( data ) {
-            data.forEach(function( station ) {
-                handleConversation(station);
-            });
-            sortStations();
-            // click selected tab to force above event handling
-            $('.tab.selected').click();
+            socket.emit('network');
+        });
+
+        socket.on('network', function( data ) {
+          data.forEach(function( station ) {
+              handleStation(station);
+          });
+
+          sortStations();
         });
 
         $(window).on('load', function(){
-            // request station data from the server
-            socket.emit('spot');
-            socket.emit('conversation');
+            // request station network data from the server
+            socket.emit('network');
         });
 
         // update last heard text and presence, client side

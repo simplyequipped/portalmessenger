@@ -7,24 +7,41 @@ function newStation(station) {
 	stationElement.removeClass('original-hidden');
 	stationElement.appendTo('.content');
 	setLastHeard(station.username, station.time);
+    setNetworkData(station);
 }
 
-// create or update spot stations sent from the server
+// create or update stations sent from the server
 function handleStation(station) {
 	if ( findStation(station.username).length == 0 ) {
 		newStation(station);
-		stationElement = findStation(station.username);
-		stationElement.addClass('spot');
 	}
 	else {
 		setLastHeard(station.username, station.time);
-		findStation(station.username).addClass('spot');
+        setNetworkData(station);
 	}
 }
 
 // find and return the station DOM element based on given username 
 function findStation(username) {
 	return $(".station[name='" + username + "']");
+}
+
+// update station network data
+function setNetworkData(station) {
+    //TODO
+    // if value is null, set to non blank space?
+
+	//if ( lastHeard == null ) {
+	//	lastHeard = 0;
+	//}
+
+	stationElement = findStation(station.username);
+    stationElement.find('.grid').html(station.grid);
+    stationElement.find('.distance').html(station.distance);
+    stationElement.find('.time-str').html(station.time_str);
+    stationElement.find('.speed').html(station.speed);
+    stationElement.find('.hearing').html(station.hearing);
+    stationElement.find('.heard-by').html(station.heard_by);
 }
 
 // update station last heard time and presence based on given
