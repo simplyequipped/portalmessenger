@@ -35,10 +35,20 @@
                     <div class="icon-dropdown">&nbsp;</div>
                     <div class="station-details">
                         <table>
-                            <tr><td><b>Grid:</b> <span class="grid">&nbsp;</span> <span class="distance">&nbsp;</span></td><td><b>SNR:</b> <span class="snr">&nbsp;</span></td></tr>
-                            <tr><td><b>Last Heard:</b> <span class="time-str">&nbsp;</span></td><td><b>Speed:</b> <span class="speed">&nbsp;</span></td></tr>
-                            <tr><td colspan="2"><b>Hearing:</b> <span class="hearing">&nbsp;</span></td></tr>
-                            <tr><td colspan="2"><b>Heard By:</b> <span class="heard-by">&nbsp;</span></td></tr>
+                            <tr>
+                                <td><b>Grid:</b>&nbsp;<span class="grid">&nbsp;</span>&nbsp;<span class="distance">&nbsp;</span></td>
+                                <td><b>SNR:</b>&nbsp;<span class="snr">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <td><b>Last Heard:</b>&nbsp;<span class="time-str">&nbsp;</span></td>
+                                <td><b>Speed:</b>&nbsp;<span class="speed">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><b>Hearing:</b>&nbsp;<span class="hearing">&nbsp;</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><b>Heard By:</b>&nbsp;<span class="heard-by">&nbsp;</span></td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -60,11 +70,11 @@
         });
 
         socket.on('network', function( data ) {
-          data.forEach(function( station ) {
-              handleStation(station);
-          });
+            data.forEach(function( station ) {
+                handleStation(station);
+            });
 
-          sortStations();
+            sortStations();
         });
 
         $(window).on('load', function(){

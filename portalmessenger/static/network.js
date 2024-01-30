@@ -28,13 +28,6 @@ function findStation(username) {
 
 // update station network data
 function setNetworkData(station) {
-    //TODO
-    // if value is null, set to non blank space?
-
-	//if ( lastHeard == null ) {
-	//	lastHeard = 0;
-	//}
-
 	stationElement = findStation(station.username);
     stationElement.find('.grid').html(station.grid);
     stationElement.find('.distance').html(station.distance);

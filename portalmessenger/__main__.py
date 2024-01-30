@@ -169,32 +169,55 @@ def init_chat():
 def network_data():
     global settings
     global modem
-    spots = []
-    network_spots = []
+
+    # activity since aging setting
+    activity = modem.js8call.get_call_activity( age = int(settings.get('aging')) )
     network = []
 
-    # spots since aging setting
-    age = 60 * int(settings.get('aging')) # convert minutes to seconds
-    spots = modem.get_spots(age = age)
+    for station in activity: 
+        # set spot attributes to non-blank space if not set, formatted value otherwise
+        if station['grid'] == '':
+            grid = '&nbsp;'
+        else:
+            grid = station['grid']
 
-    #TODO only latest spot per station
+        if station['distance'][0] is None:
+            distance = '&nbsp;'
+        else:
+            # station['distance'] = (distance, distance_units, bearing)
+            distance = '({:,} {})'.format(station['distance'][0], station['distance'][1])
 
-    for spot in spots: 
-        net = {
-            'username': spot.origin,
-            'grid': spot.grid,
-            'distance': '({:,} {})'.format(spot.distance, spot.distance_units)
-            'time': spot.timestamp,
-            'time_str': spot.local_time_str,
-            'snr': '{}dB'.format(spot.snr),
-            'hearing': ', '.join(modem.js8call.station_hearing(spot.origin))
-            'heard_by': ', '.join(modem.js8call.station_heard_by(spot.origin))
+        if station['speed'] == '':
+            speed = '&nbsp;'
+        else:
+            speed = station['speed'][0].upper() + station['speed'][1,]
+
+        if len(station['hearing']) == 0:
+            hearing = '&nbsp;'
+        else:
+            hearing = ', '.join(station['hearing'])
+
+        if len(station['heard_by']) == 0:
+            heard_by = '&nbsp;'
+        else:
+            heard_by = ', '.join(station['heard_by'])
+
+        # network station data
+        station = {
+            'username': station['origin'],
+            'grid': grid,
+            'distance': distance,
+            'time': station['timestamp'],
+            'time_str': station['local_time_str'],
+            'snr': station['snr'],
+            'speed': speed,
+            'hearing': hearing,
+            'heard_by': heard_by
         }
 
-        network.append(net)
+        network.append(station)
 
-
-
+    socketio.emit('network', network)
 
 @socketio.on('get-settings')
 def update_setting():
@@ -474,9 +497,15 @@ if __name__ == 'main':
     # TODO turn off debugging in final release
     socketio.run(app, debug=True)
 
-    # exit once application is stopped from web app
-    while not modem.js8call.restarting and modem.js8call.online:
-        time.sleep(1)
+    ## wait for js8call to come online
+    #timeout = time.time() + 120 # seconds
+    #while time.time() < timeout and not modem.js8call.online:
+    #    time.sleep(1)
+    #
+    ## exit once application is stopped from web app
+    #while not modem.js8call.restarting and modem.js8call.online:
+    #    time.sleep(1)
     
+    input('Press Enter to quit Portal Messenger...')
     modem.js8call.stop()
-    
+

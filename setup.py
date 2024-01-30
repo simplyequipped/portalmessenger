@@ -22,9 +22,9 @@ setuptools.setup(
     python_requires='>=3.7.1',
 )
 
-import sys
-import pyshortcuts
-
-# install desktop and start menu shortcuts
-cmd = '{} -m portalmessenger'.format(sys.executable)
-pyshortcuts.make_shortcut(cmd, name='Portal Messenger')
+#import sys
+#import pyshortcuts
+#
+## install desktop and start menu shortcuts
+#cmd = '{} -m portalmessenger'.format(sys.executable)
+#pyshortcuts.make_shortcut(cmd, name='Portal Messenger')
