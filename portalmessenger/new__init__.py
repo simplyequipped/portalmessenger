@@ -7,10 +7,11 @@ from flask import Flask
 # app factory
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    #app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
     app.config.from_mapping(
-        SECRET_KEY=secrets.token_hex(),
-        DATABASE=os.path.join(app.instance_path, 'portal.sqlite'),
+        SECRET_KEY = secrets.token_hex(),
+        DATABASE = os.path.join(app.instance_path, 'portal.sqlite')
     )
 
 #    if test_config is None:
@@ -20,25 +21,23 @@ def create_app(test_config=None):
 #        # load the test config if passed in
 #        app.config.from_mapping(test_config)
 
-    # ensure the instance folder exists
+    # ensure instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
+    # initialize database from schema
     from . import db
-    db.init_app()
-    
+    db.init_app(app)
+
+    # import view blueprints
     from . import portal
     app.register_blueprint(portal.bp)
 
-    #from .modem import js8callmodem
-    
-    # TODO import and start modem
+    # initalize js8call modem
+    from .modem import js8callmodem
+    app.config['MODDEM'] = js8callmodem()
+    app.config['MODDEM'].start()
     
     return app
