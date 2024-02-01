@@ -3,17 +3,15 @@ import os
 import argparse
 import subprocess
 import time
-import sqlite3
-import secrets
 
-from flask import Flask, render_template, request, session, redirect
+from flask import Blueprint, render_template, request, session, redirect, current_app
 from flask_socketio import SocketIO
 
 import portalmessenger
+from portalmessenger import db
+from portalmessenger.settings import settings
 
-app = Flask(__name__)
-app.secret_key = secrets.token_hex()
-socketio = SocketIO(app)
+socketio = SocketIO(current_app)
 
 
 
@@ -23,48 +21,36 @@ socketio = SocketIO(app)
 @app.route('/stations', methods=['GET', 'POST'])
 @app.route('/stations.html', methods=['GET', 'POST'])
 def stations_route():
-    global settings
-    db_settings = settings.db_settings()
+    current_app.config[]
     
     if request.method == 'POST':
-        settings.set('active_chat_username', request.form.get('user'))
+         current_app.config['ACTIVE_CHAT_USERNAME'] = request.form.get('user')
         return ''
     else:
-        if db_settings['callsign']['value'] == '':
+        if db.get_setting_value('callsign') == '':
             return redirect('/settings')
 
-        settings.set('active_chat_username', None)
-        return render_template('stations.html', settings = db_settings)
+        current_app.config['ACTIVE_CHAT_USERNAME'] = None
+        return render_template('stations.html', settings = db.get_settings())
 
 @app.route('/network')
 @app.route('/network.html')
 def network_route():
-    global settings
-    db_settings = settings.db_settings()
-
-    return render_template('network.html', settings = db_settings)
+    return render_template('network.html', settings = db.get_settings())
 
 @app.route('/chat')
 @app.route('/chat.html')
 def chat_route():
-    global settings
-    db_settings = settings.db_settings()
-    active_chat_username = settings.get('active_chat_username')
-
-    mark_user_msgs_read(active_chat_username)
-
-    return render_template('chat.html', user = active_chat_username, settings = db_settings)
+    mark_user_msgs_read(current_app.config['ACTIVE_CHAT_USERNAME'])
+    return render_template('chat.html', user = current_app.config['ACTIVE_CHAT_USERNAME'], settings = db.get_settings())
 
 @app.route('/settings', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
 def settings_route():
-    global settings
-    global modem
-    db_settings = settings.db_settings()
-    local_ip = settings.get('ip')
-
     if request.method == 'POST':
+        db_settings = db.get_settings()
         restart = False
+        #TODO WIP here
 
         # process posted settings
         for setting, value in request.form.items():
@@ -110,7 +96,8 @@ def settings_route():
             #TODO is this the right place to restart? should client side drive this?
             modem.restart()
 
-    return render_template('settings.html', settings = db_settings, ip = local_ip)
+    #TODO get server IP address at app init
+    return render_template('settings.html', settings = db_settings, ip = None)
 
 
 
