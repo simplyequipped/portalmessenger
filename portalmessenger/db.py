@@ -47,6 +47,7 @@ def get_table_columns(table):
 def get_settings_list():
     #TODO check format of returned value from query
     settings = get_db().execute('SELECT setting FROM settings').fetchall()
+    return settings
 
 def get_settings():
     columns = get_table_columns('settings')
@@ -67,8 +68,13 @@ def get_settings():
     return settings
 
 def get_setting_value(setting):
-    #TODO check format of returned value from query
+    #TODO check format of query result
     setting = get_db().execute('SELECT value FROM settings WHERE setting=:setting', {'setting': setting}).fetchone()
+    
+    if setting.isnumeric():
+        setting = int(setting)
+
+    return setting
 
 def set_setting(setting, value):    
     if setting not in get_settings():
