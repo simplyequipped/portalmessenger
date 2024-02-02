@@ -1,15 +1,14 @@
-import json
-import os
-import argparse
-import subprocess
+#import os
+#import argparse
+#import subprocess
 import time
 
-from flask import Blueprint, render_template, request, session, redirect, current_app
+from flask import render_template, request, session, redirect, current_app
+from flask_socketio import SocketIO
 
 import portalmessenger
 from portalmessenger import db
 
-socketio = current_app.config['SOCKETIO']
 
 
 ### flask routes and template handling
@@ -18,16 +17,14 @@ socketio = current_app.config['SOCKETIO']
 @app.route('/stations', methods=['GET', 'POST'])
 @app.route('/stations.html', methods=['GET', 'POST'])
 def stations_route():
-    current_app.config[]
-    
     if request.method == 'POST':
-         current_app.config['ACTIVE_CHAT_USER'] = request.form.get('user')
+         app.config['ACTIVE_CHAT_USER'] = request.form.get('user')
         return ''
     else:
         if db.get_setting_value('callsign') == '':
             return redirect('/settings')
 
-        current_app.config['ACTIVE_CHAT_USER'] = None
+        app.config['ACTIVE_CHAT_USER'] = None
         return render_template( 'stations.html', settings = db.get_settings() )
 
 @app.route('/network')
@@ -38,8 +35,8 @@ def network_route():
 @app.route('/chat')
 @app.route('/chat.html')
 def chat_route():
-    mark_user_msgs_read(current_app.config['ACTIVE_CHAT_USERNAME'])
-    return render_template('chat.html', user = current_app.config['ACTIVE_CHAT_USER'], settings = db.get_settings())
+    mark_user_msgs_read(app.config['ACTIVE_CHAT_USERNAME'])
+    return render_template('chat.html', user = app.config['ACTIVE_CHAT_USER'], settings = db.get_settings())
 
 @app.route('/settings', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
@@ -62,23 +59,23 @@ def settings_route():
                 if valid:
                     db.set_setting(setting, value)
 
-                    if current_app.config['MODEM'].name.lower() == 'js8call':
+                    if app.config['MODEM'].name.lower() == 'js8call':
                         # update settings in js8call
                         if setting == 'callsign':
-                            current_app.config['MODEM'].js8call.settings.set_station_callsign(value)
+                            app.config['MODEM'].js8call.settings.set_station_callsign(value)
                             restart = True
                         elif setting == 'speed':
-                            current_app.config['MODEM'].js8call.settings.set_speed(value)
+                            app.config['MODEM'].js8call.settings.set_speed(value)
                             restart = True
                         elif setting == 'grid':
-                            current_app.config['MODEM'].js8call.settings.set_station_grid(value)
+                            app.config['MODEM'].js8call.settings.set_station_grid(value)
                         elif setting == 'freq':
-                            current_app.config['MODEM'].js8call.settings.set_freq(value)
+                            app.config['MODEM'].js8call.settings.set_freq(value)
                         elif setting == 'heartbeat':
                             if value == 'enable':
-                                current_app.config['MODEM'].js8call.heartbeat.enable()
+                                app.config['MODEM'].js8call.heartbeat.enable()
                             else:
-                                current_app.config['MODEM'].js8call.heartbeat.disable()
+                                app.config['MODEM'].js8call.heartbeat.disable()
                         #TODO
                         #elif setting == 'encryption':
                         #    if value == 'enable':
@@ -86,15 +83,15 @@ def settings_route():
                         #    else:
                         #        current_app.config['MODEM'].disable_encryption()
 
-                    elif current_app.config['MODEM'].name.lower() == 'demo':
+                    elif app.config['MODEM'].name.lower() == 'demo':
                         if setting == 'callsign':
-                            current_app.config['MODEM'].callsign = value
+                            app.config['MODEM'].callsign = value
     
                 else:
                     settings[setting]['error'] = 'Invalid {}'.format(setting)
 
         if restart:
-            current_app.config['MODEM'].restart()
+            app.config['MODEM'].restart()
 
     #TODO get server IP address at app init
     return render_template('settings.html', settings = settings, ip = 'IP unavailable')
@@ -111,7 +108,7 @@ def log(data):
 # outgoing message
 @socketio.on('msg')
 def tx_msg(data):
-    msg = current_app.config['MODEM'].send(data['user'], data['text'])
+    msg = app.config['MODEM'].send(data['user'], data['text'])
     msg = process_message(msg)
     # include processed message in active chat
     socketio.emit('msg', [msg])
@@ -121,7 +118,7 @@ def tx_msg(data):
 def init_spots():
     # spots since aging setting
     age = 60 * db.get_setting_value('aging') # convert minutes to seconds
-    spots = current_app.config['MODEM'].get_spots(age = age)
+    spots = app.config['MODEM'].get_spots(age = age)
 
     if len(spots) > 0:
         spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
@@ -133,7 +130,7 @@ def init_conversations():
     conversations = db.get_user_conversations( db.get_setting_value('callsign') )
 
     for i in range(len(conversations)):
-        spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
+        spots = app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
 
         # use latest station spot timestamp if more recent
         if len(spots) > 0 and spots[0].timestamp > conversations[i]['time']:
@@ -141,15 +138,17 @@ def init_conversations():
     
     socketio.emit('conversation', conversations)
 
+# get chat history between users
 @socketio.on('init-chat')
 def init_chat():
-    msgs = db.get_user_chat_history( current_app.config['ACTIVE_CHAT_USERNAME'], db.get_setting_value('callsign') )
+    msgs = db.get_user_chat_history( app.config['ACTIVE_CHAT_USERNAME'], db.get_setting_value('callsign') )
     socketio.emit('msg', msgs)
-    
+
+# get network activity data
 @socketio.on('network')
 def network_data():
     # activity since aging setting
-    activity = current_app.config['MODEM'].js8call.get_call_activity( age = db.get_setting_value('aging') )
+    activity = app.config['MODEM'].js8call.get_call_activity( age = db.get_setting_value('aging') )
     network = []
 
     for station in activity:
@@ -180,7 +179,6 @@ def network_data():
         else:
             heard_by = ', '.join(station['heard_by'])
 
-        # network station data
         station = {
             'username': station['origin'],
             'grid': grid,
@@ -201,18 +199,16 @@ def network_data():
 def power_on():
     # wait for current transactions to finish
     time.sleep(0.1)
-    if not current_app.config['MODEM'].online():
+    if not app.config['MODEM'].online():
         # returns once application is started
-        current_app.config['MODEM'].start()
-
+        app.config['MODEM'].start()
     socketio.emit('power-on')
 
 @socketio.on('power-off')
 def power_off():
     # wait for current transactions to finish
     time.sleep(0.1)
-    current_app.config['MODEM'].stop()
-
+    app.config['MODEM'].stop()
     socketio.emit('power-off')
 
 @socketio.on('power-restart')
@@ -227,6 +223,7 @@ def power_restart():
 
 
 ### helper functions
+# must use flask.current_app to get app context
 
 # msg = pyjs8call.Message object
 def process_message(msg):
@@ -300,29 +297,12 @@ def outgoing_status(msg):
 #TODO parser.add_argument('-i', '--incognito', action='store_true', help='use sqlite in memory only, no data is stored after exit')
 #args = parser.parse_args()
 
-### initialize settings ###
-
-#TODO
-# get local IP address
-#try:
-#    devnull = open(os.devnull, 'w')
-#    local_ip = subprocess.check_output(['hostname', '-I'], stderr = devnull).decode('utf-8').split(' ')[0]
-#except (FileNotFoundError, subprocess.CalledProcessError):
-#    local_ip = 'IP unavailable'
-
 
     
 if __name__ == 'main':
+    app = portalmessenger.create_app()
     app.run(host='0.0.0.0')
-    # TODO turn off debugging in final release
+    socketio = SocketIO(app)
+    # TODO turn off debugging in production
     socketio.run(app, debug=True)
-
-    ## wait for js8call to come online
-    #timeout = time.time() + 120 # seconds
-    #while time.time() < timeout and not modem.js8call.online:
-    #    time.sleep(1)
-    #
-    ## exit once application is stopped from web app
-    #while not modem.js8call.restarting and modem.js8call.online:
-    #    time.sleep(1)
-
+    
