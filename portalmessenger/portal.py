@@ -45,7 +45,6 @@ def settings_route():
         settings = db.get_settings()
         restart = False
         error_msg = []
-        #TODO WIP here
 
         # process posted settings
         for setting, value in request.form.items():
