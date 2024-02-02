@@ -14,7 +14,7 @@ settings = {
         'label': 'Callsign',
         'default': '',
         'required': True,
-        'options': None
+        'options': None,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9
     },
     'freq': {
