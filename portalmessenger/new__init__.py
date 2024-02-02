@@ -1,4 +1,5 @@
 import os
+import socket
 import secrets
 
 from flask import Flask
@@ -11,6 +12,7 @@ def create_app(test_config=None):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = secrets.token_hex()
     app.config['DATABASE'] = os.path.join(app.instance_path, 'portal.sqlite')
+    app.config['LOCAL_IP'] = get_local_ip()
 
 #    if test_config is None:
 #        # load the instance config, if it exists, when not testing
@@ -54,3 +56,9 @@ def create_app(test_config=None):
     app.teardown_appcontext(app.config['MODEM'].js8call.stop)
     
     return app
+
+def get_local_ip():
+    try:
+        return socket.gethostbyname( socket.gethostname() )
+    except socket.error:
+        return 'unavailable'
