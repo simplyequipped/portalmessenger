@@ -2,7 +2,6 @@ import os
 import secrets
 
 from flask import Flask
-from flask_socketio import SocketIO
 
 
 # app factory
@@ -12,7 +11,6 @@ def create_app(test_config=None):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = secrets.token_hex()
     app.config['DATABASE'] = os.path.join(app.instance_path, 'portal.sqlite')
-    app.config['SOCKETIO'] = SocketIO(app)
 
 #    if test_config is None:
 #        # load the instance config, if it exists, when not testing
@@ -32,10 +30,6 @@ def create_app(test_config=None):
     db.init_db()
     # close database on app teardown
     app.teardown_appcontext(db.close_db)
-
-    # import view blueprints
-    from . import portal
-    app.register_blueprint(portal.bp)
 
     # initalize js8call modem
     from .modem.js8callmodem import JS8CallModem
