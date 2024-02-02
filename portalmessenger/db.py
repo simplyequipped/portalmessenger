@@ -3,6 +3,8 @@ import sqlite3
 
 from flask import current_app, g
 
+from portalmessenger.settings import settings
+
 
 # general db
 
@@ -22,6 +24,23 @@ def get_db():
 def init_db():
     with current_app.open_resource('schema.sql') as f:
         get_db().executescript( f.read().decode('utf8') )
+
+    # skip init default settings if settings already exist
+    if len( get_settings() ) > 0:
+        return
+    
+    for setting, details in settings.copy():
+        # flatten dict
+        db_setting = {'setting': setting}
+        db_setting.update(details)
+        db_setting.pop('validate')
+        
+        if db_setting['options'] is not None:
+            # convert options list to json string
+            db_setting['options'] = json.dumps(db_setting['options'])
+        
+        # insert setting into settings table
+        get_db().execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options)', db_setting)
 
 def close_db(e=None):
     db = g.pop('db', None)
