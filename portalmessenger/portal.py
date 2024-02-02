@@ -1,6 +1,3 @@
-#import os
-#import argparse
-#import subprocess
 import time
 
 from flask import render_template, request, session, redirect, current_app
@@ -8,7 +5,6 @@ from flask_socketio import SocketIO
 
 import portalmessenger
 from portalmessenger import db
-
 
 
 ### flask routes and template handling
@@ -94,7 +90,6 @@ def settings_route():
 
     #TODO get server IP address at app init
     return render_template('settings.html', settings = settings, ip = app.config['LOCAL_IP'])
-
 
 
 ### socket.io functions
@@ -189,7 +184,7 @@ def network_data():
             'hearing': hearing,
             'heard_by': heard_by
         }
-
+        
         network.append(station)
 
     socketio.emit('network', network)
@@ -218,7 +213,6 @@ def power_restart():
     # returns once application restarts
     current_app.config['MODEM'].restart()
     socketio.emit('power-on')
-
 
 
 ### helper functions
@@ -285,19 +279,6 @@ def outgoing_status(msg):
     socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
 
 
-
-
-### parse args ###
-#parser = argparse.ArgumentParser()
-#parser.add_argument('--headless', action='store_true', help='show or hide the JS8Ccall app using xvfb')
-#parser.add_argument('-d', '--demo', action='store_true', help='run without requiring a modem app to be installed')
-#parser.add_argument('--app')
-#parser.add_argument('run')
-#TODO parser.add_argument('-i', '--incognito', action='store_true', help='use sqlite in memory only, no data is stored after exit')
-#args = parser.parse_args()
-
-
-    
 if __name__ == 'main':
     app = portalmessenger.create_app()
     app.run(host='0.0.0.0')
