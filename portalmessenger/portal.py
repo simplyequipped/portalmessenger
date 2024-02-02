@@ -94,7 +94,7 @@ def settings_route():
             app.config['MODEM'].restart()
 
     #TODO get server IP address at app init
-    return render_template('settings.html', settings = settings, ip = 'IP unavailable')
+    return render_template('settings.html', settings = settings, ip = app.config['LOCAL_IP'])
 
 
 
