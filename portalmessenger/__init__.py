@@ -16,8 +16,6 @@ def create_app(test_config=None):
     app.config['DATABASE'] = 'portal.sqlite'
     app.config['LOCAL_IP'] = get_local_ip()
 
-    print(app.config['DATABASE'])
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
@@ -38,10 +36,7 @@ def create_app(test_config=None):
         app.config['MODEM'] = JS8CallModem( db.get_setting_value('callsign') )
         # initialize pyjs8call config before start
         app.config['MODEM'].js8call.settings.set_speed( db.get_setting_value('speed') )
-        # set callback functions
-        #app.config['MODEM'].incoming = portal.incoming_message
-        #app.config['MODEM'].spots = portal.new_spots
-        #app.config['MODEM'].outgoing = portal.outgoing_status
+
         # start pyjs8call
         app.config['MODEM'].start()
         
@@ -52,13 +47,32 @@ def create_app(test_config=None):
         if db.get_setting_value('heartbeat') == 'enable':
             app.config['MODEM'].js8call.heartbeat.enable()
 
+    def app_context_aware(func):
+        def _wrapped_function(*args, **kwargs):
+            with app.app_context():
+                func(*args, **kwargs)
+        return _wrapped_function
+
+    # set callback functions
+    app.config['MODEM'].incoming = app_context_aware(pyjs8callbacks.incoming_message)
+    app.config['MODEM'].spots = app_context_aware(pyjs8callbacks.new_spots)
+    app.config['MODEM'].outgoing = app_context_aware(pyjs8callbacks.outgoing_status)
+
     # stop modem on app teardown
     app.teardown_appcontext(app.config['MODEM'].js8call.stop)
     
-    return app
+    from . import websockets
+    websockets.socketio.init_app(app)
+
+    return (app, websockets.socketio)
 
 def get_local_ip():
     try:
         return socket.gethostbyname( socket.gethostname() )
     except socket.error:
         return 'unavailable'
+
+
+if __name__ == '__main__':
+    app, websockets = create_app()
+    websockets.run(app, host='0.0.0.0')

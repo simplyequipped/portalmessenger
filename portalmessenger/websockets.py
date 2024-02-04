@@ -18,8 +18,8 @@ def log(data):
 # outgoing message
 @socketio.on('msg')
 def tx_msg(data):
-    msg = app.config['MODEM'].send(data['user'], data['text'])
-    msg = process_message(msg)
+    msg = current_app.config['MODEM'].send(data['user'], data['text'])
+    msg = message.process_message(msg)
     # include processed message in active chat
     socketio.emit('msg', [msg])
 
@@ -28,7 +28,7 @@ def tx_msg(data):
 def init_spots():
     # spots since aging setting
     age = 60 * db.get_setting_value('aging') # convert minutes to seconds
-    spots = app.config['MODEM'].get_spots(age = age)
+    spots = current_app.config['MODEM'].get_spots(age = age)
 
     if len(spots) > 0:
         spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
@@ -40,7 +40,7 @@ def init_conversations():
     conversations = db.get_user_conversations( db.get_setting_value('callsign') )
 
     for i in range(len(conversations)):
-        spots = app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
+        spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
 
         # use latest station spot timestamp if more recent
         if len(spots) > 0 and spots[0].timestamp > conversations[i]['time']:
@@ -51,14 +51,14 @@ def init_conversations():
 # get chat history between users
 @socketio.on('init-chat')
 def init_chat():
-    msgs = db.get_user_chat_history( app.config['ACTIVE_CHAT_USERNAME'], db.get_setting_value('callsign') )
+    msgs = db.get_user_chat_history( current_app.config['ACTIVE_CHAT_USERNAME'], db.get_setting_value('callsign') )
     socketio.emit('msg', msgs)
 
 # get network activity data
 @socketio.on('network')
 def network_data():
     # activity since aging setting
-    activity = app.config['MODEM'].js8call.get_call_activity( age = db.get_setting_value('aging') )
+    activity = current_app.config['MODEM'].js8call.get_call_activity( age = db.get_setting_value('aging') )
     network = []
 
     for station in activity:
@@ -109,16 +109,16 @@ def network_data():
 def power_on():
     # wait for current transactions to finish
     time.sleep(0.1)
-    if not app.config['MODEM'].online():
+    if not current_app.config['MODEM'].online():
         # returns once application is started
-        app.config['MODEM'].start()
+        current_app.config['MODEM'].start()
     socketio.emit('power-on')
 
 @socketio.on('power-off')
 def power_off():
     # wait for current transactions to finish
     time.sleep(0.1)
-    app.config['MODEM'].stop()
+    current_app.config['MODEM'].stop()
     socketio.emit('power-off')
 
 @socketio.on('power-restart')
