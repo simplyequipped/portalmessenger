@@ -23,6 +23,9 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
+    from . import views
+    app.register_blueprint(views.bp)
+
     from . import db
     # close database on app teardown
     app.teardown_appcontext(db.close_db)
@@ -72,7 +75,3 @@ def get_local_ip():
     except socket.error:
         return 'unavailable'
 
-
-if __name__ == '__main__':
-    app, websockets = create_app()
-    websockets.run(app, host='0.0.0.0')
