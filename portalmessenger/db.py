@@ -29,7 +29,7 @@ def init_db():
     if len( get_settings() ) > 0:
         return
     
-    for setting, details in settings.copy():
+    for setting, details in settings.copy().items():
         # flatten dict
         db_setting = {'setting': setting}
         db_setting.update(details)
@@ -57,7 +57,7 @@ def get_table_columns(table):
     if table not in get_tables():
         raise ValueError('Invalid table: {}'.format(table))
         
-    columns = get_db().execute('PRAGMA table_info(:table)', {'table': table}).fetchall()
+    columns = get_db().execute('PRAGMA table_info()',).fetchall()
     columns = [column[1] for column in columns]
     return columns
 
@@ -70,9 +70,12 @@ def get_settings_list():
     return settings
 
 def get_settings():
-    columns = get_table_columns('settings')
+    #columns = get_table_columns('settings')
     settings = get_db().execute('SELECT * FROM settings').fetchall()
-    settings = [dict(zip(columns, setting)) for setting in settings]
+    #settings = [dict(zip(columns, setting)) for setting in settings]
+
+    #TODO
+    print(settings)
 
     if len(settings) == 0:
         return {}

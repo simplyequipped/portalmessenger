@@ -7,12 +7,9 @@ import portalmessenger
 from portalmessenger import db
 
 
-#bp = Blueprint('portalmessenger', __name__)
-app = portalmessenger.create_app()
-socketio = SocketIO(app)
+bp = Blueprint('portalmessenger', __name__)
 
 ### flask routes and template handling
-
 
 @app.route('/')
 @app.route('/stations', methods=['GET', 'POST'])
