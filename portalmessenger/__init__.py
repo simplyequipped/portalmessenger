@@ -4,8 +4,6 @@ import secrets
 
 from flask import Flask
 
-#from portalmessenger import portal
-
 
 # app factory
 def create_app(test_config=None):
@@ -57,6 +55,8 @@ def create_app(test_config=None):
         return _wrapped_function
 
     # set callback functions
+    from . import pyjs8callbacks
+
     app.config['MODEM'].incoming = app_context_aware(pyjs8callbacks.incoming_message)
     app.config['MODEM'].spots = app_context_aware(pyjs8callbacks.new_spots)
     app.config['MODEM'].outgoing = app_context_aware(pyjs8callbacks.outgoing_status)

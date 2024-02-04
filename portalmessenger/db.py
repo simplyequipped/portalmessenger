@@ -92,10 +92,16 @@ def get_settings():
 
 def get_setting_value(setting):
     #TODO check format of query result
-    setting = get_db().execute('SELECT value FROM settings WHERE setting=:setting', {'setting': setting}).fetchone()
-    setting = setting[0]
-    
-    if setting.isnumeric():
+    setting = get_db().execute('SELECT value FROM settings WHERE setting=?', [setting]).fetchone()
+    setting = setting['value']
+
+    #TODO
+    #import pdb; pdb.set_trace()
+    #breakpoint()
+   
+    if setting is None:
+        return setting
+    elif setting.isnumeric():
         setting = int(setting)
 
     return setting
