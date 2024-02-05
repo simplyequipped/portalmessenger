@@ -90,7 +90,7 @@ def set_setting(setting, value):
     if setting not in get_settings().keys():
         raise ValueError('Invalid setting: {}'.format(setting))
 
-    get_db().execute('UPDATE settings SET value=? WHERE setting=?', (setting, value) )
+    get_db().execute('UPDATE settings SET value=? WHERE setting=?', (value, setting) )
     get_db().commit() 
 
 
