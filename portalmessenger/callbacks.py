@@ -4,11 +4,10 @@ from flask import current_app
 
 from portalmessenger import db
 from portalmessenger import message
-
+from portalmessenger.websockets import socketio
 
 
 # incoming directed message callback
-#TODO confirm: this function does not have the flask request context because it is called via callback
 def incoming_message(msg):
     msg = message.process_message(msg)
 
