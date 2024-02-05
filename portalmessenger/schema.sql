@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS settings (
-  setting,
+  setting UNIQUE,
   "value",
   label,
   "default",
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 CREATE TABLE IF NOT EXISTS messages (
-  id,
+  id UNIQUE,
   origin,
   destination,
   type,
