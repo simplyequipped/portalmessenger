@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, current_app
 
+import portalmessenger
 from portalmessenger import db
 
 
@@ -87,6 +88,6 @@ def settings_route():
             current_app.config['MODEM'].restart()
 
     #TODO get server IP address at app init
-    return render_template('settings.html', settings = settings, ip = current_app.config['LOCAL_IP'])
+    return render_template('settings.html', settings = db.get_settings(), ip = current_app.config['LOCAL_IP'])
 
 
