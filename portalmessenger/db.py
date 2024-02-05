@@ -6,8 +6,10 @@ from flask import current_app, g
 from portalmessenger.settings import settings
 
 
-#TODO
 #breakpoint()
+
+#TODO
+# commit on db inserts
    
 
 ### general db
@@ -46,10 +48,7 @@ def init_db():
         # insert setting into settings table
         get_db().execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options)', db_setting)
 
-    #TODO print current settings db table
-    db_settings = get_db().execute('SELECT * FROM settings').fetchall()
-    for setting in db_settings:
-        print( dict(setting) )
+    get_db().commit() 
 
 def close_db(e=None):
     db = g.pop('db', None)
@@ -81,13 +80,11 @@ def get_settings():
 
 def get_setting_value(setting):
     db_setting = get_db().execute('SELECT value FROM settings WHERE setting=?', (setting,) ).fetchone()
+    db_setting = db_setting['value']
 
     if db_setting is None:
         return db_setting
-
-    db_setting = db_setting['value']
-
-    if db_setting.isnumeric():
+    elif db_setting.isnumeric():
         return int(db_setting)
 
     return db_setting
@@ -97,6 +94,7 @@ def set_setting(setting, value):
         raise ValueError('Invalid setting: {}'.format(setting))
 
     get_db().execute('UPDATE settings SET value=? WHERE setting=?', (setting, value) )
+    get_db().commit() 
 
 
 ### messages
@@ -132,6 +130,7 @@ def get_user_conversations(username):
 
 def set_user_messages_read(username):
     get_db().execute('UPDATE messages SET unread=0 WHERE origin=?', (username,) )
+    get_db().commit() 
 
 def get_user_unread_message_count(username):
     unread = get_db().execute('SELECT COUNT(*) FROM messages WHERE origin=? AND unread=1', (username,) ).fetchone()
@@ -145,10 +144,12 @@ def get_user_chat_history(user_a, user_b):
 # msg = pyjs8call.Message object
 def store_message(msg):
     get_db().execute('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status, :error, :encrypted)', msg)
+    get_db().commit() 
 
 # msg = pyjs8call.Message object
 def update_outgoing_message_status(msg):
     get_db().execute('UPDATE messages SET status=? WHERE id=?', (msg.status, msg.id) )
+    get_db().commit() 
 
 def get_user_last_heard_timestamp(username):
     timestamp = get_db().execute('SELECT MAX(time) FROM messages WHERE origin=?', (username,) ).fetchone()
