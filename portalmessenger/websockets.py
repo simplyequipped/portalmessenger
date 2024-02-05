@@ -51,7 +51,7 @@ def init_conversations():
 # get chat history between users
 @socketio.on('init-chat')
 def init_chat():
-    msgs = db.get_user_chat_history( current_app.config['ACTIVE_CHAT_USERNAME'], db.get_setting_value('callsign') )
+    msgs = db.get_user_chat_history( current_app.config['ACTIVE_CHAT_USER'], db.get_setting_value('callsign') )
     socketio.emit('msg', msgs)
 
 # get network activity data
