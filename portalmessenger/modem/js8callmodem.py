@@ -31,7 +31,7 @@ class JS8CallModem(BaseModem):
         if not self.js8call.online:
             self.js8call.start(headless = self.headless)
 
-    def stop(self):
+    def stop(self, *args):
         self.js8call.stop()
 
     def restart(self):

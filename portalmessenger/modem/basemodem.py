@@ -55,7 +55,7 @@ class BaseModem:
     def start(self):
         pass
 
-    def stop(self):
+    def stop(self, *args):
         pass
 
     def restart(self):
