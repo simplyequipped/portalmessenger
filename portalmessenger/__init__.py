@@ -61,8 +61,9 @@ def create_app(test_config=None):
     app.config['MODEM'].spots = app_context_aware(callbacks.new_spots)
     app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
 
+    #TODO this happens every time app context is exited
     # stop modem on app teardown
-    app.teardown_appcontext(app.config['MODEM'].stop)
+    #app.teardown_appcontext(app.config['MODEM'].stop)
     
     from . import websockets
     websockets.socketio.init_app(app)
