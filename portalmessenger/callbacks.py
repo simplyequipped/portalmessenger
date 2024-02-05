@@ -38,17 +38,4 @@ def outgoing_status(msg):
     time.sleep(0.001)
     db.update_outgoing_message_status(msg)
     socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
-
-
-if __name__ == 'main':
-    #TODO
-    #app = portalmessenger.create_app()
-    #app.run(host='0.0.0.0')
-    #socketio = SocketIO(app)
-    # TODO turn off debugging in production
-    socketio.run(app, debug=True, host='0.0.0.0')
-
-    app.config['MODEM'].incoming = incoming_message
-    app.config['MODEM'].spots = new_spots
-    app.config['MODEM'].outgoing = outgoing_status
     
