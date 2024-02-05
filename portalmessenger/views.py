@@ -19,18 +19,24 @@ def stations_route():
             return redirect('/settings')
 
         current_app.config['ACTIVE_CHAT_USER'] = None
-        return render_template( 'stations.html', settings = db.get_settings() )
+        return render_template('stations.html', settings = db.get_settings() )
+
+@bp.route('/quit')
+@bp.route('/quit.html')
+def quit_route():
+    return render_template('quit.html', settings = db.get_settings() )
+
 
 @bp.route('/network')
 @bp.route('/network.html')
 def network_route():
-    return render_template('network.html', settings = db.get_settings())
+    return render_template('network.html', settings = db.get_settings() )
 
 @bp.route('/chat')
 @bp.route('/chat.html')
 def chat_route():
     db.set_user_messages_read(current_app.config['ACTIVE_CHAT_USER'])
-    return render_template('chat.html', user = current_app.config['ACTIVE_CHAT_USER'], settings = db.get_settings())
+    return render_template('chat.html', user = current_app.config['ACTIVE_CHAT_USER'], settings = db.get_settings() )
 
 @bp.route('/settings', methods=['GET', 'POST'])
 @bp.route('/settings.html', methods=['GET', 'POST'])

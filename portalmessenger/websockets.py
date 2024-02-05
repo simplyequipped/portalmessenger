@@ -130,3 +130,8 @@ def power_restart():
     current_app.config['MODEM'].restart()
     socketio.emit('power-on')
 
+@socketio.on('close-portal')
+def close_portal():
+    time.sleep(0.1)
+    power_off()
+    exit()

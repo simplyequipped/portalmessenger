@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Portal Messenger</title>
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<link rel="stylesheet" type="text/css" href="../static/media.css">
+		{% if settings['theme']['value'] == 'dark' %}
+		<link rel="stylesheet" type="text/css" href="../static/dark.css">
+		{% endif %}
+		{% if settings['size']['value'] == 'large' %}
+		<link rel="stylesheet" type="text/css" href="../static/large-font.css">
+		{% endif %}
+		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
+		<script src="../static/jquery.min.js"></script>
+		<script src="../static/socket.io.min.js"></script>
+		<script src="../static/common.js"></script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+    </head>
+    <body tabindex="-1">
+        <div class="header">
+            PORTAL MESSENGER
+        </div>
+        <div class="details">&nbsp;</div>
+        <div class="viewport">
+            <div class="content">
+                <div>This portal has been closed successfully.</div>
+                <div>Please take your towel with you as you exit.</div>
+            </div>
+        </div>
+        <div class="footer">&nbsp;</div>
+
+    </body>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        $(window).on('load', function(){
+            // request station network data from the server
+            socket.emit('close-portal');
+        });
+    </script>
+</html>
+
