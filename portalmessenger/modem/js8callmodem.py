@@ -73,14 +73,14 @@ class JS8CallModem(BaseModem):
         if msg.destination not in self.js8call.identities():
             return
     
-        parent().incoming_callback(msg)
+        super().incoming_callback(msg)
 
     def outgoing_callback(self, msg):
-        parent().outgoing_callback(msg)
+        super().outgoing_callback(msg)
 
     def spots_callback(self, spots):
-        parent().spots_callback(spots)
+        super().spots_callback(spots)
 
     def inbox_callback(self, msgs):
-        parent().inbox_callback(msgs)
+        super().inbox_callback(msgs)
     
