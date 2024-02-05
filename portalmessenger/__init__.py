@@ -60,10 +60,6 @@ def create_app(test_config=None):
     app.config['MODEM'].incoming = app_context_aware(callbacks.incoming_message)
     app.config['MODEM'].spots = app_context_aware(callbacks.new_spots)
     app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
-
-    #TODO this happens every time app context is exited
-    # stop modem on app teardown
-    #app.teardown_appcontext(app.config['MODEM'].stop)
     
     from . import websockets
     websockets.socketio.init_app(app)
@@ -72,7 +68,11 @@ def create_app(test_config=None):
 
 def get_local_ip():
     try:
-        return socket.gethostbyname( socket.gethostname() )
+        # create a dummy connection to get the local IP address
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            address = s.getsockname()[0]
+        return 'Server IP: {}'.format(address)
     except socket.error:
-        return 'unavailable'
+        return 'Server IP: unavailable'
 
