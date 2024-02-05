@@ -62,7 +62,7 @@ def create_app(test_config=None):
     app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
 
     # stop modem on app teardown
-    app.teardown_appcontext(app.config['MODEM'].js8call.stop)
+    app.teardown_appcontext(app.config['MODEM'].stop)
     
     from . import websockets
     websockets.socketio.init_app(app)
