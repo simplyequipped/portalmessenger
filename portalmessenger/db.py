@@ -59,17 +59,14 @@ def close_db(e=None):
 
 ### settings
 
-def get_settings_list():
-    return get_db().execute('SELECT setting FROM settings').fetchall()
-
 def get_settings():
     db_settings = get_db().execute('SELECT * FROM settings').fetchall()
 
     if len(db_settings) == 0:
         return {}
         
-    # convert list to dict
-    db_settings = {setting['setting']: setting for setting in db_settings}
+    # convert list of row objects to to dict of dicts
+    db_settings = {setting['setting']: dict(setting) for setting in db_settings}
 
     # convert options from json to list
     for setting in db_settings.keys():
@@ -90,7 +87,7 @@ def get_setting_value(setting):
     return db_setting
 
 def set_setting(setting, value):    
-    if setting not in get_settings_list():
+    if setting not in get_settings().keys():
         raise ValueError('Invalid setting: {}'.format(setting))
 
     get_db().execute('UPDATE settings SET value=? WHERE setting=?', (setting, value) )
