@@ -133,5 +133,5 @@ def power_restart():
 @socketio.on('close-portal')
 def close_portal():
     time.sleep(0.1)
-    power_off()
-    exit()
+    current_app.config['MODEM'].stop()
+    socketio.stop()
