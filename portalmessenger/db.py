@@ -30,15 +30,15 @@ def init_db():
         get_db().executescript( f.read().decode('utf8') )
 
     # skip init default settings if settings already exist
-    if len( get_settings() ) > 0:
-        return
+    #if len( get_settings() ) > 0:
+    #    return
     
-    for setting, details in settings.copy().items():
+    for setting, details in settings.items():
         # flatten dict
         db_setting = {'setting': setting}
         db_setting.update(details)
         db_setting.pop('validate')
-        
+
         if db_setting['options'] is not None:
             # convert options list to json string
             db_setting['options'] = json.dumps(db_setting['options'])
@@ -46,28 +46,16 @@ def init_db():
         # insert setting into settings table
         get_db().execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options)', db_setting)
 
+    #TODO print current settings db table
+    db_settings = get_db().execute('SELECT * FROM settings').fetchall()
+    for setting in db_settings:
+        print( dict(setting) )
+
 def close_db(e=None):
     db = g.pop('db', None)
     
     if db is not None:
         db.close()
-
-def get_tables():
-    tables = get_db().execute('SELECT name FROM sqlite_master').fetchall()
-    tables = [tables[i][0] for i in range( len(tables) )]
-    return tables
-
-def get_table_columns(table):
-    if table not in get_tables():
-        raise ValueError( 'Invalid table: {}'.format(table) )
-        
-    if table == 'settings':
-        columns = get_db().execute('PRAGMA table_info(settings)').fetchall()
-    elif table == 'messeges':
-        columns = get_db().execute('PRAGMA table_info(messeges)').fetchall()
-
-    columns = [column[1] for column in columns]
-    return columns
 
 
 ### settings
@@ -92,15 +80,17 @@ def get_settings():
     return db_settings
 
 def get_setting_value(setting):
-    setting = get_db().execute('SELECT value FROM settings WHERE setting=?', (setting,) ).fetchone()
-    setting = setting['value']
+    db_setting = get_db().execute('SELECT value FROM settings WHERE setting=?', (setting,) ).fetchone()
 
-    if setting is None:
-        return setting
-    elif setting.isnumeric():
-        setting = int(setting)
+    if db_setting is None:
+        return db_setting
 
-    return setting
+    db_setting = db_setting['value']
+
+    if db_setting.isnumeric():
+        return int(db_setting)
+
+    return db_setting
 
 def set_setting(setting, value):    
     if setting not in get_settings_list():
