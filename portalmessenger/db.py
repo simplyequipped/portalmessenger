@@ -6,7 +6,11 @@ from flask import current_app, g
 from portalmessenger.settings import settings
 
 
-# general db
+#TODO
+#breakpoint()
+   
+
+### general db
 
 def get_db():
     if 'db' not in g:
@@ -55,9 +59,13 @@ def get_tables():
 
 def get_table_columns(table):
     if table not in get_tables():
-        raise ValueError('Invalid table: {}'.format(table))
+        raise ValueError( 'Invalid table: {}'.format(table) )
         
-    columns = get_db().execute('PRAGMA table_info()',).fetchall()
+    if table == 'settings':
+        columns = get_db().execute('PRAGMA table_info(settings)').fetchall()
+    elif table == 'messeges':
+        columns = get_db().execute('PRAGMA table_info(messeges)').fetchall()
+
     columns = [column[1] for column in columns]
     return columns
 
@@ -65,40 +73,28 @@ def get_table_columns(table):
 ### settings
 
 def get_settings_list():
-    #TODO check format of returned value from query
-    settings = get_db().execute('SELECT setting FROM settings').fetchall()
-    return settings
+    return get_db().execute('SELECT setting FROM settings').fetchall()
 
 def get_settings():
-    #columns = get_table_columns('settings')
-    settings = get_db().execute('SELECT * FROM settings').fetchall()
-    #settings = [dict(zip(columns, setting)) for setting in settings]
+    db_settings = get_db().execute('SELECT * FROM settings').fetchall()
 
-    #TODO
-    print(settings)
-
-    if len(settings) == 0:
+    if len(db_settings) == 0:
         return {}
         
-    # flatten to single level dict
-    settings = {setting['setting']: setting for setting in settings}
+    # convert list to dict
+    db_settings = {setting['setting']: setting for setting in db_settings}
 
     # convert options from json to list
-    for setting in settings.keys():
-        if settings[setting]['options'] != None:
-            settings[setting]['options'] = json.loads(settings[setting]['options'])
+    for setting in db_settings.keys():
+        if db_settings[setting]['options'] != None:
+            db_settings[setting]['options'] = json.loads(db_settings[setting]['options'])
 
-    return settings
+    return db_settings
 
 def get_setting_value(setting):
-    #TODO check format of query result
-    setting = get_db().execute('SELECT value FROM settings WHERE setting=?', [setting]).fetchone()
+    setting = get_db().execute('SELECT value FROM settings WHERE setting=?', (setting,) ).fetchone()
     setting = setting['value']
 
-    #TODO
-    #import pdb; pdb.set_trace()
-    #breakpoint()
-   
     if setting is None:
         return setting
     elif setting.isnumeric():
@@ -107,27 +103,30 @@ def get_setting_value(setting):
     return setting
 
 def set_setting(setting, value):    
-    if setting not in get_settings():
+    if setting not in get_settings_list():
         raise ValueError('Invalid setting: {}'.format(setting))
 
-    get_db().execute('UPDATE settings SET value=:value WHERE setting=:setting', {'setting': setting, 'value': value})
+    get_db().execute('UPDATE settings SET value=? WHERE setting=?', (setting, value) )
 
 
-# messages
+### messages
 
 def get_user_conversations(username):
     conversations = []
-    users = get_db().execute('SELECT DISTINCT origin, destination FROM messages WHERE origin = :user OR destination = :user', {'user': username}).fetchall()
+    users = get_db().execute('SELECT DISTINCT origin, destination FROM messages WHERE origin=? OR destination=?', (username, username) ).fetchall()
 
     if users is None or len(users) == 0:
         # no messages to process
-        return []
+        return conversations
         
-    # parse result row tuples into single list of unique values
-    users = list(set([user for x in users for user in (x[0], x[1])]))
-    users.remove(username)
-
+    unique_users = []
     for user in users:
+        if user['origin'] not in unique_users and user['origin'] != username:
+            unique_users.append(user['origin'])
+        if user['destination'] not in unique_users and user['destination'] != username:
+            unique_users.append(user['destination'])
+
+    for user in unique_users:
         unread = get_user_unread_message_count(user)
         last_heard = get_user_last_heard_timestamp(user)
 
@@ -142,19 +141,16 @@ def get_user_conversations(username):
     return conversations
 
 def set_user_messages_read(username):
-    get_db().execute('UPDATE messages SET unread = 0 WHERE origin = :user', {'user': username})
+    get_db().execute('UPDATE messages SET unread=0 WHERE origin=?', (username,) )
 
 def get_user_unread_message_count(username):
-    unread = get_db().execute('SELECT COUNT(*) FROM messages WHERE origin = :user AND unread = 1', {'user': username}).fetchone()
+    unread = get_db().execute('SELECT COUNT(*) FROM messages WHERE origin=? AND unread=1', (username,) ).fetchone()
     return int(unread[0])
 
 def get_user_chat_history(user_a, user_b):
     users = {'user_a': user_a, 'user_b': user_b}
     # select both sides of the conversation for the given users
-    columns = db.get_table_columns('messages')
-    msgs = get_db().execute('SELECT * FROM messages WHERE (origin = :user_a AND destination = :user_b) OR (origin = :user_b AND destination = :user_a)', users).fetchall()
-    msgs = [dict(zip(columns, msg)) for msg in msgs]
-    return msgs
+    return get_db().execute('SELECT * FROM messages WHERE (origin=:user_a AND destination=:user_b) OR (origin=:user_b AND destination=:user_a)', users).fetchall()
 
 # msg = pyjs8call.Message object
 def store_message(msg):
@@ -162,15 +158,13 @@ def store_message(msg):
 
 # msg = pyjs8call.Message object
 def update_outgoing_message_status(msg):
-    get_db().execute('UPDATE messages SET status = :status WHERE id = :id', {'id': msg.id, 'status': msg.status})
+    get_db().execute('UPDATE messages SET status=? WHERE id=?', (msg.status, msg.id) )
 
 def get_user_last_heard_timestamp(username):
-    last_msg_timestamp = get_db().execute('SELECT MAX(time) FROM messages WHERE origin = :user', {'user': username}).fetchone()
-
-    if last_msg_timestamp not in [None, (None,)] and len(last_msg_timestamp) > 0:
-        last_msg_timestamp = last_msg_timestamp[0]
-    else:
-        last_msg_timestamp = 0
-
-    return last_msg_timestamp
+    timestamp = get_db().execute('SELECT MAX(time) FROM messages WHERE origin=?', (username,) ).fetchone()
+    
+    if len(timestamp) == 0:
+        return 0
+    
+    return timestamp[0]
     

@@ -55,11 +55,11 @@ def create_app(test_config=None):
         return _wrapped_function
 
     # set callback functions
-    from . import pyjs8callbacks
+    from . import callbacks
 
-    app.config['MODEM'].incoming = app_context_aware(pyjs8callbacks.incoming_message)
-    app.config['MODEM'].spots = app_context_aware(pyjs8callbacks.new_spots)
-    app.config['MODEM'].outgoing = app_context_aware(pyjs8callbacks.outgoing_status)
+    app.config['MODEM'].incoming = app_context_aware(callbacks.incoming_message)
+    app.config['MODEM'].spots = app_context_aware(callbacks.new_spots)
+    app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
 
     # stop modem on app teardown
     app.teardown_appcontext(app.config['MODEM'].js8call.stop)
