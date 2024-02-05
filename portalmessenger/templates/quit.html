@@ -23,8 +23,14 @@
         <div class="details">&nbsp;</div>
         <div class="viewport">
             <div class="content">
-                <div>This portal has been closed successfully.</div>
-                <div>Please take your towel with you as you exit.</div>
+				<br><br>
+				<div class="center">
+					This portal has been closed.
+				</div>
+				<br>
+				<div class="center">
+					Please take your towel with you as you exit.
+				</div>	
             </div>
         </div>
         <div class="footer">&nbsp;</div>
@@ -34,7 +40,7 @@
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         $(window).on('load', function(){
-            // request station network data from the server
+            // stop pyj8call and app server
             socket.emit('close-portal');
         });
     </script>
