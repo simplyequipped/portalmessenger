@@ -136,7 +136,8 @@ def get_user_unread_message_count(username):
 def get_user_chat_history(user_a, user_b):
     users = {'user_a': user_a, 'user_b': user_b}
     # select both sides of the conversation for the given users
-    return get_db().execute('SELECT * FROM messages WHERE (origin=:user_a AND destination=:user_b) OR (origin=:user_b AND destination=:user_a)', users).fetchall()
+    history = get_db().execute('SELECT * FROM messages WHERE (origin=:user_a AND destination=:user_b) OR (origin=:user_b AND destination=:user_a)', users).fetchall()
+    return [dict(msg) for msg in history]
 
 # msg = pyjs8call.Message object
 def store_message(msg):
