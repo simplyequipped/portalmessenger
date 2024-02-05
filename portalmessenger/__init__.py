@@ -71,8 +71,7 @@ def get_local_ip():
         # create a dummy connection to get the local IP address
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(("8.8.8.8", 80))
-            address = s.getsockname()[0]
-        return 'Server IP: {}'.format(address)
+            return s.getsockname()[0]
     except socket.error:
-        return 'Server IP: unavailable'
+        return 'unavailable'
 
