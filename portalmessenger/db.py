@@ -32,8 +32,8 @@ def init_db():
         get_db().executescript( f.read().decode('utf8') )
 
     # skip init default settings if settings already exist
-    #if len( get_settings() ) > 0:
-    #    return
+    if len( get_settings() ) > 0:
+        return
     
     for setting, details in settings.items():
         # flatten dict
