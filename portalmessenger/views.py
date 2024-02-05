@@ -29,7 +29,7 @@ def network_route():
 @bp.route('/chat')
 @bp.route('/chat.html')
 def chat_route():
-    db.set_user_messages_read(current_app.config['ACTIVE_CHAT_USERNAME'])
+    db.set_user_messages_read(current_app.config['ACTIVE_CHAT_USER'])
     return render_template('chat.html', user = current_app.config['ACTIVE_CHAT_USER'], settings = db.get_settings())
 
 @bp.route('/settings', methods=['GET', 'POST'])
