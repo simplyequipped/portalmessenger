@@ -67,6 +67,7 @@
 
     </body>
     <script>
+        $('.menu').hide();
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         socket.on('spot', function( data ) {
@@ -88,6 +89,17 @@
         $(window).on('load', function(){
             // request station network data from the server
             socket.emit('network');
+
+            $('.icon-hamburger').click(function(){
+                $('.menu').slideToggle();
+            });
+        });
+		
+        // hide menu when clicking off menu
+        $(document).on('click', function(event) {
+            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+                $('.menu').slideUp();
+            }
         });
 
         // update last heard text and presence, client side
