@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, current_app
 
 import portalmessenger
 from portalmessenger import db
-from portalmessenger
+from portalmessenger import settings
 
 
 bp = Blueprint('portalmessenger', __name__)
@@ -50,6 +50,8 @@ def settings_route():
         if any( [updated_settings[setting]['restart'] for setting in updated_settings] ):
             current_app.config['MODEM'].restart()
 
-    return render_template('settings.html', settings = updated_settings, ip = current_app.config['LOCAL_IP'])
+        return render_template('settings.html', settings = updated_settings, ip = current_app.config['LOCAL_IP'])
+        
+    return render_template('settings.html', settings = db.get_settings(), ip = current_app.config['LOCAL_IP'])
 
 
