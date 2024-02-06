@@ -28,17 +28,16 @@ def create_app(test_config=None):
     # close database on app teardown
     app.teardown_appcontext(db.close_db)
 
-    # initialize database from schema
     with app.app_context():
+        # initialize database from schema and default settings
         db.init_db()
 
-        # initalize js8call modem
+        # initalize pyjs8call modem
         from .modem.js8callmodem import JS8CallModem
         app.config['MODEM'] = JS8CallModem( db.get_setting_value('callsign') )
-        # initialize pyjs8call config before start
+        # initialize pyjs8call config before start (see pyjs8call.settings docs)
         app.config['MODEM'].js8call.settings.set_speed( db.get_setting_value('speed') )
-
-        # start pyjs8call
+        # start pyjs8call modem
         app.config['MODEM'].start()
         
         # initialize settings with running application
@@ -54,12 +53,20 @@ def create_app(test_config=None):
                 func(*args, **kwargs)
         return _wrapped_function
 
-    # set callback functions
+    # set modem callback functions
     from . import callbacks
-
     app.config['MODEM'].incoming = app_context_aware(callbacks.incoming_message)
     app.config['MODEM'].spots = app_context_aware(callbacks.new_spots)
     app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
+    
+    # configure modem setting update functions
+    from .settings import default_settings
+    default_settings['callsign']['update'] = app.config['MODEM'].update_callsign
+    default_settings['freq']['update'] = app.config['MODEM'].update_freq
+    default_settings['grid']['update'] = app.config['MODEM'].update_grid
+    default_settings['speed']['update'] = app.config['MODEM'].update_speed
+    default_settings['heartbeat']['update'] = app.config['MODEM'].update_heartbeat
+    default_settings['inbox']['update'] = app.config['MODEM'].update_inbox
     
     from . import websockets
     websockets.socketio.init_app(app)
