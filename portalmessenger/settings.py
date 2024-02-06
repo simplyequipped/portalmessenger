@@ -95,7 +95,7 @@ default_settings = {
         'options': ['enable', 'disable'],
         'update': None,
         'validate': lambda option: option in default_settings['heartbeat']['options']
-    }.
+    },
     'inbox': {
         'value': 'disable', 
         'label': 'Inbox Monitor',
@@ -125,26 +125,27 @@ def update_settings(form_settings):
     restart = False
     db_settings = db.get_settings()
     
-    for setting, value in form_settings:
+    for setting, value in form_settings.items():
         if setting in ['callsign', 'grid']:
             value = value.upper()
 
         if value == db_settings[setting]['value']:
+            db_settings[setting]['restart'] = False
+            db_settings[setting]['error'] = None
             # skip further processing if settings not changed
             continue
             
         if not default_settings[setting]['validate'](value):
-            form_settings[setting]['error'] = 'Invalid {}: {}'.format(setting, value)
+            db_settings[setting]['error'] = 'Invalid {}: {}'.format(setting, value)
             # skip further processing if setting value invalid
             continue
 
         #TODO update modem name handling to support other modems
         #if current_app.config['MODEM'].name.lower() == 'js8call':
         if default_settings[setting]['update'] is not None:
-            form_settings[setting]['restart'] = default_settings[setting]['update'](value)
+            db_settings[setting]['restart'] = default_settings[setting]['update'](value)
     
         db.set_setting(setting, value)
-        form_settings[setting]['value'] = value
         
-    return form_settings
+    return db_settings
     
