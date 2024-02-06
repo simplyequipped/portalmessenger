@@ -74,11 +74,13 @@ class BaseModem:
         pass
 
     # set as modem application incoming message callback function
+    # msg arg to be type pyjs8call.Message
     def incoming_callback(self, msg):
         if self.incoming is not None:
             self.incoming(msg)
 
     # set as modem application outgoing message status callback function
+    # msg arg to be type pyjs8call.Message
     def outgoing_callback(self, msg):
         if self.outgoing is not None:
             self.outgoing(msg)
