@@ -72,6 +72,7 @@
 
     </body>
 	<script>
+        $('.menu').hide();
 		var socket = io.connect('http://' + document.domain + ':' + location.port);
 	
 		//socket.on('get-settings', function( settings ) {
@@ -106,6 +107,10 @@
                 $('#settings-form').submit()
             });
 
+            $('.icon-hamburger').click(function(){
+                $('.menu').slideToggle();
+            });
+
             $('.icon-power').click(function() {
 				if ( $('.icon-power').hasClass('power-on') ) {
 					socket.emit('power-off');
@@ -129,6 +134,13 @@
 				//var win = window.open('about:blank', '_self');
 				//win.close();
             });
+        });
+		
+        // hide menu when clicking off menu
+        $(document).on('click', function(event) {
+            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+                $('.menu').slideUp();
+            }
         });
 
 	</script>
