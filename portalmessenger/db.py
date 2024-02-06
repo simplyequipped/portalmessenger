@@ -2,14 +2,6 @@ import json
 import sqlite3
 
 from flask import current_app, g
-
-from portalmessenger.settings import settings
-
-
-#breakpoint()
-
-#TODO
-# commit on db inserts
    
 
 ### general db
@@ -35,7 +27,9 @@ def init_db():
     if len( get_settings() ) > 0:
         return
     
-    for setting, details in settings.items():
+    from portalmessenger.settings import default_settings
+
+    for setting, details in default_settings.items():
         # flatten dict
         db_setting = {'setting': setting}
         db_setting.update(details)
