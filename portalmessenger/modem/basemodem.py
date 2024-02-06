@@ -94,11 +94,6 @@ class BaseModem:
     def inbox_callback(self, msgs):
         if self.inbox is not None:
             self.inbox(msgs)
-
-    # update modem application setting
-    # return True if modem restart required
-    def update_modem(self, *args):
-        pass
         
     # update modem application setting
     # return True if modem restart required
