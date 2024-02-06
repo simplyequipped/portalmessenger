@@ -69,18 +69,67 @@ class JS8CallModem(BaseModem):
 
         return call_activity
                 
+    # set as modem application incoming message callback function
+    # msg arg to be type pyjs8call.Message
     def incoming_callback(self, msg):
         if msg.destination not in self.js8call.identities():
             return
     
         super().incoming_callback(msg)
 
+    # set as modem application outgoing message status callback function
+    # msg arg to be type pyjs8call.Message
     def outgoing_callback(self, msg):
         super().outgoing_callback(msg)
 
+    # set as modem application station activity callback function
+    # spots arg to be type list
     def spots_callback(self, spots):
         super().spots_callback(spots)
 
+    # set as modem application inbox activity callback function
+    # msgs arg to be type list
     def inbox_callback(self, msgs):
         super().inbox_callback(msgs)
-    
+        
+    # update modem application setting
+    # return True if modem restart required
+    def update_callsign(self, callsign):
+        self.js8call.settings.set_station_callsign(callsign)
+        # restart required
+        return True
+        
+    # update modem application setting
+    # return True if modem restart required
+    def update_freq(self, freq):
+        self..js8call.settings.set_freq( int(freq) )
+        
+    # update modem application setting
+    # return True if modem restart required
+    def update_grid(self, grid):
+        self..js8call.settings.set_station_grid(grid)
+        
+    # update modem application setting
+    # return True if modem restart required
+    def update_speed(self, speed):
+        self.js8call.settings.set_speed(speed)
+        # restart required
+        return True
+        
+    # update modem application setting
+    # return True if modem restart required
+    def update_heartbeat(self, heartbeat):
+        if heartbeat == 'enable':
+            self.js8call.heartbeat.enable()
+        else:
+            self.js8call.heartbeat.disable()
+        
+    # update modem application setting
+    # return True if modem restart required
+    def update_inbox(self, inbox):
+        if inbox == 'enable':
+            self.js8call.inbox.enable()
+        if inbox == 'query allcall':
+            self.js8call.inbox.enable(query = True)
+        else:
+            self.js8call.inbox.disable()
