@@ -94,6 +94,27 @@ class BaseModem:
     def inbox_callback(self, msgs):
         if self.inbox is not None:
             self.inbox(msgs)
+
+    def update_modem(self, *args):
+        pass
+        
+    def update_callsign(self, *args):
+        pass
+        
+    def update_freq(self, *args):
+        pass
+        
+    def update_grid(self, *args):
+        pass
+        
+    def update_speed(self, *args):
+        pass
+        
+    def update_heartbeat(self, *args):
+        pass
+        
+    def update_inbox(self, *args):
+        pass
             
 #    def process_incoming(self, msg):
 #        if not self.encryption:
