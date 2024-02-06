@@ -35,7 +35,13 @@
         </div>
         <div class="viewport">
             <div class="content">
-                
+				
+				<div class="initial-text center">
+					<br>
+					<br>
+					No network activity yet...
+				</div>
+				
                 <!-- hidden element for cloning -->
                 <div class="station station-network original-hidden">
                     <div class="chat-name">&nbsp;</div>
@@ -79,10 +85,10 @@
         });
 
         socket.on('network', function( data ) {
+			$('.initial-text').hide();
             data.forEach(function( station ) {
                 handleStation(station);
             });
-
             sortStations();
         });
 
