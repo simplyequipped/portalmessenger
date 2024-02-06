@@ -95,24 +95,38 @@ class BaseModem:
         if self.inbox is not None:
             self.inbox(msgs)
 
+    # update modem application setting
+    # return True if modem restart required
     def update_modem(self, *args):
         pass
         
+    # update modem application setting
+    # return True if modem restart required
     def update_callsign(self, *args):
         pass
         
+    # update modem application setting
+    # return True if modem restart required
     def update_freq(self, *args):
         pass
         
+    # update modem application setting
+    # return True if modem restart required
     def update_grid(self, *args):
         pass
         
+    # update modem application setting
+    # return True if modem restart required
     def update_speed(self, *args):
         pass
         
+    # update modem application setting
+    # return True if modem restart required
     def update_heartbeat(self, *args):
         pass
         
+    # update modem application setting
+    # return True if modem restart required
     def update_inbox(self, *args):
         pass
             
