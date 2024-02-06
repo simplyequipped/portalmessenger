@@ -102,12 +102,12 @@ class JS8CallModem(BaseModem):
     # update modem application setting
     # return True if modem restart required
     def update_freq(self, freq):
-        self..js8call.settings.set_freq( int(freq) )
+        self.js8call.settings.set_freq( int(freq) )
         
     # update modem application setting
     # return True if modem restart required
     def update_grid(self, grid):
-        self..js8call.settings.set_station_grid(grid)
+        self.js8call.settings.set_station_grid(grid)
         
     # update modem application setting
     # return True if modem restart required
