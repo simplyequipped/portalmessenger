@@ -33,7 +33,9 @@ def init_db():
         # flatten dict
         db_setting = {'setting': setting}
         db_setting.update(details)
-        db_setting.pop('validate')
+
+        for key in ['update', 'validate']:
+            db_setting.pop(key)
 
         if db_setting['options'] is not None:
             # convert options list to json string
