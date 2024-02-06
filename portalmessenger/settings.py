@@ -1,13 +1,18 @@
-# default settings
+from flask import current_app
+
+from portalmessenger import db
+
+
 # note: lambda references to dict elements will not be updated after dict creation
-settings = {
+default_settings = {
     'modem': {
         'value': 'JS8Call', 
         'label': 'Modem',
         'default': 'JS8Call',
         'required': False,
         'options': ['JS8Call'],
-        'validate': lambda option: option in settings['modem']['options']
+        'update': None,
+        'validate': lambda option: option in default_settings['modem']['options']
     },
     'callsign': {
         'value': '',
@@ -15,6 +20,7 @@ settings = {
         'default': '',
         'required': True,
         'options': None,
+        'update': None,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9
     },
     'freq': {
@@ -23,6 +29,7 @@ settings = {
         'default': '7078000',
         'required': True,
         'options': None,
+        'update': None,
         'validate': lambda freq: freq.isnumeric()
     },
     'grid': {
@@ -31,6 +38,7 @@ settings = {
         'default': '',
         'required': False,
         'options': None,
+        'update': None,
         'validate': lambda grid: grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit()
     },
     'speed': {
@@ -39,7 +47,8 @@ settings = {
         'default': 'normal',
         'required': False,
         'options': ['slow', 'normal', 'fast', 'turbo'],
-        'validate': lambda option: option in settings['speed']['options']
+        'update': None,
+        'validate': lambda option: option in default_settings['speed']['options']
     },
     'theme': {
         'value': 'light', 
@@ -47,7 +56,8 @@ settings = {
         'default': 'light',
         'required': False,
         'options': ['light', 'dark'],
-        'validate': lambda option: option in settings['theme']['options']
+        'update': None,
+        'validate': lambda option: option in default_settings['theme']['options']
     },
     'tab': {
         'value': 'activity', 
@@ -55,7 +65,8 @@ settings = {
         'default': 'activity',
         'required': False,
         'options': ['activity', 'messages'],
-        'validate': lambda option: option in settings['tab']['options']
+        'update': None,
+        'validate': lambda option: option in default_settings['tab']['options']
     },
     'size': {
         'value': 'normal', 
@@ -63,7 +74,8 @@ settings = {
         'default': 'normal',
         'required': False,
         'options': ['normal', 'large'],
-        'validate': lambda option: option in settings['size']['options']
+        'update': None,
+        'validate': lambda option: option in default_settings['size']['options']
     },
     # activity/spot aging in minutes
     'aging': {
@@ -72,7 +84,8 @@ settings = {
         'default': '15',
         'required': True,
         'options': None,
-        'validate': lambda settting: setting['value'].isnumeric()
+        'update': None,
+        'validate': lambda aging: aging.isnumeric()
     },
     'heartbeat': {
         'value': 'disable', 
@@ -80,7 +93,17 @@ settings = {
         'default': 'disable',
         'required': False,
         'options': ['enable', 'disable'],
-        'validate': lambda option: option in settings['heartbeat']['options']
+        'update': None,
+        'validate': lambda option: option in default_settings['heartbeat']['options']
+    }.
+    'inbox': {
+        'value': 'disable', 
+        'label': 'Inbox Monitor',
+        'default': 'disable',
+        'required': False,
+        'options': ['enable', 'disable', 'query allcall'],
+        'update': None,
+        'validate': lambda option: option in default_settings['inbox']['options']
     }
 #    },
 #    # ECC/AES-256 encryption
@@ -90,7 +113,38 @@ settings = {
 #        'default': 'disable',
 #        'required': False,
 #        'options': ['enable', 'disable'],
-#        'validate': lambda option: option in settings['encryption']['options']
+#        'validate': lambda option: option in default_settings['encryption']['options']
 #    }
 }
 
+def validate(setting, value):
+    return default_settings[setting]['validate'](value)
+
+# form_settings = flask.request.form from post request
+def update_settings(form_settings):
+    restart = False
+    db_settings = db.get_settings()
+    
+    for setting, value in form_settings:
+        if setting in ['callsign', 'grid']:
+            value = value.upper()
+
+        if value == db_settings[setting]['value']:
+            # skip further processing if settings not changed
+            continue
+            
+        if not default_settings[setting]['validate'](value):
+            form_settings[setting]['error'] = 'Invalid {}: {}'.format(setting, value)
+            # skip further processing if setting value invalid
+            continue
+
+        #TODO update modem name handling to support other modems
+        #if current_app.config['MODEM'].name.lower() == 'js8call':
+        if default_settings[setting]['update'] is not None:
+            form_settings[setting]['restart'] = default_settings[setting]['update'](value)
+    
+        db.set_setting(setting, value)
+        form_settings[setting]['value'] = value
+        
+    return form_settings
+    
