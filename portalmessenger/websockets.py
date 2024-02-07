@@ -1,4 +1,6 @@
+import os
 import time
+import signal
 
 from flask import current_app
 from flask_socketio import SocketIO
@@ -134,11 +136,6 @@ def power_restart():
 def close_portal():
     time.sleep(0.1)
     current_app.config['MODEM'].stop()
-
-    try:
-        socketio.stop()
-    except RuntimeError:
-        pass
-
-    exit()
+    time.sleep(1)
+    os.kill( os.getpid(), signal.SIGINT )
     
