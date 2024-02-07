@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/simplyequipped/portalmessenger",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=['pyjs8call>=0.2.2', 'waitress', 'flask', 'flask-socketio', 'pyshortcuts'],
+    install_requires=['pyjs8call>=0.2.2', 'flask', 'flask-socketio', 'pyshortcuts'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
