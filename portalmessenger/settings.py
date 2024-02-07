@@ -50,33 +50,6 @@ default_settings = {
         'update': None,
         'validate': lambda option: option in default_settings['speed']['options']
     },
-    'theme': {
-        'value': 'light', 
-        'label': 'App Theme',
-        'default': 'light',
-        'required': False,
-        'options': ['light', 'dark'],
-        'update': None,
-        'validate': lambda option: option in default_settings['theme']['options']
-    },
-    'tab': {
-        'value': 'activity', 
-        'label': 'Default Tab',
-        'default': 'activity',
-        'required': False,
-        'options': ['activity', 'messages'],
-        'update': None,
-        'validate': lambda option: option in default_settings['tab']['options']
-    },
-    'size': {
-        'value': 'normal', 
-        'label': 'Font Size',
-        'default': 'normal',
-        'required': False,
-        'options': ['normal', 'large'],
-        'update': None,
-        'validate': lambda option: option in default_settings['size']['options']
-    },
     # activity/spot aging in minutes
     'aging': {
         'value': '15', 
@@ -104,6 +77,33 @@ default_settings = {
         'options': ['enable', 'disable', 'query @ALLCALL'],
         'update': None,
         'validate': lambda option: option in default_settings['inbox']['options']
+    },
+    'tab': {
+        'value': 'activity', 
+        'label': 'Default Tab',
+        'default': 'activity',
+        'required': False,
+        'options': ['activity', 'messages'],
+        'update': None,
+        'validate': lambda option: option in default_settings['tab']['options']
+    },
+    'theme': {
+        'value': 'light', 
+        'label': 'App Theme',
+        'default': 'light',
+        'required': False,
+        'options': ['light', 'dark'],
+        'update': None,
+        'validate': lambda option: option in default_settings['theme']['options']
+    },
+    'size': {
+        'value': 'normal', 
+        'label': 'Font Size',
+        'default': 'normal',
+        'required': False,
+        'options': ['normal', 'large'],
+        'update': None,
+        'validate': lambda option: option in default_settings['size']['options']
     }
 #    },
 #    # ECC/AES-256 encryption
