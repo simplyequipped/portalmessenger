@@ -43,14 +43,13 @@
                     <label for="{{ setting }}">{{ data['label'] }}</label>
                     {% if data['options'] == None %}
                     <input type="text" id="{{ setting }}" name="{{ setting }}" value="{{ data['value'] }}"
-                    {% if data['required'] and data['value'] == '' %} class="required" {% endif %}
-                    >
+                    {% if data['required'] and data['value'] == '' %} class="required" {% endif %}>
                     {% else %}
 				    <select type="text" id="{{ setting }}" name="{{ setting }}">
                         {% for option in data['options'] %}
-					    <option value="{{ option }}"
-                        {% if option == data['value'] %} selected {% endif %}
-                        >{{ option[0]|upper }}{{ option[1:] }}</option>
+					    <option value="{{ option }}" {% if option == data['value'] %} selected {% endif %}>
+                            {{ option[0]|upper }}{{ option[1:] }}
+                        </option>
                         {% endfor %}
                     </select>
                     {% endif %}
