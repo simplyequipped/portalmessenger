@@ -108,10 +108,12 @@
 				$('#tab-conversations').removeClass('selected');
 				$('#tab-activity').addClass('selected');
 				// hide/show initial text on activity tab
-				if ( $('.spot').length == 0 ):
+				if ( $('.spot').length == 0 ) {
 					$('.initial-text').show();
-				else:
+                }
+				else {
 					$('.initial-text').hide();
+                }
 				// show spots, including conversations that are also spots
 				$('.conversation').hide();
 				$('.spot').show();
@@ -121,10 +123,12 @@
 				$('#tab-activity').removeClass('selected');
 				$('#tab-conversations').addClass('selected');
 				// hide/show initial text on messages tab
-				if ( $('.conversation').length == 0 ):
+				if ( $('.conversation').length == 0 ) {
 					$('.initial-text').show();
-				else:
+                }
+				else {
 					$('.initial-text').hide();
+                }
 				// show conversations, including spots that are also conversations
 				$('.spot').hide();
 				$('.conversation').show();

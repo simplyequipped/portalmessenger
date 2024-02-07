@@ -85,7 +85,9 @@
         });
 
         socket.on('network', function( data ) {
-			$('.initial-text').hide();
+            if ( data.length > 0 ) {
+			    $('.initial-text').hide();
+            }
             data.forEach(function( station ) {
                 handleStation(station);
             });
