@@ -124,19 +124,21 @@ def validate(setting, value):
 def update_settings(form_settings):
     restart = False
     db_settings = db.get_settings()
+
+    # initialize restart and error elements
+    for setting in db_settings.keys():
+        db_settings[setting]['restart'] = False
+        db_settings[setting]['error'] = None
     
     for setting, value in form_settings.items():
         if setting in ['callsign', 'grid']:
             value = value.upper()
 
         if value == db_settings[setting]['value']:
-            db_settings[setting]['restart'] = False
-            db_settings[setting]['error'] = None
             # skip further processing if settings not changed
             continue
             
         if not default_settings[setting]['validate'](value):
-            db_settings[setting]['restart'] = False
             db_settings[setting]['error'] = 'Invalid {}: {}'.format(setting, value)
             # skip further processing if setting value invalid
             continue
@@ -145,7 +147,7 @@ def update_settings(form_settings):
         #if current_app.config['MODEM'].name.lower() == 'js8call':
         if default_settings[setting]['update'] is not None:
             db_settings[setting]['restart'] = default_settings[setting]['update'](value)
-    
+
         db.set_setting(setting, value)
         db_settings[setting]['value'] = value
         
