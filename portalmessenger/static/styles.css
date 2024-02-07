@@ -292,6 +292,10 @@ body {
 	display: none;
 }
 
+.initial-text {
+	font-size: var(--heading-font-size);
+}
+
 /*https://jsfiddle.net/ajiths4u/u9dzyvct/*/
 .viewport {
 	background-color: var(--secondary-color);
