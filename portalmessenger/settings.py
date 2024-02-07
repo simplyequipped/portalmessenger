@@ -101,7 +101,7 @@ default_settings = {
         'label': 'Inbox Monitor',
         'default': 'disable',
         'required': False,
-        'options': ['enable', 'disable', 'query allcall'],
+        'options': ['enable', 'disable', 'query @ALLCALL'],
         'update': None,
         'validate': lambda option: option in default_settings['inbox']['options']
     }
@@ -136,6 +136,7 @@ def update_settings(form_settings):
             continue
             
         if not default_settings[setting]['validate'](value):
+            db_settings[setting]['restart'] = False
             db_settings[setting]['error'] = 'Invalid {}: {}'.format(setting, value)
             # skip further processing if setting value invalid
             continue
@@ -146,6 +147,7 @@ def update_settings(form_settings):
             db_settings[setting]['restart'] = default_settings[setting]['update'](value)
     
         db.set_setting(setting, value)
+        db_settings[setting]['value'] = value
         
     return db_settings
     
