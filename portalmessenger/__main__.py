@@ -9,9 +9,8 @@ if __name__ == '__main__':
     epilog = 'Note: other arguments specified when using --shortcut are included in the shortcut command'
     parser = argparse.ArgumentParser(prog=program, description='Simple messenger web app using pyjs8call', epilog=epilog)
     parser.add_argument('-a', '--host', help='Accept requests from this address, defaults to 0.0.0.0 (all hosts)', default='0.0.0.0')
-    parser.add_argument('-p', '--port', help='Web server port, defaults to 80', default=80, type=int)
+    parser.add_argument('-p', '--port', help='Web server port, defaults to 5000', default=5000, type=int)
     parser.add_argument('-d', '--debug', help='Enable debug output (development use only)', action='store_true')
-    parser.add_argument('-r', '--reload', help='Enable flask reloader (development use only)', action='store_true')
     parser.add_argument('-s', '--shortcut', help='Make desktop shortcut, then exit', action='store_true')
     args = parser.parse_args()
 
@@ -33,4 +32,4 @@ if __name__ == '__main__':
         exit()
     
     app, websockets = create_app()
-    websockets.run(app, host=args.host, port=args.port, debug=args.debug, use_reloader=args.reload, allow_unsafe_werkzeug=True)
+    websockets.run(app, host=args.host, port=args.port, debug=args.debug, allow_unsafe_werkzeug=True)
