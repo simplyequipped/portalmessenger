@@ -7,7 +7,7 @@ from . import create_app
 if __name__ == '__main__':
     program = 'python -m portalmessenger'
     epilog = 'Note: other arguments specified when using --shortcut are included in the shortcut command'
-    parser = argparse.ArgumentParser(prog=program, description='Simple messenger web app using pyjs8call', epilog=epilog)
+    parser = argparse.ArgumentParser(prog=program, description='Messaging web app using pyjs8call', epilog=epilog)
     parser.add_argument('-a', '--host', help='Accept requests from this address, defaults to 0.0.0.0 (all hosts)', default='0.0.0.0')
     parser.add_argument('-p', '--port', help='Web server port, defaults to 5000', default=5000, type=int)
     parser.add_argument('-d', '--debug', help='Enable debug output (development use only)', action='store_true')
@@ -25,9 +25,16 @@ if __name__ == '__main__':
             
         icon_path = os.path.join( os.path.dirname( os.path.abspath(__file__) ), icon_file)
         
-        # include specified args in shortcut command
-        command = '{} -m portalmessenger' + ' '.join(sys.argv[1:])
-        pyshortcuts.make_shortcut(command, name='Portal Messenger', icon=icon_path)
+        # include specified args in shortcut command, removing shortcut
+        _args = sys.argv[1:]
+
+        if '-s' in _args:
+            _args.remove('-s')
+        if '--shortcut' in _args:
+            _args.remove('--shortcut')
+
+        command = '{} -m portalmessenger ' + ' '.join(_args)
+        pyshortcuts.make_shortcut(command, name='Portal Messenger', icon=icon_path, terminal=True)
         print('\nDesktop shortcut created, exiting\n')
         exit()
     

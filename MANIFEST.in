@@ -1,0 +1,5 @@
+include portalmessenger/schema.sql
+include LICENSE
+recursive-include portalmessenger/modem *
+recursive-include portalmessenger/static *
+recursive-include portalmessenger/templates *

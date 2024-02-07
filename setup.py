@@ -5,14 +5,15 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="portalmessenger",
-    version="0.1.0",
+    version="0.1.0-dev",
     author="Simply Equipped LLC",
     author_email="howard@simplyequipped.com",
-    description="Simple chat application utilizing JS8Call",
+    description="Messaging web app using pyjs8call",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/simplyequipped/portalmessenger",
     packages=setuptools.find_packages(),
+    include_package_data=True,
     install_requires=['flask', 'flask-socketio', 'pyjs8call>=0.2.2', 'pyshortcuts'],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -21,10 +22,4 @@ setuptools.setup(
     ],
     python_requires='>=3.7.1',
 )
-
-#import sys
-#import pyshortcuts
-#
-## install desktop and start menu shortcuts
-#cmd = '{} -m portalmessenger'.format(sys.executable)
-#pyshortcuts.make_shortcut(cmd, name='Portal Messenger')
+    
