@@ -11,8 +11,8 @@ class JS8CallModem(BaseModem):
         # initialize pyjs8call client and callback functions
         self.js8call = pyjs8call.Client()
         self.js8call.callback.register_incoming(self.incoming_callback)
+        self.js8call.callback.register_spots(self.spots_callback)
         self.js8call.callback.outgoing = self.outgoing_callback
-        self.js8call.callback.spots = self.spots_callback
         self.js8call.callback.inbox = self.inbox_callback
 
         if 'Portal' not in self.js8call.settings.get_profile_list():
