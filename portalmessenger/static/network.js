@@ -30,6 +30,7 @@ function findStation(username) {
 function setNetworkData(station) {
 	stationElement = findStation(station.username);
     stationElement.find('.grid').html(station.grid);
+    stationElement.find('.snr').html(station.snr);
     stationElement.find('.distance').html(station.distance);
     stationElement.find('.time-str').html(station.time_str);
     stationElement.find('.speed').html(station.speed);
