@@ -3,6 +3,7 @@
 #   - config parameters set to a value will pass that value to the corresponding pyjs8call.settings function
 #   - config parameters set to None will call the corresponding pyjs8call.settings function without any arguments
 #   - all config parameters are implemented before starting pyjs8call (i.e. in the js8call config file, see pyjs8call.confighandler)
+#   - Portal Messenger settings loaded from the database will overwrite config parameters specified here
 #
 # see pyjs8call.settings docs for available functions: https://simplyequipped.github.io/pyjs8call/pyjs8call/client.html#Settings
 
