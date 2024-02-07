@@ -134,4 +134,11 @@ def power_restart():
 def close_portal():
     time.sleep(0.1)
     current_app.config['MODEM'].stop()
-    socketio.stop()
+
+    try:
+        socketio.stop()
+    except RuntimeError:
+        pass
+
+    exit()
+    
