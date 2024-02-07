@@ -1,3 +1,0 @@
-#!/bin/bash
-
-flask --app portal run --host=0.0.0.0
