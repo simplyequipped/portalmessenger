@@ -11,7 +11,7 @@ def create_app(test_config=None):
     #app = Flask(__name__, instance_relative_config=True)
     app = Flask(__name__)
     app.config['SECRET_KEY'] = secrets.token_hex()
-    app.config['DATABASE'] = 'portal.sqlite'
+    app.config['DATABASE'] = '.portal.sqlite'
     app.config['LOCAL_IP'] = get_local_ip()
 
     if test_config is None:
