@@ -79,7 +79,7 @@ def network_data():
         if station['speed'] == '':
             speed = '&nbsp;'
         else:
-            speed = station['speed'][0].upper() + station['speed'][1,]
+            speed = station['speed'][0].upper() + station['speed'][1:]
 
         if len(station['hearing']) == 0:
             hearing = '&nbsp;'
