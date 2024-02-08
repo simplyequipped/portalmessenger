@@ -61,50 +61,23 @@ def init_chat():
 # get network activity data
 @socketio.on('network')
 def network_data():
-    # activity since aging setting
-    activity = current_app.config['MODEM'].js8call.get_call_activity( age = db.get_setting_value('aging') )
+    # network activity since aging setting
+    activity = current_app.config['MODEM'].get_call_activity(age = db.get_setting_value('aging'))
     network = []
 
     for station in activity:
-        # set spot attributes to non-blank space if not set, formatted value otherwise
-        if station['grid'] == '':
-            grid = '&nbsp;'
-        else:
-            grid = station['grid']
-
-        if station['distance'][0] is None:
-            distance = '&nbsp;'
-        else:
-            # station['distance'] = (distance, distance_units, bearing)
-            distance = '({:,} {})'.format(station['distance'][0], station['distance'][1])
-
-        if station['speed'] == '':
-            speed = '&nbsp;'
-        else:
-            speed = station['speed'][0].upper() + station['speed'][1:]
-
-        if len(station['hearing']) == 0:
-            hearing = '&nbsp;'
-        else:
-            hearing = ', '.join(station['hearing'])
-
-        if len(station['heard_by']) == 0:
-            heard_by = '&nbsp;'
-        else:
-            heard_by = ', '.join(station['heard_by'])
-
+        # set station attributes to formatted value or non-blank space
         station = {
             'username': station['origin'],
-            'grid': grid,
-            'distance': distance,
+            'grid': station['grid'] if station['grid'] is not None else '&nbsp;',
+            'distance': station['distance'] if station['distance'] is not None else '&nbsp;',
             'time': station['timestamp'],
             'time_str': station['local_time_str'],
-            'snr': station['snr'],
-            'speed': speed,
-            'hearing': hearing,
-            'heard_by': heard_by
+            'snr': station['snr'] if station['snr'] is not None else '&nbsp;',
+            'speed': station['speed'][0].upper() + station['speed'][1:] if station['speed'] is not None else '&nbsp;',
+            'hearing': station['hearing'] if station['hearing'] is not None else '&nbsp;',
+            'heard_by': station['heard_by'] if station['heard_by'] is not None else '&nbsp;'
         }
-        
         network.append(station)
 
     socketio.emit('network', network)
