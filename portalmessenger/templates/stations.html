@@ -73,17 +73,6 @@
         $('.menu').hide();
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        //socket.on('connect', function() {
-        //});
-
-        //$('.station').on('contextmenu', function(e) {
-        //    e.preventDefault();
-        //    e.stopImmediatePropogation();
-        //    $( this ).trigger('hover');
-        //});
-
-        //$( document ).tooltip();
-
 		socket.on('spot', function( data ) {
 			data.forEach(function( station ) {
 				handleSpot(station);
