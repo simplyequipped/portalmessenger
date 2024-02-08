@@ -41,7 +41,7 @@ class JS8CallModem(BaseModem):
         return self.js8call.online
 
     def send(self, destination, text):
-        if any([bool(text.find(cmd) == 0) for cmd in self.js8call.message.COMMANDS]):
+        if any([bool(text.find(cmd) == 0) for cmd in pyjs8call.Message.COMMANDS]):
             #TODO handle commands with spaces
             text = text.strip().split()
             cmd = ' ' + text[0]
