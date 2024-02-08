@@ -12,7 +12,7 @@ def incoming_message(msg):
     msg = message.process_message(msg)
 
     if msg['origin'] == current_app.config['ACTIVE_CHAT_USER']:
-    # pass messages for active chat to client side
+        # pass messages for active chat to client side
         socketio.emit('msg', [msg])
 
     unread = bool( db.get_user_unread_message_count(msg['origin']) )
