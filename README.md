@@ -1,4 +1,4 @@
-# Portal
+# Portal Messenger
 
 HF radio messaging web app based on pyjs8call.
 
