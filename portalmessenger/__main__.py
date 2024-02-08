@@ -16,11 +16,14 @@ if __name__ == '__main__':
     parser.add_argument('-j', '--headless', help='Run JS8Call app headless (Linux only)', action='store_true')
     parser.add_argument('-s', '--shortcut', help='Create a desktop shortcut to launch the application, then exit', action='store_true')
     args = parser.parse_args()
+    sys_args = ' '.join(sys.argv[1:])
 
     if args.config not in [None, '']:
         pyjs8call_config_path = os.path.abspath(args.config)
         if not os.path.exists(pyjs8call_config_path):
             raise OSError('pyjs8call configuration path does not exist: {}'.format(pyjs8call_config_path))
+        # replace possible relative config path with absolute path
+        sys_args = sys_args.replace(args.config, pyjs8call_config_path)
 
     if args.shortcut:
         import pyshortcuts
@@ -35,15 +38,10 @@ if __name__ == '__main__':
         icon_path = os.path.join( os.path.dirname( os.path.abspath(__file__) ), icon_file)
         
         # include specified args in pyshortcuts command, removing --shortcut
-        _args = sys.argv[1:]
-
-        if '-s' in _args:
-            _args.remove('-s')
-        if '--shortcut' in _args:
-            _args.remove('--shortcut')
-
-        command = '{} -m portalmessenger ' + ' '.join(_args)
+        sys_args = sys_args.replace('--shortcut ', '').replace('-s ', '')
+        command = '{} -m portalmessenger ' + sys_args
         pyshortcuts.make_shortcut(command, name='Portal Messenger', icon=icon_path, terminal=True)
+
         print('\nDesktop shortcut created, exiting\n')
         exit()
     
