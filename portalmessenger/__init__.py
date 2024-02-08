@@ -53,7 +53,7 @@ def create_app(test_config=None, headless=True, pyjs8call_config_path=None):
 
             # call each pyjs8call.settings function
             for func, value in pyjs8call_config.items():
-                pyjs8call_settings_func = getattr(app.config['MODEM'].settings, func)
+                pyjs8call_settings_func = getattr(app.config['MODEM'].js8call.settings, func)
 
                 if value is None:
                     pyjs8call_settings_func()
