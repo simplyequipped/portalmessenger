@@ -73,14 +73,6 @@
 	<script>
         $('.menu').hide();
 		var socket = io.connect('http://' + document.domain + ':' + location.port);
-	
-		//socket.on('get-settings', function( settings ) {
-		//	Object.keys(settings).forEach(function( setting ) {
-		//		updateLocalSetting('setting-' + setting, settings[setting]);
-		//	});
-		//
-		//	handleLocalSettings();
-		//});
 
 		socket.on('power-on', function( settings ) {
 			$('.icon-power').removeClass('power-off');
@@ -128,10 +120,6 @@
 						}
 					}, 60 * 1000);
 				}
-
-				// close the current tab
-				//var win = window.open('about:blank', '_self');
-				//win.close();
             });
         });
 		
