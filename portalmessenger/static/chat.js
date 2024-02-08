@@ -5,20 +5,21 @@ function newChatMessage(msg) {
 	newMsg.find('.chat-time').attr('data-timestamp', msg.time);
 	newMsg.find('.chat-time').html(timeString(msg.time));
 	newMsg.find('.chat-msg').html(msg.text);
-	
-	if ( msg.encrypted != null ) {
-		if ( msg.type == 'rx' ) {
-			newMsg.find('.chat-time').prepend('<span class="encrypted-icon">&nbsp;</span>');
-		}
-		else if ( msg.type == 'tx' ) {
-			newMsg.find('.chat-time').append('<span class="encrypted-icon">&nbsp;</span>');
-		}
-	}
 
-	if ( msg.status == 'sent' ) {
+	//TODO
+	//if ( msg.encrypted != null ) {
+	//	if ( msg.type == 'rx' ) {
+	//		newMsg.find('.chat-time').prepend('<span class="encrypted-icon">&nbsp;</span>');
+	//	}
+	//	else if ( msg.type == 'tx' ) {
+	//		newMsg.find('.chat-time').append('<span class="encrypted-icon">&nbsp;</span>');
+	//	}
+	//}
+
+	if ( msg.status == 'sent' || msg.status == 'received' ) {
 		newMsg.find('.chat-status').remove();
 	}
-	else if ( msg.status != null) {
+	else if ( msg.status != null ) {
 		upperCaseStatus = msg.status.charAt(0).toUpperCase() + msg.status.slice(1).toLowerCase();
 		
 		if ( msg.error != null ) {
@@ -82,10 +83,6 @@ function setPresence(presence) {
 	$('.presence-indicator').addClass("presence-" + presence);
 }
 
-function sendMsg(msg_text) {
-	socket.emit('msg', {msg: msg_text});
-}
-
 function setLastHeard(last_heard) {
 	now = new Date();
 	then = new Date(last_heard * 1000);
@@ -95,10 +92,6 @@ function setLastHeard(last_heard) {
 	lastHeardElement = $('.last-heard');
 	lastHeardElement.html(lastHeardText(last_heard_minutes));
 	lastHeardElement.attr('data-last-heard', Math.floor(last_heard));
-	updatePresence(last_heard_minutes);
-}
-
-function updatePresence(last_heard_minutes) {
 	setPresence(presenceText(last_heard_minutes));
 }
 
