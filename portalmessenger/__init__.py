@@ -2,7 +2,6 @@ import os
 import socket
 import secrets
 import configparser
-import importlib.util
 
 from flask import Flask
 
@@ -38,27 +37,9 @@ def create_app(test_config=None, headless=True, pyjs8call_config_path=None):
         #TODO set callsign after init for consistency
         app.config['MODEM'] = JS8CallModem(db.get_setting_value('callsign'), headless=headless)
 
-        # load and parse pyjs8call config from file
-        if pyjs8call_config_path not in [None, ''] and os.path.exists(pyjs8call_config_path):
-            # import pyjs8call config file as module
-            spec = importlib.util.spec_from_file_location('pyjs8call_config_module', pyjs8call_config_path)
-            pyjs8call_config_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(pyjs8call_config_module)
-            
-            # get dict of variable names and values, ignoring special variables, functions, and classes
-            pyjs8call_config = {var.lower(): getattr(pyjs8call_config_module, var) for var in dir(pyjs8call_config_module)
-                                if not var.startswith('__') and
-                                not callable(getattr(pyjs8call_config_module, var)) and
-                                not isinstance(getattr(pyjs8call_config_module, var), type)}
-
-            # call each pyjs8call.settings function
-            for func, value in pyjs8call_config.items():
-                pyjs8call_settings_func = getattr(app.config['MODEM'].js8call.settings, func)
-
-                if value is None:
-                    pyjs8call_settings_func()
-                else:
-                    pyjs8call_settings_func(value)
+        # load pyjs8call config file
+        if pyjs8call_config_path is not None:
+            app.config['MODEM'].js8call.load_config(pyjs8call_config_path)
             
         # initialize pyjs8call config before start (see pyjs8call.settings docs)
         app.config['MODEM'].js8call.settings.set_speed( db.get_setting_value('speed') )
@@ -113,4 +94,3 @@ def get_local_ip():
             return s.getsockname()[0]
     except socket.error:
         return 'unavailable'
-
