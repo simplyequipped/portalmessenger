@@ -12,14 +12,13 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--host', help='Accept requests from this host address, defaults to 0.0.0.0 (all hosts)', default='0.0.0.0')
     parser.add_argument('-p', '--port', help='Web server port, defaults to 5000', default=5000, type=int)
     parser.add_argument('-d', '--debug', help='Enable debug output (development use only)', action='store_true')
-    parser.add_argument('-c', '--config', help='Path to pyjs8call configuration file, defaults to \'./pyjs8call_config.py\'', default='./pyjs8call_config.py')
+    parser.add_argument('-c', '--config', help='Path to pyjs8call configuration file')
     parser.add_argument('-j', '--headless', help='Run JS8Call app headless (Linux only)', action='store_true')
     parser.add_argument('-s', '--shortcut', help='Create a desktop shortcut to launch the application, then exit', action='store_true')
     args = parser.parse_args()
 
     if args.config not in [None, '']:
         pyjs8call_config_path = os.path.abspath(args.config)
-
         if not os.path.exists(pyjs8call_config_path):
             raise OSError('pyjs8call configuration path does not exist: {}'.format(pyjs8call_config_path))
 
