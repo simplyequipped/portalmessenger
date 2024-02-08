@@ -4,6 +4,7 @@ import argparse
 
 from . import create_app
 
+
 if __name__ == '__main__':
     program = 'python -m portalmessenger'
     epilog = 'Note: other arguments specified when using --shortcut are included in the shortcut command'
@@ -17,14 +18,6 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--shortcut', help='Create a desktop shortcut to launch the application, then exit', action='store_true')
     args = parser.parse_args()
     sys_args = ' '.join(sys.argv[1:])
-
-    if args.config not in [None, '']:
-        original_config = args.config
-        args.config = os.path.abspath(args.config)
-        if not os.path.exists(args.config):
-            raise OSError('pyjs8call configuration path does not exist: {}'.format(args.config))
-        # replace possible relative config path with absolute path
-        sys_args = sys_args.replace(original_config, args.config)
 
     if args.shortcut:
         import pyshortcuts
