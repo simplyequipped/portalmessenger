@@ -41,6 +41,13 @@ class JS8CallModem(BaseModem):
         return self.js8call.online
 
     def send(self, destination, text):
+        # check for command in text
+        # sort decending by command length to precent matching a partial command
+        msg_cmds = sorted(pyjs8call.Message.COMMANDS, key=len, reverse=True)
+
+        for cmd in msg_cmds:
+            if text.begins_with(cmd)
+        
         if any([bool(text.find(cmd) == 0) for cmd in pyjs8call.Message.COMMANDS]):
             #TODO handle commands with spaces
             text = text.strip().split()
@@ -72,10 +79,12 @@ class JS8CallModem(BaseModem):
         call_activity = self.js8call.get_call_activity(age = age)
 
         for activity in call_activity.copy():
-            call_activity[activity]['snr'] = '{}dB'.format(call_activity[activity]['snr'])
-            call_activity[activity]['hearing'] = ', '.join(call_activity[activity]['hearing'])
-            call_activity[activity]['heard_by'] = ', '.join(call_activity[activity]['heard_by'])
-            call_activity[activity]['distance'] = '{0[0]:,} {0[1]}'.format(call_activity[activity]['distance'])
+            # pre-process and set empty values to None for easier ui handling
+            call_activity[activity]['grid'] = call_activity[activity]['grid'] if call_activity[activity]['grid'] not in [None, ''] else None
+            call_activity[activity]['distance'] = '{0[0]:,} {0[1]}'.format(call_activity[activity]['distance']) if call_activity[activity]['distance'][0] not in [None, ''] else None
+            call_activity[activity]['snr'] = '{}dB'.format(call_activity[activity]['snr']) if call_activity[activity]['snr'] not in [None, ''] else None
+            call_activity[activity]['hearing'] = ', '.join(call_activity[activity]['hearing']) if len(call_activity[activity]['hearing']) > 0 else None
+            call_activity[activity]['heard_by'] = ', '.join(call_activity[activity]['heard_by']) if len(call_activity[activity]['heard_by']) > 0 else None
 
         return call_activity
                 
