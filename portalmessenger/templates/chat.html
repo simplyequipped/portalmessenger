@@ -61,8 +61,8 @@
     </body>
 	<script>
         $('.menu').hide();
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
         $('span.icon-back').parent().attr('href', '/stations' + window.location.search.substring(0))
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         socket.on('msg', function( msgs ) {
 			msgs.forEach(function ( msg ) {
