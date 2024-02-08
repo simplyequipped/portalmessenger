@@ -45,7 +45,7 @@ def init_conversations():
         spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
 
         # use latest station spot timestamp if more recent
-        if len(spots) > 0 and spots[0].timestamp > conversations[i]['time']:
+        if conversations[i]['time'] is None or (len(spots) > 0 and spots[0].timestamp > conversations[i]['time']):
              conversations[i]['time'] = spots[0].timestamp
     
     socketio.emit('conversation', conversations)
