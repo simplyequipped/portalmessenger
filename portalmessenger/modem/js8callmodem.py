@@ -41,23 +41,23 @@ class JS8CallModem(BaseModem):
         return self.js8call.online
 
     def send(self, destination, text):
+        #TODO consider moving command handling to pyjs8call
         # check for command in text
-        # sort decending by command length to precent matching a partial command
+        # sort decending by command length to avoid matching a partial command
         msg_cmds = sorted(pyjs8call.Message.COMMANDS, key=len, reverse=True)
 
+        cmd_found = False
         for cmd in msg_cmds:
-            if text.begins_with(cmd)
-        
-        if any([bool(text.find(cmd) == 0) for cmd in pyjs8call.Message.COMMANDS]):
-            #TODO handle commands with spaces
-            text = text.strip().split()
-            cmd = ' ' + text[0]
-            if len(text) > 1:
-                text = ' ' + ' '.join(text[1:])
-            else:
-                text = None
+            if text.startswith(cmd):
+                cmd_found = True
+                text = text.replace(cmd, '').strip()
+                if len(text) == 0:
+                    text = None
+                break
 
+        if cmd_found:
             return self.js8call.send_directed_command_message(destination, cmd, text)
+            
         return self.js8call.send_directed_message(destination, text)
 
     def get_spots(self, *args, **kwargs):
