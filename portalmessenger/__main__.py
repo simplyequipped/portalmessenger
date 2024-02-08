@@ -19,11 +19,12 @@ if __name__ == '__main__':
     sys_args = ' '.join(sys.argv[1:])
 
     if args.config not in [None, '']:
-        pyjs8call_config_path = os.path.abspath(args.config)
-        if not os.path.exists(pyjs8call_config_path):
-            raise OSError('pyjs8call configuration path does not exist: {}'.format(pyjs8call_config_path))
+        original_config = args.config
+        args.config = os.path.abspath(args.config)
+        if not os.path.exists(args.config):
+            raise OSError('pyjs8call configuration path does not exist: {}'.format(args.config))
         # replace possible relative config path with absolute path
-        sys_args = sys_args.replace(args.config, pyjs8call_config_path)
+        sys_args = sys_args.replace(original_config, args.config)
 
     if args.shortcut:
         import pyshortcuts
@@ -38,13 +39,13 @@ if __name__ == '__main__':
         icon_path = os.path.join( os.path.dirname( os.path.abspath(__file__) ), icon_file)
         
         # include specified args in pyshortcuts command, removing --shortcut
-        sys_args = sys_args.replace('--shortcut ', '').replace('-s ', '')
+        sys_args = sys_args.replace('--shortcut', '').replace('-s', '').replace('  ', ' ')
         command = '{} -m portalmessenger ' + sys_args
         pyshortcuts.make_shortcut(command, name='Portal Messenger', icon=icon_path, terminal=True)
 
         print('\nDesktop shortcut created, exiting\n')
         exit()
     
-    app, websockets = create_app(headless=args.headless, pyjs8call_config_path=pyjs8call_config_path)
+    app, websockets = create_app(headless=args.headless, pyjs8call_config_path=args.config)
     websockets.run(app, host=args.host, port=args.port, debug=args.debug, allow_unsafe_werkzeug=True)
     
