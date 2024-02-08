@@ -85,13 +85,13 @@ class JS8CallModem(BaseModem):
     def get_call_activity(self, age=None):
         call_activity = self.js8call.get_call_activity(age = age)
 
-        for activity in call_activity.copy():
+        for i in len(call_activity):
             # pre-process and set empty values to None for easier ui handling
-            call_activity[activity]['grid'] = call_activity[activity]['grid'] if call_activity[activity]['grid'] not in [None, ''] else None
-            call_activity[activity]['distance'] = '{0[0]:,} {0[1]}'.format(call_activity[activity]['distance']) if call_activity[activity]['distance'][0] not in [None, ''] else None
-            call_activity[activity]['snr'] = '{}dB'.format(call_activity[activity]['snr']) if call_activity[activity]['snr'] not in [None, ''] else None
-            call_activity[activity]['hearing'] = ', '.join(call_activity[activity]['hearing']) if len(call_activity[activity]['hearing']) > 0 else None
-            call_activity[activity]['heard_by'] = ', '.join(call_activity[activity]['heard_by']) if len(call_activity[activity]['heard_by']) > 0 else None
+            call_activity[i]['grid'] = call_activity[i]['grid'] if call_activity[i]['grid'] not in [None, ''] else None
+            call_activity[i]['distance'] = '{0[0]:,} {0[1]}'.format(call_activity[i]['distance']) if call_activity[i]['distance'][0] not in [None, ''] else None
+            call_activity[i]['snr'] = '{}dB'.format(call_activity[i]['snr']) if call_activity[i]['snr'] not in [None, ''] else None
+            call_activity[i]['hearing'] = ', '.join(call_activity[i]['hearing']) if len(call_activity[i]['hearing']) > 0 else None
+            call_activity[i]['heard_by'] = ', '.join(call_activity[i]['heard_by']) if len(call_activity[i]['heard_by']) > 0 else None
 
         return call_activity
                 
