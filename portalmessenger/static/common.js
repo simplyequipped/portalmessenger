@@ -1,62 +1,62 @@
-		
-		function urlParam(name){
-			var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-			return decodeURIComponent(results[1]) || 0;
-		}
 
-		function lastHeardText(minutes) {
-			var text = '';
+function urlParam(name){
+	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	return decodeURIComponent(results[1]) || 0;
+}
 
-            // now (less than 1 minute)
-			if ( minutes < 1 ) {
-				num = null;
-				text = 'Now';
-			}
-            // minutes
-			else if ( minutes < 60 ) {
-				num = minutes;
-				text = String(num) + ' minute';
-			}
-            // hours
-			else if ( minutes < 60 * 24 ) {
-				num = Math.floor(minutes / 60);
-				text = String(num) + ' hour';
-			}
-            // days
-			else if ( minutes < 60 * 24 * 365 ) {
-				num = Math.floor((minutes / 60) / 24);
-				text = String(num) + ' day';
-			}
-            // over a year
-			else {
-				num = null;
-				text = 'Never';
-			}
+function lastHeardText(minutes) {
+	var text = '';
 
-			// handle plural
-			if ( num != 1 && num != null) {
-				text = text + 's'
-			}
+	// now (less than 1 minute)
+	if ( minutes < 1 ) {
+		num = null;
+		text = 'Now';
+	}
+	// minutes
+	else if ( minutes < 60 ) {
+		num = minutes;
+		text = String(num) + ' minute';
+	}
+	// hours
+	else if ( minutes < 60 * 24 ) {
+		num = Math.floor(minutes / 60);
+		text = String(num) + ' hour';
+	}
+	// days
+	else if ( minutes < 60 * 24 * 365 ) {
+		num = Math.floor((minutes / 60) / 24);
+		text = String(num) + ' day';
+	}
+	// over a year
+	else {
+		num = null;
+		text = 'Never';
+	}
 
-            if ( num == null ) {
-                return text;
-            }
-            else {
-			    return text + ' ago';
-            }
-		}
+	// handle plural
+	if ( num != 1 && num != null) {
+		text = text + 's'
+	}
 
-		function presenceText(minutes) {
-			if ( minutes < 10 ) {
-				return 'active';
-			}
-			else if ( minutes < 60 ) {
-				return 'inactive';
-			}
-			else {
-				return 'unknown';
-			}
-		}
+	if ( num == null ) {
+		return text;
+	}
+	else {
+		return text + ' ago';
+	}
+}
+
+function presenceText(minutes) {
+	if ( minutes < 10 ) {
+		return 'active';
+	}
+	else if ( minutes < 60 ) {
+		return 'inactive';
+	}
+	else {
+		return 'unknown';
+	}
+}
 
 function timeString(unix_timestamp) {
 	// unix = seconds, js = milliseconds
@@ -98,42 +98,3 @@ function timeString(unix_timestamp) {
 
 	return then.toLocaleString('en-US', options);
 }
-
-function getSetting( setting ) {
-	return localStorage.getItem( setting );
-}
-
-function updateLocalSetting( setting, value, force ) {
-	if ( force === undefined ) {
-		force = false;
-	}
-
-	if ( localStorage.getItem(setting) === null || ( value != '' && force ) ) {
-		localStorage.setItem( setting, value );
-	}
-}
-
-function handleLocalSettings() {
-	var settings = ['setting-theme', 'setting-size', 'setting-tab'];
-
-	settings.forEach(function( setting, index, settings ) {
-		setting = settings[index];
-		localSetting = getSetting( setting );
-		console.log(setting);
-		console.log(localSetting);
-
-		if ( setting == 'setting-theme' && localSetting == 'dark' && $('link[href="../static/dark.css"]').length == 0 ) {
-			$('head').append('<link rel="stylesheet" type="text/css" href="../static/dark.css">');
-		}
-
-		if ( setting == 'setting-size' ) {
-			if ( localSetting == 'small' ) {
-				//TODO
-			}
-			else if ( localSetting == 'large' ) {
-				//TODO
-			}
-		}
-	});
-}
-
