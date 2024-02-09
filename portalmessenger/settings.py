@@ -131,6 +131,8 @@ def update_settings(form_settings):
         db_settings[setting]['error'] = None
     
     for setting, value in form_settings.items():
+        value = value.strip()
+        
         if setting in ['callsign', 'grid']:
             value = value.upper()
 
