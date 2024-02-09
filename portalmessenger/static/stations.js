@@ -10,16 +10,6 @@ function newStation(station) {
 	setLastHeard(station.username, station.time);
 }
 
-// construct new conversation station element based on given username
-function newConversation(station) {
-	stationElement = $('.station.original-hidden').clone();
-	stationElement.attr('name', username)
-	stationElement.find('.chat-name').html(username);
-	stationElement.click(stationClick)
-	stationElement.removeClass('original-hidden');
-	stationElement.appendTo('.content');
-}
-
 // create or update spot stations sent from the server
 function handleSpot(station) {
 	if ( findStation(station.username).length == 0 ) {
@@ -178,14 +168,6 @@ function stationClick() {
 	$.post('/stations', {user: username}, function() {
 		window.location = '/chat?' + $('.tab.selected').attr('id');
 	});
-}
-
-function conversationHover() {
-	if ( selectedTab() == 'conversations' ) {
-		console.log('hover');
-		$(this).find('.last-heard').toggle();
-		$(this).find('.icon-conversation-settings').toggle();
-	}
 }
 
 // sort stations in ascending order by last heard time
