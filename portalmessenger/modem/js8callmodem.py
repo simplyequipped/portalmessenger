@@ -11,7 +11,6 @@ class JS8CallModem(BaseModem):
         # initialize pyjs8call client and callback functions
         self.js8call = pyjs8call.Client()
         # store previous js8call config profile
-        self._previous_profile = self.js8call.settings.get_profile()
         self.js8call.callback.register_incoming(self.incoming_callback)
         self.js8call.callback.register_spots(self.spots_callback)
         self.js8call.callback.outgoing = self.outgoing_callback
@@ -21,7 +20,8 @@ class JS8CallModem(BaseModem):
             # copy new profile from default profile
             self.js8call.config.create_new_profile('Portal')
             
-        self.js8call.settings.set_profile('Portal')
+        # set app specific config profile for JS8Call, restore previous profile on exit
+        self.js8call.settings.set_profile('Portal', restore_on_exit=True)
         # disable idle timeout
         self.js8call.settings.set_idle_timeout(0)
         self.js8call.settings.set_distance_units_miles(True)
@@ -34,10 +34,6 @@ class JS8CallModem(BaseModem):
             self.js8call.start(headless = self.headless)
 
     def stop(self, *args):
-        # restore previous js8call config profile
-        # this allows js8call to run in the previous config profile when started next
-        if self._previous_profile in self.js8call.settings.get_profile_list():
-            self.js8call.settings.set_profile(self._previous_profile)
         # pyjs8call writes config to file on stop
         self.js8call.stop()
 
