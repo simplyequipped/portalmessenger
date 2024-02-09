@@ -38,18 +38,17 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_confi
         if pyjs8call_config_path is not None:
             app.config['MODEM'].load_config(pyjs8call_config_path)
 
-        
-        app.config['MODEM'].()
-        app.config['MODEM'].(
         # initialize pyjs8call config before start (see pyjs8call.settings docs)
         callsign = db.get_setting_value('callsign')
         if callsign not in [None, '']:
             app.config['MODEM'].update_callsign(callsign)
         app.config['MODEM'].update_speed(db.get_setting_value('speed'))
+
         # start pyjs8call modem
         print('Starting JS8Call modem via pyjs8call...')
         app.config['MODEM'].start(headless=headless, debugging=debugging)
         print('JS8Call started')
+
         # initialize running modem application settings
         app.config['MODEM'].update_freq(db.get_setting_value('freq'))
         app.config['MODEM'].update_grid(db.get_setting_value('grid'))
