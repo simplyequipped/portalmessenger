@@ -14,10 +14,7 @@ def create_app(test_config=None, headless=True, pyjs8call_config_path=None):
     app.config['DATABASE'] = '.portal.sqlite'
     app.config['LOCAL_IP'] = get_local_ip()
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
+    if test_config is not None:
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
