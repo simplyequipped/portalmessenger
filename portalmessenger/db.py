@@ -121,6 +121,10 @@ def get_user_conversations(username):
 
     return conversations
 
+def remove_user_conversations(username):
+    get_db().execute('DELETE FROM messages WHERE origin=? OR destination=?', (username, username) )
+    get_db().commit() 
+
 def set_user_messages_read(username):
     get_db().execute('UPDATE messages SET unread=0 WHERE origin=?', (username,) )
     get_db().commit() 
