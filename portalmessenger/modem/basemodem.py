@@ -126,6 +126,11 @@ class BaseModem:
     # return True if modem restart required
     def update_inbox(self, *args):
         pass
+
+    # load modem settings from config
+    # must be called before start()
+    def load_config(self, *args):
+        pass
             
 #    def process_incoming(self, msg):
 #        if not self.encryption:
