@@ -147,7 +147,7 @@
 
 			$('.menu-item.delete-messages').click(function(){
                 $('.menu').slideUp();
-                $('.station').each(function(index, element){
+                $('.station').not('.original-hidden').each(function(index, element){
                     $(element).find('.last-heard').hide();
                     $(element).find('.icon-delete').show();
                 });
@@ -195,20 +195,20 @@
 
             // hide conversation delete icons when clicking on anything but a delete icon
             if ( !$(event.target).hasClass('icon-delete') && !$(event.target).hasClass('menu-item') ) {
-                $('.station').each(function(index, element) {
+                $('.station').not('.original-hidden').each(function(index, element) {
                     $(element).find('.icon-delete').hide();
                     $(element).find('.last-heard').show();
                 });
             }
         });
 
-		// update last heard text and presence, client side
+		// update last heard text and presence
 		setInterval(function() {
 			$('.station').not('.original-hidden').each(function() {
 				username = $(this).attr('name');
 				timestamp = parseInt( $(this).find('.last-heard').attr('data-last-heard') );
 
-				// cull spots older than 10 miuntes
+				// cull spots older than aging setting
 				if ( $(this).hasClass('spot') ) {
 			        now = new Date();
 					then = new Date( timestamp * 1000 );
