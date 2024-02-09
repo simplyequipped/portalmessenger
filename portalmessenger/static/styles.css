@@ -57,7 +57,14 @@ body {
 
 .icon-delete {
 	-webkit-mask-image: url('icons/delete-hollow.svg');
-    display: none;
+	position: absolute;
+	display: block;
+	top: 20px;
+	right: 20px;
+	background: var(--primary-color);
+}
+.icon-delete:hover {
+	background: var(--secondary-color);
 }
 
 .icon-dropdown {

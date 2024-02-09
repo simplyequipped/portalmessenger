@@ -95,14 +95,16 @@
 		});
 
 		socket.on('conversation-removed', function( data ) {
-            var station = findStation(data.username)
+            var station = findStation(data.username);
+            station.find('.icon-delete').slideUp(300);
             station.slideUp();
 	        station.removeClass('conversation');
 
             if ( !station.hasClass('spot') ) {
-                station.remove();
+                // remove after 400ms (default jquery event duration)
+                setTimeout( function() { station.remove(); }, 400);
             }
-		});
+        });
 
 		$(window).on('load', function(){
 			// setup click callbacks
@@ -149,6 +151,8 @@
                     $(element).find('.last-heard').hide();
                     $(element).find('.icon-delete').show();
                 });
+                // click selected tab to force event handling
+                //$('.tab.selected').click();
 			});
 
             $('.icon-hamburger').click(function(){
@@ -161,11 +165,6 @@
                 $('.menu').slideToggle();
             });
 
-            $('.icon-delete').click(function(){
-	            var username = $(this).parent().attr('name');
-                socket.emit('remove-conversation', {username: username});
-            });
-			
 			$('#new-conversation-form').submit(function (){
 				event.preventDefault();
 				username = $('#new-conversation').val().trim().toUpperCase();
@@ -190,17 +189,16 @@
 		
         $(document).on('click', function(event) {
             // hide menu when clicking off menu
-            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu') && !$(event.target).hasClass('menu-item') ) {
                 $('.menu').slideUp();
             }
 
             // hide conversation delete icons when clicking on anything but a delete icon
-            if ( !$(event.target).hasClass('icon-delete') )
-                $('.station').each(function(index, element){
+            if ( !$(event.target).hasClass('icon-delete') && !$(event.target).hasClass('menu-item') ) {
+                $('.station').each(function(index, element) {
                     $(element).find('.icon-delete').hide();
                     $(element).find('.last-heard').show();
-                    // click selected tab to force event handling
-                    $('.tab.selected').click();
+                });
             }
         });
 

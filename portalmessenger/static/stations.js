@@ -2,12 +2,14 @@
 // construct new station element based on given station data
 function newStation(station) {
 	stationElement = $('.station.original-hidden').clone();
-	stationElement.attr('name', station.username)
+	stationElement.attr('name', station.username);
 	stationElement.find('.chat-name').html(station.username);
-	stationElement.click(stationClick)
+	stationElement.click(stationClick);
 	stationElement.removeClass('original-hidden');
 	stationElement.appendTo('.content');
 	setLastHeard(station.username, station.time);
+    stationElement.find('.icon-delete').hide();
+    stationElement.find('.icon-delete').click(stationDeleteClick);
 }
 
 // create or update spot stations sent from the server
@@ -168,6 +170,14 @@ function stationClick() {
 	$.post('/stations', {user: username}, function() {
 		window.location = '/chat?' + $('.tab.selected').attr('id');
 	});
+}
+
+// on click event handler for station delete icon
+function stationDeleteClick(event) {
+	var username = $(this).parent().attr('name');
+    socket.emit('remove-conversation', {username: username});
+    // prevent event bubble up to parent station element
+    event.stopPropagation();
 }
 
 // sort stations in ascending order by last heard time

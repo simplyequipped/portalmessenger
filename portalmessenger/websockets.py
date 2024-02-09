@@ -56,7 +56,7 @@ def init_conversations():
 @socketio.on('remove-conversation')
 def remove_conversation(data):
     db.remove_user_conversations(data['username'])
-    socketio.emit('conversation-removed', data['username'])
+    socketio.emit('conversation-removed', {'username': data['username']})
 
 # get chat history between users
 @socketio.on('init-chat')
