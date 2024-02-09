@@ -81,7 +81,7 @@ class JS8CallModem(BaseModem):
     def get_call_activity(self, age=None):
         call_activity = self.js8call.get_call_activity(age = age)
 
-        for i in len(call_activity):
+        for i in range(len(call_activity)):
             # pre-process and set empty values to None for easier ui handling
             call_activity[i]['grid'] = call_activity[i]['grid'] if call_activity[i]['grid'] not in [None, ''] else None
             call_activity[i]['distance'] = '{0[0]:,} {0[1]}'.format(call_activity[i]['distance']) if call_activity[i]['distance'][0] not in [None, ''] else None
