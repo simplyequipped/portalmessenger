@@ -3,11 +3,8 @@ import pyjs8call
 
 
 class JS8CallModem(BaseModem):
-    def __init__(self, callsign=None, headless=True):
+    def __init__(self):
         super().__init__('JS8Call')
-        self.callsign = callsign
-        self.headless = headless
-
         # initialize pyjs8call client and callback functions
         self.js8call = pyjs8call.Client()
         # store previous js8call config profile
@@ -22,16 +19,10 @@ class JS8CallModem(BaseModem):
             
         # set app specific config profile for JS8Call, restore previous profile on exit
         self.js8call.settings.set_profile('Portal', restore_on_exit=True)
-        # disable idle timeout
-        self.js8call.settings.set_idle_timeout(0)
-        self.js8call.settings.set_distance_units_miles(True)
-        
-        if self.callsign not in (None, ''):
-            self.js8call.settings.set_station_callsign(self.callsign)
                 
-    def start(self):
+    def start(self, *args):
         if not self.js8call.online:
-            self.js8call.start(headless = self.headless)
+            self.js8call.start(*args)
 
     def stop(self, *args):
         # pyjs8call writes config to file on stop
@@ -152,6 +143,11 @@ class JS8CallModem(BaseModem):
         if inbox == 'enable':
             self.js8call.inbox.enable()
         if inbox == 'query allcall':
-            self.js8call.inbox.enable(query = True)
+            self.js8call.inbox.enable(query=True)
         else:
             self.js8call.inbox.disable()
+
+    # load pyjs8call settings from config
+    # must be called before start()
+    def load_config(self, pyjs8call_config_path):
+        self.js8call.load_config(pyjs8call_config_path)
