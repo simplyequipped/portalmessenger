@@ -13,7 +13,13 @@ bp = Blueprint('portalmessenger', __name__)
 @bp.route('/stations.html', methods=['GET', 'POST'])
 def stations_route():
     if request.method == 'POST':
-        current_app.config['ACTIVE_CHAT_USER'] = request.form.get('user')
+        username = request.form.get('user').strip()
+
+        if '>' in username:
+            # remove spaces around relay characters
+            username = '>'.join( [user.strip() for user in username.split('>')] )
+        
+        current_app.config['ACTIVE_CHAT_USER'] = username
         return ''
     else:
         if db.get_setting_value('callsign') == '':
