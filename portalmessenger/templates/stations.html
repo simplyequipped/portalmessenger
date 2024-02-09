@@ -30,6 +30,7 @@
             <a href="/stations"><div class="menu-item">Activity</div></a>
             <a href="/network"><div class="menu-item">Network</div></a>
             <a href="settings"><div class="menu-item">Settings</div></a>
+            <a href="#"><div class="menu-item delete-messages">Delete Messages...</div></a>
             <a href="/quit"><div class="menu-item">Close Portal</div></a>
         </div></div>
 		
@@ -55,8 +56,9 @@
 					<div class="presence-indicator presence-unknown">&nbsp;</div>
 					<div class="chat-name">&nbsp;</div>
 					<div class="last-heard">&nbsp;</div>
+					<span class="icon icon-delete">&nbsp;</span>
 				</div>
-
+                
 			</div>
 
 		</div>
@@ -71,6 +73,7 @@
     </body>
 	<script>
         $('.menu').hide();
+        $('.menu-item.delete-messages').hide();
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 		socket.on('spot', function( data ) {
@@ -78,7 +81,7 @@
 				handleSpot(station);
 			});
 			sortStations();
-            // click selected tab to force above event handling
+            // click selected tab to force event handling
             $('.tab.selected').click();
 		});
 
@@ -87,8 +90,18 @@
 				handleConversation(station);
 			});
 			sortStations();
-            // click selected tab to force above event handling
+            // click selected tab to force event handling
             $('.tab.selected').click();
+		});
+
+		socket.on('conversation-removed', function( data ) {
+            var station = findStation(data.username)
+            station.slideUp();
+	        station.removeClass('conversation');
+
+            if ( !station.hasClass('spot') ) {
+                station.remove();
+            }
 		});
 
 		$(window).on('load', function(){
@@ -130,8 +143,27 @@
 				$('#new-conversation').focus();
 			});
 
+			$('.menu-item.delete-messages').click(function(){
+                $('.menu').slideUp();
+                $('.station').each(function(index, element){
+                    $(element).find('.last-heard').hide();
+                    $(element).find('.icon-delete').show();
+                });
+			});
+
             $('.icon-hamburger').click(function(){
+                if ( selectedTab() == 'conversations' ) {
+                    $('.menu-item.delete-messages').show();
+                }
+                else {
+                    $('.menu-item.delete-messages').hide();
+                }
                 $('.menu').slideToggle();
+            });
+
+            $('.icon-delete').click(function(){
+	            var username = $(this).parent().attr('name');
+                socket.emit('remove-conversation', {username: username});
             });
 			
 			$('#new-conversation-form').submit(function (){
@@ -146,7 +178,7 @@
 			socket.emit('spot');
 			socket.emit('conversation');
 
-            // click selected tab to force above event handling
+            // click selected tab to force event handling
             // return to previously selected tab if returning from another page
             if ( window.location.search.substring(1) == '' ) {
                 $('.tab.selected').click();
@@ -156,10 +188,19 @@
             }
 		});
 		
-        // hide menu when clicking off menu
         $(document).on('click', function(event) {
+            // hide menu when clicking off menu
             if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
                 $('.menu').slideUp();
+            }
+
+            // hide conversation delete icons when clicking on anything but a delete icon
+            if ( !$(event.target).hasClass('icon-delete') )
+                $('.station').each(function(index, element){
+                    $(element).find('.icon-delete').hide();
+                    $(element).find('.last-heard').show();
+                    // click selected tab to force event handling
+                    $('.tab.selected').click();
             }
         });
 
