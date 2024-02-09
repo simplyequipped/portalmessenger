@@ -24,6 +24,10 @@ def tx_msg(data):
     msg = message.process_message(msg)
     # include processed message in active chat
     socketio.emit('msg', [msg])
+    
+@socketio.on('heard-user')
+def heard_user(data):
+    socketio.emit('heard-user', db.get_user_last_heard_timestamp(data['user']))
 
 # initilize station spot data
 @socketio.on('spot')
