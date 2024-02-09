@@ -155,5 +155,5 @@ def get_user_last_heard_timestamp(username):
     if len(timestamp) == 0:
         return 0
     
-    return timestamp[0]
+    return int(timestamp[0])
     
