@@ -34,7 +34,7 @@
             <div class="details-name">Network</div>
         </div>
         <div class="viewport">
-            <div class="content">
+            <div class="content" data-aging="{{ settings['aging']['value'] }}">
 				
 				<div class="initial-text center">
 					<br>
@@ -110,11 +110,23 @@
             }
         });
 
-        // update last heard text and presence, client side
+        // update last heard text and presence
         setInterval(function() {
             $('.station').not('.original-hidden').each(function() {
                 username = $(this).attr('name');
                 timestamp = parseInt( $(this).find('.last-heard').attr('data-last-heard') );
+
+                // cull network activity older than aging setting
+                now = new Date();
+                then = new Date( timestamp * 1000 );
+                lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
+
+                if ( lastHeardMinutes >= parseInt( $('.content').attr('data-aging') ) ) {
+                    $(this).remove();
+                    // continue with next iteration
+                    return true;
+                }
+
                 setLastHeard(username, timestamp);
             });
         }, 1000 * 60);
