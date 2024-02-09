@@ -30,6 +30,11 @@ def incoming_message(msg):
 def new_spots(spots):
     spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
     socketio.emit('spot', spots)
+
+    username = current_app.config['ACTIVE_CHAT_USER']
+    if username is not None and username in [spot['username'] for spot in spots]:
+        # update current chat last heard timestamp
+        socketio.emit('heard-user', spots[username]['timestamp'])
     
 # outgoing message status change callback
 def outgoing_status(msg):
