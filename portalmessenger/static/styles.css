@@ -55,6 +55,11 @@ body {
 	-webkit-mask-image: url('icons/chat-hollow.svg');
 }
 
+.icon-delete {
+	-webkit-mask-image: url('icons/delete-hollow.svg');
+    display: none;
+}
+
 .icon-dropdown {
 	-webkit-mask-image: url('icons/dropdown-arrow.svg');
     display: inline-block;
