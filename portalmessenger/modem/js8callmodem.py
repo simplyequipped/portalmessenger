@@ -20,9 +20,9 @@ class JS8CallModem(BaseModem):
         # set app specific config profile for JS8Call, restore previous profile on exit
         self.js8call.settings.set_profile('Portal', restore_on_exit=True)
                 
-    def start(self, *args):
+    def start(self, *args, **kwargs):
         if not self.js8call.online:
-            self.js8call.start(*args)
+            self.js8call.start(*args, **kwargs)
 
     def stop(self, *args):
         # pyjs8call writes config to file on stop
@@ -151,3 +151,4 @@ class JS8CallModem(BaseModem):
     # must be called before start()
     def load_config(self, pyjs8call_config_path):
         self.js8call.load_config(pyjs8call_config_path)
+
