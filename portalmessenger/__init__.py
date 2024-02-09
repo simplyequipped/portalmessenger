@@ -31,7 +31,6 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_confi
 
         # initalize pyjs8call modem
         from .modem.js8callmodem import JS8CallModem
-        #TODO set callsign after init for consistency
         app.config['MODEM'] = JS8CallModem()
 
         # load pyjs8call config file
@@ -89,3 +88,4 @@ def get_local_ip():
             return s.getsockname()[0]
     except socket.error:
         return 'unavailable'
+
