@@ -151,8 +151,8 @@ def update_outgoing_message_status(msg):
 
 def get_user_last_heard_timestamp(username):
     timestamp = get_db().execute('SELECT MAX(time) FROM messages WHERE origin=?', (username,) ).fetchone()
-    
-    if len(timestamp) == 0:
+
+    if timestamp[0] is None:
         return 0
     
     return int(timestamp[0])
