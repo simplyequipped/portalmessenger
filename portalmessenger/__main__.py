@@ -43,8 +43,8 @@ if __name__ == '__main__':
         exit()
     
     app, websockets = create_app(headless=args.headless, debugging=args.debug, pyjs8call_config_path=args.config)
-    websockets.run(app, host=args.host, port=args.port, debug=args.debug, allow_unsafe_werkzeug=True)
 
     if args.browser:
-        time.sleep(1)
         webbrowser.open('http://127.0.0.1:{}'.format(args.port))
+
+    websockets.run(app, host=args.host, port=args.port, debug=args.debug, allow_unsafe_werkzeug=True)
