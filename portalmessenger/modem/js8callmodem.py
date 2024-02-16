@@ -81,6 +81,25 @@ class JS8CallModem(BaseModem):
             call_activity[i]['heard_by'] = ', '.join(call_activity[i]['heard_by']) if len(call_activity[i]['heard_by']) > 0 else None
 
         return call_activity
+        
+    def get_propagation_data(self, max_age=120):
+        propagation_data = self.js8call.propagation.grids_median_dataset(max_age = max_age)
+
+        for i in range(len(propagation_data)):
+            # convert (grid, snr, timestamp) into [lat, lon, snr]
+            try:
+                lat, lon = self.js8call.grid_to_lat_lon(propagation_data[i][0])
+            except Exception:
+                # skip if grid to lat/lon converstion fails
+                continue
+                
+            propagation_data[i] = [
+                lat,
+                lon,
+                propagation_data[i][1]
+            ]
+
+        return propagation_data
                 
     # set as modem application incoming message callback function
     # msg arg to be type pyjs8call.Message
