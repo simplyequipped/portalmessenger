@@ -85,8 +85,8 @@ class JS8CallModem(BaseModem):
     def get_propagation_data(self, max_age=120):
         propagation_data = self.js8call.propagation.grids_median_dataset(max_age = max_age)
 
+        # convert each data point (grid, snr, timestamp) to [lat, lon, snr]
         for i in range(len(propagation_data)):
-            # convert (grid, snr, timestamp) into [lat, lon, snr]
             try:
                 lat, lon = self.js8call.grid_to_lat_lon(propagation_data[i][0])
             except Exception:
@@ -99,7 +99,15 @@ class JS8CallModem(BaseModem):
                 propagation_data[i][1]
             ]
 
-        return propagation_data
+        station_grid = self.js8call.settings.get_station_grid()
+        station_grid = station_grid if station_grid not in (None, '') else 'FM18lv' # default to Washington D.C. USA
+        station = list(self.js8call.grid_to_lat_lon(station_grid))
+        data = {
+            'propagation': propagation_data,
+            'station': station
+        }
+
+        return data
                 
     # set as modem application incoming message callback function
     # msg arg to be type pyjs8call.Message
