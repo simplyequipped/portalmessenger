@@ -92,6 +92,14 @@ def network_data():
 
     socketio.emit('network', network)
 
+# get median grid propagation data
+@socketio.on('propagation-data')
+def propagation_data():
+    # max age defaults to 120 minutes
+    # propagation data format: [ [lat, lon, snr], ... ]
+    data = current_app.config['MODEM'].get_propagation_data()
+    socketio.emit('propagation-data', data)
+
 @socketio.on('power-on')
 def power_on():
     # wait for current transactions to finish
