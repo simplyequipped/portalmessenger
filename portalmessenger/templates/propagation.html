@@ -37,8 +37,8 @@
         <div class="details">
             <div class="details-name">Propagation Map</div>
         </div>
-        <div class="viewport">
-            <div id="map" class="content">
+        <div id="map" class="viewport">
+            <div class="content">
 				<br><br>
 				<div class="initial-text center">
 					Loading propagation map...
@@ -49,6 +49,7 @@
 
     </body>
     <script>
+        $('.menu').hide()
         var socket = io.connect('http://' + document.domain + ':' + location.port);
         
 		socket.on('propagation-data', function( data ) {

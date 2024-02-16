@@ -61,6 +61,6 @@ def settings_route():
 
 @bp.route('/propagation')
 @bp.route('/propagation.html')
-def network_route():
+def propagation_route():
     return render_template('propagation.html', settings = db.get_settings())
     
