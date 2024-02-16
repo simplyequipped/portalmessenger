@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Portal Messenger</title>
+		<link rel="stylesheet" type="text/css" href="../static/styles.css">
+		<link rel="stylesheet" type="text/css" href="../static/media.css">
+		{% if settings['theme']['value'] == 'dark' %}
+		<link rel="stylesheet" type="text/css" href="../static/dark.css">
+		{% endif %}
+		{% if settings['size']['value'] == 'large' %}
+		<link rel="stylesheet" type="text/css" href="../static/large-font.css">
+		{% endif %}
+		<link rel="icon" type="image/x-icon" href="../static/icons/double_arrow.svg">
+		<script src="../static/jquery.min.js"></script>
+		<script src="../static/socket.io.min.js"></script>
+		<script src="../static/common.js"></script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    </head>
+    <body tabindex="-1">
+        <div class="header">
+            PORTAL MESSENGER
+            <span class="icon icon-hamburger">&nbsp;</span>
+		</div>
+		
+        <div class='menu-container'><div class="menu">
+            <a href="/stations"><div class="menu-item">Activity</div></a>
+            <a href="/network"><div class="menu-item">Network</div></a>
+            <a href="/propagation"><div class="menu-item">Propagation Map</div></a>
+            <a href="/settings"><div class="menu-item">Settings</div></a>
+            <a href="/quit"><div class="menu-item">Close Portal</div></a>
+        </div></div>
+		
+        <div class="details">
+            <div class="details-name">Propagation Map</div>
+        </div>
+        <div class="viewport">
+            <div id="map" class="content">
+				<br><br>
+				<div class="initial-text center">
+					Loading propagation map...
+				</div>
+            </div>
+        </div>
+        <div class="footer">&nbsp;</div>
+
+    </body>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+		socket.on('propagation-data', function( data ) {
+			$('.initial-text').hide();
+            
+            // cetner view on station location (or Washington D.C. USA if station grid not set)
+            //TODO check default zoom
+			var map = L.map('map').setView(data['station'], 5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors',
+            }).addTo(map);
+
+            // add heat map layer using grid square median SNR
+            //TODO check radius
+            var heat = L.heatLayer(data['propagation'], { radius: 25 }).addTo(map);
+		});
+        
+        $(window).on('load', function(){
+            // request propagation data
+            socket.emit('propagation-data');
+        });
+    </script>
+</html>
