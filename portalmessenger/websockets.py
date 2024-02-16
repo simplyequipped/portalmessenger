@@ -84,7 +84,7 @@ def network_data():
             'time': station['timestamp'],
             'time_str': station['local_time_str'],
             'snr': station['snr'] if station['snr'] is not None else '&nbsp;',
-            'speed': station['speed'][0].upper() + station['speed'][1:] if station['speed'] is not None else '&nbsp;',
+            'speed': '&nbsp;' if staion['speed'] in (None, '') else station['speed'][0].upper() + station['speed'][1:],
             'hearing': station['hearing'] if station['hearing'] is not None else '&nbsp;',
             'heard_by': station['heard_by'] if station['heard_by'] is not None else '&nbsp;'
         }
