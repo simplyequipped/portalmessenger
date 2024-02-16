@@ -22,10 +22,79 @@ It is the user's responsibility to manage their local network and implement good
 Refer to the [pyjs8call documentation](https://simplyequipped.github.io/pyjs8call/) for information on installing JS8Call.
 
 1. Pip install the application: `pip install portalmessenger` (use pip3 if python3 is not the default on your system)
-2. Create a desktop shortcut to open JS8Call and a web browser to the application: `python -m portalmessenger --shortcut --browser`
+2. Create a desktop shortcut to run JS8Call and open Portal Messenger in a web browser:
+   ```
+   python -m portalmessenger --shortcut --browser
+   ```
 
    or
    
-   Create a desktop shortcut to run JS8Call headless (Linux only) for remote only use: `python -m portalmessenger --shortcut --headless`
+   Create a desktop shortcut to run JS8Call headless (Linux only) for remote access via Portal Messenger:
+   ```
+   python -m portalmessenger --shortcut --headless
+   ```
+Portal Messenger is now installed and an icon is available on the Desktop.
+
+Use the IP address and port printed to the command line (ex. 192.168.0.20:5000) when accessing Portal Messenger from another device.
 
 **Note:** the latest Portal Messenger version has not been released to PyPi yet, coming soon :)
+
+### Views
+
+#### Menu Items
+Selecting the menu (hamburger) icon displays the main application menu. The available menu items are the same in most views, with a few exceptions noted in the relevant sections below.
+
+- **Activity**: Navigate to the station activity view
+- **Network**: Navigate to the network activity view
+- **Propagation Map**: Navigate to the propagation map view 
+- **Settings**: Navigate to the settings view
+- **Close Portal**: Stop the application
+
+#### Stations
+There are two tabs in the *Station* view: *Activity* and *Messages*. The *Default Tab* setting is used to select which of these two tabs is displayed when navigating to the *Stations* view (see the *Settings* section for more information). The *Activity* tab displays each heard station's presence indicator, callsign, and time since last heard. The *Messages* tab displays a station's presence indicator, callsign, and time since last heard when there are stored messages associated with that station. The *Messages* tab will be bold when there are unread messages, and will indicate the number of unread messages.
+
+Select a station to send a message or see stored message history. Use the **+** button near the bottom of the view to start a new conversation with a station. After pressing the **+** button, you will enter the station callsign or group designator and then press *Add*. You will be redirected to the conversation for that station or group.
+
+The *Station* view is dynamic and will update automatically as stations are heard and messages are received. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list.
+
+When the *Messages* tab is selected, the menu will offer an additonal option: *Delete Messages ...*. After selecting this menu option a delete (trash can) icon will be displayed on each station message. Selecting the delete icon will remove all stored messages assocaited with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons and return to normal operation.
+
+#### Network
+The *Network* view displays detailed information about each heard station:
+
+- **Grid**: Grid square and distance (km or mi depending on JS8Call configuration)
+- **SNR**: Signal-to-noise ratio of station's last activity
+- **Last Heard**: Local time of station's last activity
+- **Speed**: JS8Call modem speed of station's last activity
+- **Hearing**: Other stations hearing the station
+- **Heard By**: Other stations heard by the station
+
+The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list.
+
+#### Conversation
+When a station is selected, the user will navigate to the *Conversation* view. This view displays the station's presence indicator, callsign, and time since last heard. An outgoing message is entered in the text field near the bottom of the view. Select the *Send* button to send the message.
+
+Selecting the vertical ellipsis menu icon in the upper right corner of the view displays a list of pre-formatted JS8Call command messages. Selecting a command from the list will insert the pre-formatted command text in the outgoing message field. Text in square brackets is replaced with applicable information. For example, the following text is inserted in the outgoing message field when the command *Query Callsign* is selected: ` QUERY CALL [callsign]` where [callsign] is replaced with the callsign to be queried.
+
+Selecting the back (left arrow) icon in the upper right corner of the view navigates back to the *Stations* view.
+
+#### Propagation
+The *Propagation* view displays a map centered on the local station's grid square (or Washington D.C., USA if no grid square is configured). Heard station data is analyzed to determine the median SNR for each "heard" grid square over a 30 minute period. This data is displayed as a heat map to indicate an approximation of current propagation conditions relative to the local station. The heat map is updated with the latest heard station data each time the view is loaded, or every 5 minutes while the view is active.
+
+#### Settings
+The *Settings* view displays a list of application settings:
+
+- **Modem**: Radio modem application used to send and receive messages (only JS8Call is currently available)
+- **Callsign**: Callsign of the local station (changing this setting requires JS8Call to restart)
+- **Frequency (Hz)**: Radio frequency setting for JS8Call and the controlled radio
+- **Grid Square**: Grid square of the local station
+- **JS8Call Speed**: Speed setting of the JS8Call modem (changing this setting requires JS8Call to restart)
+- **Aging (minutes)**: How long after begin heard a station will be displayed in activity lists
+- **Heartbeat Net**: Whether the pyjs8call heartbeat function is enabled or disabled
+- **Inbox Monitor**: Whether the pyjs8call inbox monitor function is enabled, enabled with periodic query to @ALLCALL, or disabled
+- **Default Tab**: Which tab to display when navigating to the *Station* view
+- **App Theme**: Whether the app should use a light or dark color theme
+- **Font Size**: Whether the app should use a normal or large font size
+
+Press the *Save Settings* button near the bottom of the view after making changes.
+
