@@ -96,7 +96,7 @@ def network_data():
 @socketio.on('propagation-data')
 def propagation_data():
     # max age defaults to 120 minutes
-    # propagation data format: [ [lat, lon, snr], ... ]
+    # propagation data format: {'propagation': [ [lat, lon, snr], ... ], 'station': [lat, lon]}
     data = current_app.config['MODEM'].get_propagation_data()
     socketio.emit('propagation-data', data)
 
