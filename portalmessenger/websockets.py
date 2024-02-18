@@ -94,9 +94,9 @@ def network_data():
 
 # get median grid propagation data
 @socketio.on('propagation-data')
-def propagation_data():
+def propagation_data(max_age=60):
     # propagation data format: {'propagation': [ [lat, lon, snr], ... ], 'station': [lat, lon]}
-    data = current_app.config['MODEM'].get_propagation_data(max_age=30)
+    data = current_app.config['MODEM'].get_propagation_data(max_age = max_age)
     socketio.emit('propagation-data', data)
 
 @socketio.on('power-on')
