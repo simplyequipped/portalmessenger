@@ -11,8 +11,7 @@ from portalmessenger.websockets import socketio
 def incoming_message(msg):
     msg = message.process_message(msg)
 
-    if ('ACTIVE_CHAT_USER' in current_app.config and
-        msg['origin'] == current_app.config['ACTIVE_CHAT_USER']):
+    if  msg['origin'] == current_app.config['ACTIVE_CHAT_USER']:
         # pass messages for active chat to client side
         socketio.emit('msg', [msg])
 
@@ -32,11 +31,10 @@ def new_spots(spots):
     spots = [{'username': spot.origin, 'time': spot.timestamp} for spot in spots]
     socketio.emit('spot', spots)
 
-    if ('ACTIVE_CHAT_USER' in current_app.config and
-        current_app.config['ACTIVE_CHAT_USER'] is not None and
-        current_app.config['ACTIVE_CHAT_USER'] in [spot['username'] for spot in spots]):
+    username = current_app.config['ACTIVE_CHAT_USER']
+    if username is not None and username in [spot['username'] for spot in spots]):
         # update current chat last heard timestamp
-        socketio.emit('heard-user', spots[current_app.config['ACTIVE_CHAT_USER']]['timestamp'])
+        socketio.emit('heard-user', spots[username]['timestamp'])
     
 # outgoing message status change callback
 def outgoing_status(msg):

@@ -13,6 +13,7 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_confi
     app.config['SECRET_KEY'] = secrets.token_hex()
     app.config['DATABASE'] = '.portal.sqlite'
     app.config['LOCAL_IP'] = get_local_ip()
+    app.config['ACTIVE_CHAT_USER'] = None
 
     if test_config is not None:
         # load the test config if passed in
