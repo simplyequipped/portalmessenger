@@ -11,7 +11,7 @@ from portalmessenger.websockets import socketio
 def incoming_message(msg):
     msg = message.process_message(msg)
 
-    if  msg['origin'] == current_app.config['ACTIVE_CHAT_USER']:
+    if msg['origin'] == current_app.config['ACTIVE_CHAT_USER']:
         # pass messages for active chat to client side
         socketio.emit('msg', [msg])
 
@@ -32,7 +32,7 @@ def new_spots(spots):
     socketio.emit('spot', spots)
 
     username = current_app.config['ACTIVE_CHAT_USER']
-    if username is not None and username in [spot['username'] for spot in spots]):
+    if username is not None and username in [spot['username'] for spot in spots]:
         # update current chat last heard timestamp
         socketio.emit('heard-user', spots[username]['timestamp'])
     
