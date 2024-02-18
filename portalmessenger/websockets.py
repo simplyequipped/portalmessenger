@@ -31,7 +31,7 @@ def heard_user(data):
     spot_last_heard = current_app.config['MODEM'].get_spots(origin=data['user'], count=1)
 
     db_last_heard = db_last_heard if db_last_heard is not None else 0
-    spot_last_heard = spot_last_heard[0] if len(spot_last_heard) > 0 else 0
+    spot_last_heard = spot_last_heard[0].timestamp if len(spot_last_heard) > 0 else 0
     last_heard = max(db_last_heard, spot_last_heard)
 
     socketio.emit('heard-user', last_heard)
