@@ -3,7 +3,9 @@ from flask import current_app
 from portalmessenger import db
 
 
-# note: lambda references to dict elements will not be updated after dict creation
+# lambda references to dict elements will not be updated after dict creation, even if dict changes (which it should not)
+# 'display' indicates whether the setting should be displayed in the Settings view (may still be displayed elsewhere)
+# 'validate' is not stored in the db, only referenced from default_settings
 default_settings = {
     'modem': {
         'value': 'JS8Call', 
@@ -11,7 +13,7 @@ default_settings = {
         'default': 'JS8Call',
         'required': False,
         'options': ['JS8Call'],
-        'update': None,
+        'display': False,
         'validate': lambda option: option in default_settings['modem']['options']
     },
     'callsign': {
@@ -20,7 +22,7 @@ default_settings = {
         'default': '',
         'required': True,
         'options': None,
-        'update': None,
+        'display': True,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9
     },
     'freq': {
@@ -29,7 +31,7 @@ default_settings = {
         'default': '7078000',
         'required': True,
         'options': None,
-        'update': None,
+        'display': True,
         'validate': lambda freq: freq.isnumeric()
     },
     'grid': {
@@ -38,7 +40,7 @@ default_settings = {
         'default': '',
         'required': False,
         'options': None,
-        'update': None,
+        'display': True,
         'validate': lambda grid: grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit()
     },
     'speed': {
@@ -47,7 +49,7 @@ default_settings = {
         'default': 'normal',
         'required': False,
         'options': ['slow', 'normal', 'fast', 'turbo'],
-        'update': None,
+        'display': True,
         'validate': lambda option: option in default_settings['speed']['options']
     },
     # activity/spot aging in minutes
@@ -57,7 +59,7 @@ default_settings = {
         'default': '15',
         'required': True,
         'options': None,
-        'update': None,
+        'display': True,
         'validate': lambda aging: aging.isnumeric()
     },
     'heartbeat': {
@@ -66,7 +68,7 @@ default_settings = {
         'default': 'disable',
         'required': False,
         'options': ['enable', 'disable'],
-        'update': None,
+        'display': True,
         'validate': lambda option: option in default_settings['heartbeat']['options']
     },
     'inbox': {
@@ -75,7 +77,7 @@ default_settings = {
         'default': 'disable',
         'required': False,
         'options': ['enable', 'disable', 'query @ALLCALL'],
-        'update': None,
+        'display': True,
         'validate': lambda option: option in default_settings['inbox']['options']
     },
     'tab': {
@@ -84,7 +86,7 @@ default_settings = {
         'default': 'activity',
         'required': False,
         'options': ['activity', 'messages'],
-        'update': None,
+        'display': True,
         'validate': lambda option: option in default_settings['tab']['options']
     },
     'theme': {
@@ -93,7 +95,7 @@ default_settings = {
         'default': 'light',
         'required': False,
         'options': ['light', 'dark'],
-        'update': None,
+        'display': True,
         'validate': lambda option: option in default_settings['theme']['options']
     },
     'size': {
@@ -102,19 +104,18 @@ default_settings = {
         'default': 'normal',
         'required': False,
         'options': ['normal', 'large'],
-        'update': None,
+        'display': True,
         'validate': lambda option: option in default_settings['size']['options']
+    },
+    'propagation': {
+        'value': '60', 
+        'label': 'Propagation Period (minutes)',
+        'default': '60',
+        'required': False,
+        'options': ['30', '60', '120'],
+        'display': False,
+        'validate': lambda option: option in default_settings['propagation']['options']
     }
-#    },
-#    # ECC/AES-256 encryption
-#    'encryption': {
-#        'value': 'disable', 
-#        'label': 'Encryption',
-#        'default': 'disable',
-#        'required': False,
-#        'options': ['enable', 'disable'],
-#        'validate': lambda option: option in default_settings['encryption']['options']
-#    }
 }
 
 def validate(setting, value):
