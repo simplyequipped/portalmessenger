@@ -19,22 +19,26 @@ def get_db():
 
     return g.db
 
+# initialize db from schema
+# allows for addition of new settings in future revisions without affecting existing settings
 def init_db():
     with current_app.open_resource('schema.sql') as f:
-        get_db().executescript( f.read().decode('utf8') )
+        get_db().executescript( f.read().decode('utf8'))
 
-    # skip init default settings if settings already exist
-    if len( get_settings() ) > 0:
-        return
-    
+    existing_settings = get_settings()
     from portalmessenger.settings import default_settings
 
     for setting, details in default_settings.items():
+        # skip if setting already exists
+        if setting in existing_settings:
+            continue
+        
         # flatten dict
         db_setting = {'setting': setting}
         db_setting.update(details)
 
-        for key in ['update', 'validate']:
+        # remove unstored setting properties
+        for key in ['validate']:
             db_setting.pop(key)
 
         if db_setting['options'] is not None:
@@ -42,7 +46,7 @@ def init_db():
             db_setting['options'] = json.dumps(db_setting['options'])
         
         # insert setting into settings table
-        get_db().execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options)', db_setting)
+        get_db().execute('INSERT INTO settings VALUES (:setting, :value, :label, :default, :required, :options, :display)', db_setting)
 
     get_db().commit() 
 
@@ -61,7 +65,7 @@ def get_settings():
     if len(db_settings) == 0:
         return {}
         
-    # convert list of row objects to to dict of dicts
+    # convert list of row objects to dict of dicts
     db_settings = {setting['setting']: dict(setting) for setting in db_settings}
 
     # convert options from json to list
@@ -141,7 +145,7 @@ def get_user_chat_history(user_a, user_b):
 
 # msg = pyjs8call.Message object
 def store_message(msg):
-    get_db().execute('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status, :error, :encrypted)', msg)
+    get_db().execute('INSERT INTO messages VALUES (:id, :origin, :destination, :type, :time, :text, :unread, :status, :error)', msg)
     get_db().commit() 
 
 # msg = pyjs8call.Message object
