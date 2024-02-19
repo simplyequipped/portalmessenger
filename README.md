@@ -19,6 +19,8 @@ It is the user's responsibility to manage their local network and implement good
 - Simple application installation, including cross-platform desktop shortcut creation
 
 ### Installation
+**Note:** the latest Portal Messenger version has not been released to PyPi yet, coming soon :)
+
 Refer to the [pyjs8call documentation](https://simplyequipped.github.io/pyjs8call/) for information on installing JS8Call.
 
 1. Pip install the application: `pip install portalmessenger` (use pip3 if python3 is not the default on your system)
@@ -37,12 +39,10 @@ Portal Messenger is now installed and an icon is available on the Desktop.
 
 Use the IP address and port printed to the command line (ex. 192.168.0.20:5000) when accessing Portal Messenger from another device.
 
-**Note:** the latest Portal Messenger version has not been released to PyPi yet, coming soon :)
-
 ### Views
 
 #### Menu Items
-Selecting the menu (hamburger) icon displays the main application menu. The available menu items are the same in most views, with a few exceptions noted in the relevant sections below.
+Selecting the menu icon ( <img src="portalmessenger/static/icons/hamburger.svg" alt="hamburger icon" width="25" height="25"/> ) displays the main application menu. The available menu items are the same in most views, with a few exceptions noted in the relevant sections below.
 
 - **Activity**: Navigate to the station activity view
 - **Network**: Navigate to the network activity view
@@ -53,11 +53,18 @@ Selecting the menu (hamburger) icon displays the main application menu. The avai
 #### Stations
 There are two tabs in the *Station* view: *Activity* and *Messages*. The *Default Tab* setting is used to select which of these two tabs is displayed when navigating to the *Stations* view (see the *Settings* section for more information). The *Activity* tab displays each heard station's presence indicator, callsign, and time since last heard. The *Messages* tab displays a station's presence indicator, callsign, and time since last heard when there are stored messages associated with that station. The *Messages* tab will be bold when there are unread messages, and will indicate the number of unread messages.
 
-Select a station to send a message or see stored message history. Use the **+** button near the bottom of the view to start a new conversation with a station. After pressing the **+** button, you will enter the station callsign or group designator and then press *Add*. You will be redirected to the conversation for that station or group.
+Select a station to send a message or see stored message history. Use the add icon ( <img src="portalmessenger/static/icons/add-solid.svg" alt="add icon" width="25" height="25"/> ) near the bottom of the view to start a new conversation with a station. After pressing the add icon, you will enter the station callsign or group designator and then press *Add*. You will be redirected to the conversation for that station or group.
 
 The *Station* view is dynamic and will update automatically as stations are heard and messages are received. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list.
 
-When the *Messages* tab is selected, the menu will offer an additonal option: *Delete Messages ...*. After selecting this menu option a delete (trash can) icon will be displayed on each station message. Selecting the delete icon will remove all stored messages assocaited with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons and return to normal operation.
+When the *Messages* tab is selected, the menu will include an additonal *Delete Messages...* option. After selecting this menu option, a delete icon ( <img src="portalmessenger/static/icons/delete-hollow.svg" alt="trash can icon" width="25" height="25"/> ) will be displayed on each station message. Selecting the delete icon will remove all stored messages associated with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons.
+
+#### Conversation
+When a station is selected, the user will navigate to the *Conversation* view. This view displays the station's presence indicator, callsign, and time since last heard. An outgoing message is entered in the text field near the bottom of the view. Select the *Send* button to send the message.
+
+Selecting the context menu icon ( <img src="portalmessenger/static/icons/vertical-ellipsis.svg" alt="vertical ellipsis icon" width="25" height="25"/> ) in the upper right corner of the view displays a list of pre-formatted JS8Call command messages. Selecting a command from the list will insert the pre-formatted command text in the outgoing message field. Text in square brackets should be replaced with applicable information. For example, the following text is inserted in the outgoing message field when the command *Query Callsign* is selected: ` QUERY CALL [callsign]` where [callsign] should be replaced with the callsign to be queried.
+
+Selecting the back icon ( <img src="portalmessenger/static/icons/arrow-left.svg" alt="back icon" width="25" height="25"/> ) in the upper right corner of the view navigates back to the *Stations* view.
 
 #### Network
 The *Network* view displays detailed information about each heard station:
@@ -71,15 +78,8 @@ The *Network* view displays detailed information about each heard station:
 
 The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list.
 
-#### Conversation
-When a station is selected, the user will navigate to the *Conversation* view. This view displays the station's presence indicator, callsign, and time since last heard. An outgoing message is entered in the text field near the bottom of the view. Select the *Send* button to send the message.
-
-Selecting the vertical ellipsis menu icon in the upper right corner of the view displays a list of pre-formatted JS8Call command messages. Selecting a command from the list will insert the pre-formatted command text in the outgoing message field. Text in square brackets is replaced with applicable information. For example, the following text is inserted in the outgoing message field when the command *Query Callsign* is selected: ` QUERY CALL [callsign]` where [callsign] is replaced with the callsign to be queried.
-
-Selecting the back (left arrow) icon in the upper right corner of the view navigates back to the *Stations* view.
-
 #### Propagation
-The *Propagation* view displays a map centered on the local station's grid square (or Washington D.C., USA if no grid square is configured). Heard station data is analyzed to determine the median SNR for each "heard" grid square over a 30 minute period. This data is displayed as a heat map to indicate an approximation of current propagation conditions relative to the local station. The heat map is updated with the latest heard station data each time the view is loaded, or every 5 minutes while the view is active.
+The *Propagation* view displays a map centered on the local station's grid square (or Washington D.C. USA if no grid square is configured). Heard station data is analyzed to determine the median SNR for each "heard" grid square over a 60 minute period. This data is displayed as a heat map to indicate an approximation of current propagation conditions relative to the local station. The heat map is updated with the latest heard station data each time the view is loaded, or every 5 minutes while the view is active.
 
 #### Settings
 The *Settings* view displays a list of application settings:
