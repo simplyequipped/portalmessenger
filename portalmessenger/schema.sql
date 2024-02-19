@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS settings (
   label,
   "default",
   required,
-  options
+  options,
+  display
 );
 
 CREATE TABLE IF NOT EXISTS messages (
