@@ -40,6 +40,9 @@
 			    <form id="settings-form" action="/settings" method="post">
 
                 {% for setting, data in settings.items() %}
+                    {% if not data['display'] %}
+                        {% continue %}
+                    {% endif %}
 				<div class="setting-row">
                     <label for="{{ setting }}">{{ data['label'] }}</label>
                     {% if data['options'] == None %}
