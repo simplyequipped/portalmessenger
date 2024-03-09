@@ -55,6 +55,8 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_confi
         app.config['MODEM'].update_heartbeat(db.get_setting_value('heartbeat'))
         app.config['MODEM'].update_inbox(db.get_setting_value('inbox'))
 
+        app.jinja_env.add_extension('jinja2.ext.loopcontrols')
+
     def app_context_aware(func):
         def _wrapped_function(*args, **kwargs):
             with app.app_context():
