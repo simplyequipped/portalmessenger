@@ -14,6 +14,7 @@ default_settings = {
         'required': False,
         'options': ['JS8Call'],
         'display': False,
+        'restart': False,
         'validate': lambda option: option in default_settings['modem']['options']
     },
     'callsign': {
@@ -23,6 +24,7 @@ default_settings = {
         'required': True,
         'options': None,
         'display': True,
+        'restart': True,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9
     },
     'freq': {
@@ -32,6 +34,7 @@ default_settings = {
         'required': True,
         'options': None,
         'display': True,
+        'restart': False,
         'validate': lambda freq: freq.isnumeric()
     },
     'grid': {
@@ -41,6 +44,7 @@ default_settings = {
         'required': False,
         'options': None,
         'display': True,
+        'restart': False,
         'validate': lambda grid: grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit()
     },
     'speed': {
@@ -50,6 +54,7 @@ default_settings = {
         'required': False,
         'options': ['slow', 'normal', 'fast', 'turbo'],
         'display': True,
+        'restart': True,
         'validate': lambda option: option in default_settings['speed']['options']
     },
     # activity/spot aging in minutes
@@ -60,6 +65,7 @@ default_settings = {
         'required': True,
         'options': None,
         'display': True,
+        'restart': False,
         'validate': lambda aging: aging.isnumeric()
     },
     'heartbeat': {
@@ -69,6 +75,7 @@ default_settings = {
         'required': False,
         'options': ['enable', 'disable'],
         'display': True,
+        'restart': False,
         'validate': lambda option: option in default_settings['heartbeat']['options']
     },
     'inbox': {
@@ -78,6 +85,7 @@ default_settings = {
         'required': False,
         'options': ['enable', 'disable', 'query @ALLCALL'],
         'display': True,
+        'restart': False,
         'validate': lambda option: option in default_settings['inbox']['options']
     },
     'tab': {
@@ -87,6 +95,7 @@ default_settings = {
         'required': False,
         'options': ['activity', 'messages'],
         'display': True,
+        'restart': False,
         'validate': lambda option: option in default_settings['tab']['options']
     },
     'theme': {
@@ -96,6 +105,7 @@ default_settings = {
         'required': False,
         'options': ['light', 'dark'],
         'display': True,
+        'restart': False,
         'validate': lambda option: option in default_settings['theme']['options']
     },
     'size': {
@@ -105,6 +115,7 @@ default_settings = {
         'required': False,
         'options': ['normal', 'large'],
         'display': True,
+        'restart': False,
         'validate': lambda option: option in default_settings['size']['options']
     },
     'propagation': {
@@ -114,6 +125,7 @@ default_settings = {
         'required': False,
         'options': ['30', '60', '120'],
         'display': False,
+        'restart': False,
         'validate': lambda option: option in default_settings['propagation']['options']
     }
 }
@@ -148,8 +160,9 @@ def update_settings(form_settings):
 
         #TODO update modem name handling to support other modems
         #if current_app.config['MODEM'].name.lower() == 'js8call':
-        if default_settings[setting]['update'] is not None:
-            db_settings[setting]['restart'] = default_settings[setting]['update'](value)
+
+        # setting changed, setting validated, indicate restart if required
+        db_settings[setting]['restart'] = default_settings[setting]['restart']
 
         db.set_setting(setting, value)
         db_settings[setting]['value'] = value
