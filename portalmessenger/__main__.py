@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--host', help='Accept requests from this host address, defaults to 0.0.0.0 (all hosts)', default='0.0.0.0')
     parser.add_argument('-p', '--port', help='Web server port, defaults to 5000', default=5000, type=int)
     parser.add_argument('-j', '--headless', help='Run JS8Call app headless (Linux only)', action='store_true')
-    parser.add_argument('-c', '--config', help='Path to pyjs8call configuration file')
+    parser.add_argument('-c', '--settings', help='Path to pyjs8call settings file')
     parser.add_argument('-d', '--debug', help='Enable pyjs8call debug output', action='store_true')
     parser.add_argument('-b', '--browser', help='Open a browser window to 127.0.0.1 after starting server', action='store_true')
     parser.add_argument('-s', '--shortcut', help='Create a desktop shortcut to launch the application, then exit', action='store_true')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         print('\nDesktop shortcut created, exiting\n')
         exit()
     
-    app, websockets = create_app(headless=args.headless, debugging=args.debug, pyjs8call_config_path=args.config)
+    app, websockets = create_app(headless=args.headless, debugging=args.debug, pyjs8call_settings_path=args.settings)
 
     if args.browser:
         webbrowser.open('http://127.0.0.1:{}'.format(args.port))

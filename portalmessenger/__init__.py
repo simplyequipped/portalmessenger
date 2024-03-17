@@ -7,7 +7,7 @@ from flask import Flask
 
 
 # app factory
-def create_app(test_config=None, headless=True, debugging=False, pyjs8call_config_path=None):
+def create_app(test_config=None, headless=True, debugging=False, pyjs8call_settings_path=None):
     # create and configure the app
     app = Flask(__name__)
     app.config['SECRET_KEY'] = secrets.token_hex()
@@ -35,8 +35,8 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_confi
         app.config['MODEM'] = JS8CallModem()
 
         # load pyjs8call config file
-        if pyjs8call_config_path is not None:
-            app.config['MODEM'].load_config(pyjs8call_config_path)
+        if pyjs8call_settings_path is not None:
+            app.config['MODEM'].settings.load(pyjs8call_settings_path)
 
         # initialize pyjs8call config before start (see pyjs8call.settings docs)
         callsign = db.get_setting_value('callsign')
