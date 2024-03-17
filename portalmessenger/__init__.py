@@ -32,11 +32,7 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
 
         # initalize pyjs8call modem
         from .modem.js8callmodem import JS8CallModem
-        app.config['MODEM'] = JS8CallModem()
-
-        # load pyjs8call config file
-        if pyjs8call_settings_path is not None:
-            app.config['MODEM'].settings.load(pyjs8call_settings_path)
+        app.config['MODEM'] = JS8CallModem(settings_path = pyjs8call_settings_path)
 
         # initialize pyjs8call config before start (see pyjs8call.settings docs)
         callsign = db.get_setting_value('callsign')
