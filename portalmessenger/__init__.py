@@ -33,14 +33,17 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
         from .modem.js8callmodem import JS8CallModem
         app.config['MODEM'] = JS8CallModem()
 
-        # load pyjs8call settings file if specified
+        # load pyjs8call settings from file and initialize in app settings
         loaded_settings = {}
         if pyjs8call_settings_path is not None:
             app.config['MODEM'].js8call.settings.load(pyjs8call_settings_path)
             
-            for setting in ['callsign', 'speed', 'grid', 'freq', 'frequency']:
+            for setting in ['callsign', 'speed', 'grid', 'freq']:
                 if setting in app.config['MODEM'].js8call.settings.loaded_settings['station']:
                     loaded_settings[setting] = app.config['MODEM'].js8call.settings.loaded_settings['station'][setting]
+
+            if 'enable' in app.config['MODEM'].js8call.settings.loaded_settings['heartbeat']:
+                loaded_settings['heartbeat'] = 'enable' if app.config['MODEM'].js8call.settings.loaded_settings['heartbeat']['enable'].lower() in ['true', 'yes'] else 'disable'
 
             from . import settings
             updated_settings = settings.update_settings(loaded_settings)
@@ -50,7 +53,7 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
                 raise ValueError(', '.join(updated_settings_error))
 
         # initialize pyjs8call config before start (see pyjs8call.settings docs)
-        if 'callsign' not in loaded_settings
+        if 'callsign' not in loaded_settings:
             callsign = db.get_setting_value('callsign')
             if callsign not in [None, '']:
                 app.config['MODEM'].update_callsign(callsign)
