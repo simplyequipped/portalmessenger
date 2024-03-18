@@ -17,6 +17,5 @@ CREATE TABLE IF NOT EXISTS messages (
   text,
   unread,
   status,
-  error,
-  encrypted
+  error
 );
