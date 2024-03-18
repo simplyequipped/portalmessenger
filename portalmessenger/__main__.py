@@ -35,7 +35,7 @@ if __name__ == '__main__':
         icon_path = os.path.join( os.path.dirname( os.path.abspath(__file__) ), icon_file)
         
         # include specified args in pyshortcuts command, removing --shortcut
-        sys_args = sys_args.replace('--shortcut', '').replace('-s', '').replace('  ', ' ')
+        sys_args = sys_args.replace('--shortcut ', '').replace('-s ', '').replace('  ', ' ').strip()
         command = '{} -m portalmessenger ' + sys_args
         pyshortcuts.make_shortcut(command, name='Portal Messenger', icon=icon_path, terminal=True)
 
