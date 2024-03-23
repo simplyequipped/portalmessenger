@@ -26,8 +26,13 @@ def process_message(msg):
         'status': msg.status
     }
 
-    if msg['type'] == 'rx' and msg['origin'] != current_app.config['ACTIVE_CHAT_USER']:
-        msg['unread'] = True
+    if msg['type'] == 'rx':
+        if msg['origin'] != current_app.config['ACTIVE_CHAT_USER']:
+            msg['unread'] = True
+
+        if len(msg['destination']) > 0 and msg['destination'][0] == '@':
+            # msg to group, prepend origin to msg text
+            msg['text'] = '{}: {}'.format(msg['origin'], msg['text'])
 
     if msg['type'] == 'tx':
         msg['origin'] = db.get_setting_value('callsign')
