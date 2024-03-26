@@ -28,6 +28,12 @@
 	.content {
 		max-height: calc(100vh - (100vh - 100%));
 	}
+    .menu {
+        /*prevent chat command menu going off bottom of screen, add scrollbar as needed*/
+        /*minimum 400px height to keep menu on screen*/
+        max-height: 80vh;
+        overflow-y: auto;
+    }
 }
 
 
