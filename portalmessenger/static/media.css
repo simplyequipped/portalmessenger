@@ -19,7 +19,7 @@
 		border-radius: 0px;
 		padding: 25px 10px 25px 10px;
 	}
-	.chat-time, .last-heard {
+	.chat-time {
 		font-size: var(--normal-font-size);
 	}
 	.viewport {
@@ -57,7 +57,7 @@
 	.conversation {
 		padding: 10px 15px 10px 15px;
 	}
-	.chat-time, .last-heard {
+	.chat-time {
 		font-size: var(--small-font-size);
 	}
 	.viewport {
