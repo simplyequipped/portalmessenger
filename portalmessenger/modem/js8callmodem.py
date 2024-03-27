@@ -68,20 +68,7 @@ class JS8CallModem(BaseModem):
         
     def get_propagation_data(self, max_age=30):
         propagation_data = self.js8call.propagation.grids_median_dataset(max_age = max_age)
-
-        # convert each data point (grid, snr, timestamp) to [lat, lon, snr]
-        for i in range(len(propagation_data)):
-            try:
-                lat, lon = self.js8call.grid_to_lat_lon(propagation_data[i][0])
-            except Exception:
-                # skip if grid to lat/lon converstion fails
-                continue
-                
-            propagation_data[i] = [
-                lat,
-                lon,
-                propagation_data[i][1]
-            ]
+        propagation_data = [[lat, lon, snr] for grid, lat, lon, snr, timestamp in propagation_data]
 
         station_grid = self.js8call.settings.get_station_grid()
         station_grid = station_grid if station_grid not in (None, '') else 'FM18lv' # default to Washington D.C. USA
