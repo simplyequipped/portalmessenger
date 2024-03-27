@@ -54,7 +54,7 @@ class JS8CallModem(BaseModem):
         return spots
 
     def get_call_activity(self, age=None):
-        call_activity = self.js8call.get_call_activity(age = age)
+        call_activity = self.js8call.get_call_activity_from_spots(age = age)
 
         for i in range(len(call_activity)):
             # pre-process and set empty values to None for easier ui handling
