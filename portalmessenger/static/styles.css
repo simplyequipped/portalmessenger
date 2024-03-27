@@ -275,7 +275,7 @@ body {
 
 .last-heard {
 	display: inline-block;
-	font-size: var(--small-font-size);
+	font-size: var(--normal-font-size);
 	float: right;
 	padding-top: 4px;
 }
