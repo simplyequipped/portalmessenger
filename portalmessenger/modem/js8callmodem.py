@@ -67,7 +67,7 @@ class JS8CallModem(BaseModem):
         return call_activity
         
     def get_propagation_data(self, max_age=30):
-        propagation_data = self.js8call.propagation.grids_median_dataset(max_age = max_age)
+        propagation_data = self.js8call.propagation.grids_median_dataset(max_age = max_age, normalize_snr=True)
         propagation_data = [[lat, lon, snr] for grid, lat, lon, snr, timestamp in propagation_data]
 
         station_grid = self.js8call.settings.get_station_grid()
