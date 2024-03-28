@@ -77,13 +77,44 @@
         $('.menu-item.delete-messages').hide();
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+        function updateActivityContent() {
+            // hide/show initial text on activity tab
+            if ( $('.spot').length == 0 ) {
+                $('.initial-text').show();
+            }
+            else {
+                $('.initial-text').hide();
+            }
+            // show spots, including conversations/messages that are also spots
+            $('.conversation').hide();
+            $('.spot').show();
+        }
+
+        function updateConversationsContent() {
+            // hide/show initial text on messages tab
+            if ( $('.conversation').length == 0 ) {
+                $('.initial-text').show();
+            }
+            else {
+                $('.initial-text').hide();
+            }
+            // show conversations, including spots that are also conversations/messages
+            $('.spot').hide();
+            $('.conversation').show();
+        }
+
 		socket.on('spot', function( data ) {
 			data.forEach(function( station ) {
 				handleSpot(station);
 			});
 			sortStations();
-            // click selected tab to force event handling
-            $('.tab.selected').click();
+            
+            if ( selectedTab() == 'activity' ) {
+                updateActivityContent();
+            }
+            else if ( selectedTab() == 'conversations' ) {
+                updateConversationsContent();
+            }
 		});
 
 		socket.on('conversation', function( data ) {
@@ -91,8 +122,13 @@
 				handleConversation(station);
 			});
 			sortStations();
-            // click selected tab to force event handling
-            $('.tab.selected').click();
+            
+            if ( selectedTab() == 'activity' ) {
+                updateActivityContent();
+            }
+            else if ( selectedTab() == 'conversations' ) {
+                updateConversationsContent();
+            }
 		});
 
 		socket.on('conversation-removed', function( data ) {
@@ -112,31 +148,13 @@
 			$('#tab-activity').click(function(){
 				$('#tab-conversations').removeClass('selected');
 				$('#tab-activity').addClass('selected');
-				// hide/show initial text on activity tab
-				if ( $('.spot').length == 0 ) {
-					$('.initial-text').show();
-                }
-				else {
-					$('.initial-text').hide();
-                }
-				// show spots, including conversations that are also spots
-				$('.conversation').hide();
-				$('.spot').show();
+                updateActivityContent();
 			});
 
 			$('#tab-conversations').click(function(){
 				$('#tab-activity').removeClass('selected');
 				$('#tab-conversations').addClass('selected');
-				// hide/show initial text on messages tab
-				if ( $('.conversation').length == 0 ) {
-					$('.initial-text').show();
-                }
-				else {
-					$('.initial-text').hide();
-                }
-				// show conversations, including spots that are also conversations
-				$('.spot').hide();
-				$('.conversation').show();
+                updateConversationsContent();
 			});
 
 			$('.icon-add').click(function(){
