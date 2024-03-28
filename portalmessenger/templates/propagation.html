@@ -55,7 +55,7 @@
         var heatLayer;
 
 
-        //TODO
+        //TODO test code
         var numSets = 100;
         function simulatePropagationData(numDatasets) {
             // Define bounds for continental USA
@@ -79,6 +79,8 @@
         
             return datasets;
         }
+
+        
         
         socket.on('propagation-data', function( data ) {
     		$('.initial-text').hide();
@@ -98,26 +100,26 @@
                 map.removeLayer(heatLayer)
             }
 
+            
             //TODO test code
-            //data = {
-            //    propagation: simulatePropagationData(numSets)
-            //};
+            if ( window.location.search.substring(1) == 'test' ) {
+                data = { propagation: simulatePropagationData(numSets) };
+            }
 
+            
             // normalize bottom end of SNR range from -28 to 0, avoid negative numbers
             // JS8Call slow speed results in minimum decode SNR is -28dB
             normalizedData = data['propagation'].map(function (point) {
                 return [point[0], point[1], point[2] + 28]
             });
 
-            console.log(normalizedData);
-
             // create heat map layer using normalized grid square median SNR
-            // gradient weighted on lower end of range
-            // max based on 0dB as high snr, plus 28 for normalization
+            // gradient weighted to middle of range, max based on 0dB as high snr, plus 28 for normalization
+            // heat map point radius adjusted dynamically based on number of points, to improve point visibility
             dynamicRadius = (-0.2 * normalizedData.length) + 76
             heatLayer = L.heatLayer(normalizedData, {
                 radius: dynamicRadius,
-                gradient: {0.1: 'blue', 0.2: 'cyan', 0.3: 'lime', 0.6: 'yellow', 0.8:'red'},
+                gradient: {0.3: 'blue', 0.4: 'cyan', 0.5: 'lime', 0.6: 'yellow', 0.7:'red'},
                 max: 28
             }).addTo(map);
 		});
