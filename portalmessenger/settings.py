@@ -133,6 +133,16 @@ default_settings = {
 def validate(setting, value):
     return default_settings[setting]['validate'](value)
 
+def update_modem_setting(setting, value):
+    #TODO update modem name handling to support other modems
+    if current_app.config['MODEM'].name.lower() == 'js8call':
+        if setting == 'callsign': current_app.config['MODEM'].update_callsign(value)
+        elif setting == 'freq': current_app.config['MODEM'].update_freq(value)
+        elif setting == 'grid': current_app.config['MODEM'].update_grid(value)
+        elif setting == 'speed': current_app.config['MODEM'].update_speed(value)
+        elif setting == 'heartbeat': current_app.config['MODEM'].update_heartbeat(value)
+        elif setting == 'inbox': current_app.config['MODEM'].update_inbox(value)
+
 # form_settings = flask.request.form from post request
 def update_settings(form_settings):
     restart = False
@@ -158,14 +168,12 @@ def update_settings(form_settings):
             # skip further processing if setting value invalid
             continue
 
-        #TODO update modem name handling to support other modems
-        #if current_app.config['MODEM'].name.lower() == 'js8call':
-
-        # setting changed, setting validated, indicate restart if required
-        db_settings[setting]['restart'] = default_settings[setting]['restart']
-
         db.set_setting(setting, value)
         db_settings[setting]['value'] = value
+        update_modem_setting(setting, value)
+
+        # setting validated amd updated, indicate restart if required
+        db_settings[setting]['restart'] = default_settings[setting]['restart']
         
     return db_settings
     
