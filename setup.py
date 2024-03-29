@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="portalmessenger",
-    version="0.1.0-dev",
+    version="0.1.0",
     author="Simply Equipped LLC",
     author_email="howard@simplyequipped.com",
     description="Messaging web app using pyjs8call",
