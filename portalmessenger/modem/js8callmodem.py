@@ -144,9 +144,4 @@ class JS8CallModem(BaseModem):
             self.js8call.inbox.enable(query=True)
         else:
             self.js8call.inbox.disable()
-
-    # load pyjs8call settings from config
-    # must be called before start()
-    def load_config(self, pyjs8call_config_path):
-        self.js8call.load_config(pyjs8call_config_path)
-
+    
