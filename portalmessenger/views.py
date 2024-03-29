@@ -54,6 +54,9 @@ def settings_route():
         # restart modem if required
         if any([updated_settings[setting]['restart'] for setting in updated_settings]):
             current_app.config['MODEM'].restart()
+            # make sure non-config settings are updated after restart
+            current_app.config['MODEM'].update_freq(updated_settings['freq']['value'])
+            current_app.config['MODEM'].update_grid(updated_settings['grid']['value'])
 
         return render_template('settings.html', settings = updated_settings, ip = current_app.config['LOCAL_IP'])
         
