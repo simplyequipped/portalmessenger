@@ -59,7 +59,6 @@ body {
 	-webkit-mask-image: url('icons/delete-hollow.svg');
 	position: absolute;
 	display: block;
-	top: 20px;
 	right: 20px;
 	background: var(--primary-color);
 }
@@ -213,6 +212,7 @@ body {
 	padding: 10px 15px 10px 15px;
 	color: black; 
 	cursor: pointer;
+    position: relative;
 }
 
 .station:hover, .station:focus {
