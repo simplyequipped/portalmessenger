@@ -76,7 +76,7 @@ The *Network* view displays detailed information about each heard station:
 - **Hearing**: Other stations hearing the station
 - **Heard By**: Other stations heard by the station
 
-The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list.
+The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list. In order to provide more network information, *Hearing* and *Heard By* activity with an age 10 times the *Aging (minutes)* setting in included for each station.
 
 #### Propagation
 The *Propagation* view displays a map centered on the local station's grid square (or Washington D.C. USA if no grid square is configured). Heard station data is analyzed to determine the median SNR for each "heard" grid square over a 60 minute period. This data is displayed as a heat map to indicate an approximation of current propagation conditions relative to the local station. The heat map is updated with the latest heard station data each time the view is loaded, or every 5 minutes while the view is active.
