@@ -103,18 +103,22 @@
             $('.conversation').show();
         }
 
-		socket.on('spot', function( data ) {
-			data.forEach(function( station ) {
-				handleSpot(station);
-			});
-			sortStations();
-            
+        function updateTabContent() {
             if ( selectedTab() == 'activity' ) {
                 updateActivityContent();
             }
             else if ( selectedTab() == 'conversations' ) {
                 updateConversationsContent();
             }
+        }
+
+		socket.on('spot', function( data ) {
+			data.forEach(function( station ) {
+				handleSpot(station);
+			});
+			sortStations();
+            
+            updateTabContent();
 		});
 
 		socket.on('conversation', function( data ) {
@@ -123,12 +127,7 @@
 			});
 			sortStations();
             
-            if ( selectedTab() == 'activity' ) {
-                updateActivityContent();
-            }
-            else if ( selectedTab() == 'conversations' ) {
-                updateConversationsContent();
-            }
+            updateTabContent();
 		});
 
 		socket.on('conversation-removed', function( data ) {
@@ -143,6 +142,8 @@
                 // remove after 400ms (default jquery event duration)
                 setTimeout( function() { station.remove(); }, 400);
             }
+
+            updateTabContent();
         });
 
 		$(window).on('load', function(){
