@@ -146,5 +146,16 @@
         setInterval(function () {
             socket.emit('propagation-data');
         }, 300000);
+
+        // reconnect socketio when tab gets focus again
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visibile') {
+                if (socket && socket.disconnected) {
+                    socket.connect();
+                    // update propagation data
+                    socket.emit('propagation-data');
+                }
+            }
+        });
     </script>
 </html>
