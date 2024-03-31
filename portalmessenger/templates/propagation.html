@@ -152,9 +152,9 @@
             if (document.visibilityState === 'visibile') {
                 if (socket && socket.disconnected) {
                     socket.connect();
-                    // update propagation data
-                    socket.emit('propagation-data');
                 }
+                // update propagation data
+                socket.emit('propagation-data');
             }
         });
     </script>

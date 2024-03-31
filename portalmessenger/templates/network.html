@@ -137,9 +137,9 @@
             if (document.visibilityState === 'visibile') {
                 if (socket && socket.disconnected) {
                     socket.connect();
-                    // update network activity
-                    socket.emit('network');
                 }
+                // update network activity
+                socket.emit('network');
             }
         });
     </script>
