@@ -135,6 +135,8 @@
             var station = findStation(data.username);
             station.find('.icon-delete').slideUp(300);
             station.slideUp();
+            //decrement unread count in messages tab
+            markRead(data.username);
 	        station.removeClass('conversation');
 
             if ( !station.hasClass('spot') ) {
