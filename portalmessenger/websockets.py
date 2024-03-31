@@ -83,14 +83,14 @@ def network_data():
     activity = current_app.config['MODEM'].get_call_activity(age = aging, hearing_age = aging * 10)
     network = []
     # html collapses empty elements, use character(s) or &nbsp;
-    blank_str = '--'
+    blank_str = ' --'
 
     for station in activity:
         # set station attributes to formatted value or non-blank space
         station = {
             'username': station['origin'],
             'grid': station['grid'] if station['grid'] is not None else blank_str,
-            'distance': station['distance'] if station['distance'] is not None else blank_str,
+            'distance': station['distance'] if station['distance'] is not None else '&nbsp;',
             'time': station['timestamp'],
             'time_str': station['local_time_str'],
             'snr': station['snr'] if station['snr'] is not None else blank_str,
