@@ -82,19 +82,21 @@ def network_data():
     # network activity since aging setting
     activity = current_app.config['MODEM'].get_call_activity(age = aging, hearing_age = aging * 10)
     network = []
+    # html collapses empty elements, use character(s) or &nbsp;
+    blank_str = '--'
 
     for station in activity:
         # set station attributes to formatted value or non-blank space
         station = {
             'username': station['origin'],
-            'grid': station['grid'] if station['grid'] is not None else '&nbsp;',
-            'distance': station['distance'] if station['distance'] is not None else '&nbsp;',
+            'grid': station['grid'] if station['grid'] is not None else blank_str,
+            'distance': station['distance'] if station['distance'] is not None else blank_str,
             'time': station['timestamp'],
             'time_str': station['local_time_str'],
-            'snr': station['snr'] if station['snr'] is not None else '&nbsp;',
-            'speed': station['speed'][0].upper() + station['speed'][1:] if station['speed'] not in (None, '') else '&nbsp;',
-            'hearing': station['hearing'] if station['hearing'] is not None else '&nbsp;',
-            'heard_by': station['heard_by'] if station['heard_by'] is not None else '&nbsp;'
+            'snr': station['snr'] if station['snr'] is not None else blank_str,
+            'speed': station['speed'][0].upper() + station['speed'][1:] if station['speed'] not in (None, '') else blank_str,
+            'hearing': station['hearing'] if station['hearing'] is not None else blank_str,
+            'heard_by': station['heard_by'] if station['heard_by'] is not None else blank_str
         }
         network.append(station)
 
