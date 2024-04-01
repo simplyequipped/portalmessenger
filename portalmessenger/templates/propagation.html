@@ -147,14 +147,28 @@
             socket.emit('propagation-data');
         }, 300000);
 
-        // reconnect socketio when tab gets focus again
-        document.addEventListener('visibilitychange', function() {
+        // update content when page regains focus
+        var shouldFetchContent = false;
+        
+        function fetchContent() {
+            socket.emit('propagation-data');
+        }
+
+        socket.on('connect', {
+            if (shouldFetchContent) {
+                fetchContent();
+                shouldFetchContent = false;
+            }
+        });
+        
+        $(document).on('visibilitychange', function(event) {
             if (document.visibilityState === 'visibile') {
-                if (socket && socket.disconnected) {
-                    socket.connect();
+                if (socket && socket.connected) {
+                    fetchContent();
                 }
-                // update propagation data
-                socket.emit('propagation-data');
+                else {
+                    shouldFetchContent = true;
+                }
             }
         });
     </script>
