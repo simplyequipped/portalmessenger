@@ -256,15 +256,29 @@
 			});
 		}, 1000 * 60);
 
-        // reconnect socketio when tab gets focus again
-        document.addEventListener('visibilitychange', function() {
+        // update content when page regains focus
+        var shouldFetchContent = false;
+        
+        function fetchContent() {
+            socket.emit('spot');
+            socket.emit('conversation');
+        }
+
+        socket.on('connect', {
+            if (shouldFetchContent) {
+                fetchContent();
+                shouldFetchContent = false;
+            }
+        });
+        
+        $(document).on('visibilitychange', function(event) {
             if (document.visibilityState === 'visibile') {
-                if (socket && socket.disconnected) {
-                    socket.connect();
+                if (socket && socket.connected) {
+                    fetchContent();
                 }
-                // update activity and messages
-                socket.emit('spot');
-                socket.emit('conversation');
+                else {
+                    shouldFetchContent = true;
+                }
             }
         });
 	</script>
