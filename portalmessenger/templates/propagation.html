@@ -133,6 +133,32 @@
 
             // request propagation data
             socket.emit('propagation-data');
+
+            // update content when page regains focus
+
+            var shouldFetchContent = false;
+            
+            function fetchContent() {
+                socket.emit('propagation-data');
+            }
+    
+            socket.on('connect', {
+                if (shouldFetchContent) {
+                    fetchContent();
+                    shouldFetchContent = false;
+                }
+            });
+            
+            $(document).on('visibilitychange', function(event) {
+                if (document.visibilityState === 'visibile') {
+                    if (socket && socket.connected) {
+                        fetchContent();
+                    }
+                    else {
+                        shouldFetchContent = true;
+                    }
+                }
+            });
         });
 		
         // hide menu when clicking off menu
@@ -146,30 +172,5 @@
         setInterval(function () {
             socket.emit('propagation-data');
         }, 300000);
-
-        // update content when page regains focus
-        var shouldFetchContent = false;
-        
-        function fetchContent() {
-            socket.emit('propagation-data');
-        }
-
-        socket.on('connect', {
-            if (shouldFetchContent) {
-                fetchContent();
-                shouldFetchContent = false;
-            }
-        });
-        
-        $(document).on('visibilitychange', function(event) {
-            if (document.visibilityState === 'visibile') {
-                if (socket && socket.connected) {
-                    fetchContent();
-                }
-                else {
-                    shouldFetchContent = true;
-                }
-            }
-        });
     </script>
 </html>
