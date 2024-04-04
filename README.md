@@ -1,4 +1,7 @@
 # Portal Messenger
+[![pypi version](https://img.shields.io/pypi/v/portalmessenger?color=blue&label=pypi%20version)](https://pypi.org/project/portalmessenger) &nbsp;&nbsp;&nbsp;
+[![pypi downloads](https://img.shields.io/pypi/dw/portalmessenger?color=blue&label=pypi%20downloads)](https://pypi.org/project/portalmessenger) &nbsp;&nbsp;&nbsp;
+[![github license](https://img.shields.io/github/license/simplyequipped/portalmessenger?color=blue)](https://github.com/simplyequipped/portalmessenger/blob/main/LICENSE)
 
 HF radio messaging web app using pyjs8call.
 
