@@ -34,17 +34,17 @@ Refer to the [pyjs8call documentation](https://simplyequipped.github.io/pyjs8cal
 
    or
    
-   Create a desktop shortcut to run JS8Call headless (Linux only) for remote access via Portal Messenger:
+   Create a desktop shortcut to run JS8Call headless (Linux only) and access Portal Messenger from another device:
    ```
    python -m portalmessenger --shortcut --headless
    ```
 Portal Messenger is now installed and an icon is available on the Desktop.
 
-Use the IP address and port printed to the command line (ex. 192.168.0.20:5000) when accessing Portal Messenger from another device.
+Use the IP address and port printed to the command line at startup (ex. 192.168.0.20:5000) to access Portal Messenger from another device.
 
-### Views
+## Views
 
-#### Menu Items
+### Menu Items
 Selecting the menu icon ( <img src="portalmessenger/static/icons/hamburger.svg" alt="hamburger icon" width="25" height="25"/> ) displays the main application menu. The available menu items are the same in most views, with a few exceptions noted in the relevant sections below.
 
 - **Activity**: Navigate to the station activity view
@@ -53,7 +53,7 @@ Selecting the menu icon ( <img src="portalmessenger/static/icons/hamburger.svg" 
 - **Settings**: Navigate to the settings view
 - **Close Portal**: Stop the application
 
-#### Activity
+### Activity
 
 ![Activity view screenshot](docs/screenshot_activity.png)
 
@@ -65,7 +65,7 @@ The *Activity* view is dynamic and will update automatically as stations are hea
 
 When the *Messages* tab is selected, the menu will include an additonal *Delete Messages...* option. After selecting this menu option, a delete icon ( <img src="portalmessenger/static/icons/delete-hollow.svg" alt="trash can icon" width="25" height="25"/> ) will be displayed on each station message. Selecting the delete icon will remove all stored messages associated with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons.
 
-#### Conversation
+### Conversation
 
 ![Conversation view screenshot](docs/screenshot_conversation.png)
 ![Conversation context menu screenshot](docs/screenshot_conversation_context_menu.png)
@@ -76,7 +76,7 @@ Selecting the context menu icon ( <img src="portalmessenger/static/icons/vertica
 
 Selecting the back icon ( <img src="portalmessenger/static/icons/arrow-left.svg" alt="back icon" width="25" height="25"/> ) in the upper right corner of the view navigates back to the *Activity* view.
 
-#### Network
+### Network
 
 ![Network view screenshot](docs/screenshot_network.png)
 
@@ -91,13 +91,13 @@ The *Network* view displays detailed information about each heard station:
 
 The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list. In order to provide more network information, *Hearing* and *Heard By* activity with an age 10 times the *Aging (minutes)* setting in included for each station.
 
-#### Propagation Map
+### Propagation Map
 
 ![Propagation Map view screenshot](docs/screenshot_propagation_map.png)
 
 The *Propagation Map* view displays a map centered on the local station's grid square (or Washington D.C. USA if no grid square is configured). Heard station data is analyzed to determine the median SNR for each "heard" grid square over a 60 minute period. This data is displayed as a heat map to indicate an approximation of current propagation conditions relative to the local station. The heat map is updated with the latest heard station data each time the view is loaded, or every 5 minutes while the view is active.
 
-#### Settings
+### Settings
 
 ![Settings view screenshot](docs/screenshot_settings.png)
 
