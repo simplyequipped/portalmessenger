@@ -137,13 +137,16 @@
             //decrement unread count in messages tab
             markRead(data.username);
 	        station.removeClass('conversation');
-
-            if ( !station.hasClass('spot') ) {
-                // remove after 400ms (default jquery event duration)
-                setTimeout( function() { station.remove(); }, 400);
-            }
-
-            updateTabContent();
+            
+            // after 400ms (default jquery event duration)
+            setTimeout( function() {
+                if ( !station.hasClass('spot') ) {
+                    // remove station if only conversation
+                    station.remove(); 
+                }
+                // show initial text if last conversation deleted
+                updateTabContent();
+            }, 400);
         });
 
 		$(window).on('load', function(){
