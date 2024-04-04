@@ -185,34 +185,34 @@
                     $('.menu-item.delete-messages').hide();
                 }
                 $('.menu').slideToggle();
-
+            });
+            
             // update content when page regains focus
-
-            var shouldFetchContent = false;
-            
-            function fetchContent() {
-                socket.emit('spot');
-                socket.emit('conversation');
-            }
-    
-            socket.on('connect', {
-                if (shouldFetchContent) {
-                    fetchContent();
-                    shouldFetchContent = false;
-                }
-            });
-            
-            $(document).on('visibilitychange', function(event) {
-                if (document.visibilityState === 'visibile') {
-                    if (socket && socket.connected) {
-                        fetchContent();
-                    }
-                    else {
-                        shouldFetchContent = true;
-                    }
-                }
-            });
-            });
+            //
+            //var shouldFetchContent = false;
+            //
+            //function fetchContent() {
+            //    socket.emit('spot');
+            //    socket.emit('conversation');
+            //}
+            //
+            //socket.on('connect', {
+            //    if (shouldFetchContent) {
+            //        fetchContent();
+            //        shouldFetchContent = false;
+            //    }
+            //});
+            //
+            //$(document).on('visibilitychange', function(event) {
+            //    if (document.visibilityState === 'visibile') {
+            //        if (socket && socket.connected) {
+            //            fetchContent();
+            //        }
+            //        else {
+            //            shouldFetchContent = true;
+            //        }
+            //    }
+            //});
 
 			$('#new-conversation-form').submit(function (){
 				event.preventDefault();
