@@ -137,11 +137,16 @@ def update_modem_setting(setting, value):
     #TODO update modem name handling to support other modems
     if current_app.config['MODEM'].name.lower() == 'js8call':
         if setting == 'callsign': current_app.config['MODEM'].update_callsign(value)
-        elif setting == 'freq': current_app.config['MODEM'].update_freq(value)
-        elif setting == 'grid': current_app.config['MODEM'].update_grid(value)
         elif setting == 'speed': current_app.config['MODEM'].update_speed(value)
-        elif setting == 'heartbeat': current_app.config['MODEM'].update_heartbeat(value)
-        elif setting == 'inbox': current_app.config['MODEM'].update_inbox(value)
+
+        # js8call must be running to update these settings
+        if current_app.config['MODEM'].js8call.connected():
+            if setting == 'freq': current_app.config['MODEM'].update_freq(value)
+            elif setting == 'grid': current_app.config['MODEM'].update_grid(value)
+            elif setting == 'heartbeat': current_app.config['MODEM'].update_heartbeat(value)
+            elif setting == 'inbox': current_app.config['MODEM'].update_inbox(value)
+            
+            
 
 # form_settings = flask.request.form from post request
 def update_settings(form_settings):
