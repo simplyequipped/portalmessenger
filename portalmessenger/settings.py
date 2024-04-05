@@ -29,7 +29,7 @@ default_settings = {
         'display': True,
         'restart': True,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9,
-        'update': current_app.config['MODEM'].update_callsign,
+        'update': lambda value: None,
         'js8call-api': False
     },
     'grid': {
@@ -41,7 +41,7 @@ default_settings = {
         'display': True,
         'restart': False,
         'validate': lambda grid: grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit(),
-        'update': current_app.config['MODEM'].update_grid,
+        'update': lambda value: None,
         'js8call-api': True
     },
     'speed': {
@@ -53,7 +53,7 @@ default_settings = {
         'display': True,
         'restart': True,
         'validate': lambda option: option in default_settings['speed']['options'],
-        'update': current_app.config['MODEM'].update_speed,
+        'update': lambda value: None,
         'js8call-api': False
     },
     'freq': {
@@ -65,7 +65,7 @@ default_settings = {
         'display': True,
         'restart': False,
         'validate': lambda freq: freq.isnumeric(),
-        'update': current_app.config['MODEM'].update_freq,
+        'update': lambda value: None,
         'js8call-api': True
     },
     'groups': {
@@ -77,7 +77,7 @@ default_settings = {
         'display': True,
         'restart': True,
         'validate': lambda groups: all([bool(group.strip().startswith('@') and len(group.strip()) <= 9) for group in groups.split(',')]),
-        'update': current_app.config['MODEM'].update_groups,
+        'update': lambda value: None,
         'js8call-api': False
     },
     # activity/spot aging in minutes
@@ -102,7 +102,7 @@ default_settings = {
         'display': True,
         'restart': False,
         'validate': lambda option: option in default_settings['heartbeat']['options'],
-        'update': current_app.config['MODEM'].update_heartbeat,
+        'update': lambda value: None,
         'js8call-api': True
     },
     'inbox': {
@@ -114,7 +114,7 @@ default_settings = {
         'display': True,
         'restart': False,
         'validate': lambda option: option in default_settings['inbox']['options'],
-        'update': current_app.config['MODEM'].update_inbox,
+        'update': lambda value: None,
         'js8call-api': True
     },
     'tab': {
