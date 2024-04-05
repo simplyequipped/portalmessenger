@@ -5,7 +5,8 @@ from portalmessenger import db
 
 # lambda references to dict elements will not be updated after dict creation, even if dict changes (which it should not)
 # 'display' indicates whether the setting should be displayed in the Settings view (may still be displayed elsewhere)
-# 'validate' is not stored in the db, only referenced from default_settings
+# 'validate' and 'update' are not stored in the db, only referenced from default_settings
+# 'js8call-api' indicates whether a setting requires js8call to be running to change the setting
 default_settings = {
     'modem': {
         'value': 'JS8Call', 
@@ -15,7 +16,9 @@ default_settings = {
         'options': ['JS8Call'],
         'display': False,
         'restart': False,
-        'validate': lambda option: option in default_settings['modem']['options']
+        'validate': lambda option: option in default_settings['modem']['options'],
+        'update': lambda value: None,
+        'js8call-api': False
     },
     'callsign': {
         'value': '',
@@ -25,7 +28,9 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': True,
-        'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9
+        'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9,
+        'update': current_app.config['MODEM'].update_callsign,
+        'js8call-api': False
     },
     'grid': {
         'value': '',
@@ -35,7 +40,9 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
-        'validate': lambda grid: grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit()
+        'validate': lambda grid: grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit(),
+        'update': current_app.config['MODEM'].update_grid,
+        'js8call-api': True
     },
     'speed': {
         'value': 'normal',
@@ -45,7 +52,9 @@ default_settings = {
         'options': ['slow', 'normal', 'fast', 'turbo'],
         'display': True,
         'restart': True,
-        'validate': lambda option: option in default_settings['speed']['options']
+        'validate': lambda option: option in default_settings['speed']['options'],
+        'update': current_app.config['MODEM'].update_speed,
+        'js8call-api': False
     },
     'freq': {
         'value': '7078000', 
@@ -55,7 +64,9 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
-        'validate': lambda freq: freq.isnumeric()
+        'validate': lambda freq: freq.isnumeric(),
+        'update': current_app.config['MODEM'].update_freq,
+        'js8call-api': True
     },
     'groups': {
         'value': '',
@@ -64,8 +75,10 @@ default_settings = {
         'required': False,
         'options': None,
         'display': True,
-        'restart': False,
-        'validate': lambda groups: all([bool(group.strip().startswith('@') and len(group.strip()) <= 9) for group in groups.split(',')])
+        'restart': True,
+        'validate': lambda groups: all([bool(group.strip().startswith('@') and len(group.strip()) <= 9) for group in groups.split(',')]),
+        'update': current_app.config['MODEM'].update_groups,
+        'js8call-api': False
     },
     # activity/spot aging in minutes
     'aging': {
@@ -76,7 +89,9 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
-        'validate': lambda aging: aging.isnumeric()
+        'validate': lambda aging: aging.isnumeric(),
+        'update': lambda value: None,
+        'js8call-api': False
     },
     'heartbeat': {
         'value': 'disable', 
@@ -86,7 +101,9 @@ default_settings = {
         'options': ['enable', 'disable'],
         'display': True,
         'restart': False,
-        'validate': lambda option: option in default_settings['heartbeat']['options']
+        'validate': lambda option: option in default_settings['heartbeat']['options'],
+        'update': current_app.config['MODEM'].update_heartbeat,
+        'js8call-api': True
     },
     'inbox': {
         'value': 'disable', 
@@ -96,7 +113,9 @@ default_settings = {
         'options': ['enable', 'disable', 'query @ALLCALL'],
         'display': True,
         'restart': False,
-        'validate': lambda option: option in default_settings['inbox']['options']
+        'validate': lambda option: option in default_settings['inbox']['options'],
+        'update': current_app.config['MODEM'].update_inbox,
+        'js8call-api': True
     },
     'tab': {
         'value': 'activity', 
@@ -106,7 +125,9 @@ default_settings = {
         'options': ['activity', 'messages'],
         'display': True,
         'restart': False,
-        'validate': lambda option: option in default_settings['tab']['options']
+        'validate': lambda option: option in default_settings['tab']['options'],
+        'update': lambda value: None,
+        'js8call-api': False
     },
     'theme': {
         'value': 'light', 
@@ -116,7 +137,9 @@ default_settings = {
         'options': ['light', 'dark'],
         'display': True,
         'restart': False,
-        'validate': lambda option: option in default_settings['theme']['options']
+        'validate': lambda option: option in default_settings['theme']['options'],
+        'update': lambda value: None,
+        'js8call-api': False
     },
     'size': {
         'value': 'normal', 
@@ -126,7 +149,9 @@ default_settings = {
         'options': ['normal', 'large'],
         'display': True,
         'restart': False,
-        'validate': lambda option: option in default_settings['size']['options']
+        'validate': lambda option: option in default_settings['size']['options'],
+        'update': lambda value: None,
+        'js8call-api': False
     },
     'propagation': {
         'value': '60', 
@@ -136,32 +161,20 @@ default_settings = {
         'options': ['30', '60', '120'],
         'display': False,
         'restart': False,
-        'validate': lambda option: option in default_settings['propagation']['options']
+        'validate': lambda option: option in default_settings['propagation']['options'],
+        'update': lambda value: None,
+        'js8call-api': False
     }
 }
 
 def validate(setting, value):
     return default_settings[setting]['validate'](value)
 
-def update_modem_setting(setting, value):
-    #TODO update modem name handling to support other modems
-    if current_app.config['MODEM'].name.lower() == 'js8call':
-        if setting == 'callsign': current_app.config['MODEM'].update_callsign(value)
-        elif setting == 'speed': current_app.config['MODEM'].update_speed(value)
-
-        # js8call must be running to update these settings
-        if current_app.config['MODEM'].js8call.connected():
-            if setting == 'freq': current_app.config['MODEM'].update_freq(value)
-            elif setting == 'grid': current_app.config['MODEM'].update_grid(value)
-            elif setting == 'heartbeat': current_app.config['MODEM'].update_heartbeat(value)
-            elif setting == 'inbox': current_app.config['MODEM'].update_inbox(value)
-
 # form_settings = flask.request.form from post request
 def update_settings(form_settings):
     restart = False
     db_settings = db.get_settings()
 
-    # initialize restart and error elements
     for setting in db_settings.keys():
         db_settings[setting]['restart'] = False
         db_settings[setting]['error'] = None
@@ -169,11 +182,11 @@ def update_settings(form_settings):
     for setting, value in form_settings.items():
         value = value.strip()
         
-        if setting in ['callsign', 'grid']:
+        if setting in ['callsign', 'grid', 'groups']:
             value = value.upper()
 
         if value == db_settings[setting]['value']:
-            # skip further processing if settings not changed
+            # skip further processing if setting not changed
             continue
             
         if not default_settings[setting]['validate'](value):
@@ -181,11 +194,18 @@ def update_settings(form_settings):
             # skip further processing if setting value invalid
             continue
 
+        # update setting in db
         db.set_setting(setting, value)
         db_settings[setting]['value'] = value
-        update_modem_setting(setting, value)
 
-        # setting validated amd updated, indicate restart if required
+        # avoid updating js8call api settings if js8call is not running
+        if default_settings[setting]['js8call-api'] and not current_app.config['MODEM'].js8call.connected():
+            continue
+
+        # update modem settings
+        default_settings[setting]['update'](value)
+
+        # indicate modem restart to update setting
         db_settings[setting]['restart'] = default_settings[setting]['restart']
         
     return db_settings
