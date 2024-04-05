@@ -38,7 +38,7 @@ def init_db():
         db_setting.update(details)
 
         # remove unstored setting properties
-        for key in ['validate', 'update']:
+        for key in ['validate', 'update', 'js8call-api']:
             db_setting.pop(key)
 
         if db_setting['options'] is not None:
