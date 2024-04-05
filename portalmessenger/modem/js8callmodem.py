@@ -79,6 +79,9 @@ class JS8CallModem(BaseModem):
         }
 
         return data
+
+    def get_groups(self):
+        return ', '.join(self.js8call.settings.get_groups_list())
                 
     # set as modem application incoming message callback function
     # msg arg to be type pyjs8call.Message
@@ -144,4 +147,6 @@ class JS8CallModem(BaseModem):
             self.js8call.inbox.enable(query=True)
         else:
             self.js8call.inbox.disable()
-    
+
+    def update_groups(self, groups):
+        self.js8call.settings.set_groups(groups)
