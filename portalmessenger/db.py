@@ -38,7 +38,7 @@ def init_db():
         db_setting.update(details)
 
         # remove unstored setting properties
-        for key in ['validate']:
+        for key in ['validate', 'update']:
             db_setting.pop(key)
 
         if db_setting['options'] is not None:
