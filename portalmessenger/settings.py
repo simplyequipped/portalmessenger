@@ -27,16 +27,6 @@ default_settings = {
         'restart': True,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9
     },
-    'freq': {
-        'value': '7078000', 
-        'label': 'Frequency (Hz)',
-        'default': '7078000',
-        'required': True,
-        'options': None,
-        'display': True,
-        'restart': False,
-        'validate': lambda freq: freq.isnumeric()
-    },
     'grid': {
         'value': '',
         'label': 'Grid Square',
@@ -56,6 +46,26 @@ default_settings = {
         'display': True,
         'restart': True,
         'validate': lambda option: option in default_settings['speed']['options']
+    },
+    'freq': {
+        'value': '7078000', 
+        'label': 'Frequency (Hz)',
+        'default': '7078000',
+        'required': True,
+        'options': None,
+        'display': True,
+        'restart': False,
+        'validate': lambda freq: freq.isnumeric()
+    },
+    'groups': {
+        'value': '',
+        'label': 'Groups (@)',
+        'default': '',
+        'required': False,
+        'options': None,
+        'display': True,
+        'restart': False,
+        'validate': lambda groups: all([bool(group.strip().startswith('@') and len(group.strip()) <= 9) for group in groups.split(',')])
     },
     # activity/spot aging in minutes
     'aging': {
@@ -145,8 +155,6 @@ def update_modem_setting(setting, value):
             elif setting == 'grid': current_app.config['MODEM'].update_grid(value)
             elif setting == 'heartbeat': current_app.config['MODEM'].update_heartbeat(value)
             elif setting == 'inbox': current_app.config['MODEM'].update_inbox(value)
-            
-            
 
 # form_settings = flask.request.form from post request
 def update_settings(form_settings):
