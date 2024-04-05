@@ -33,32 +33,54 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
         from .modem.js8callmodem import JS8CallModem
         app.config['MODEM'] = JS8CallModem()
 
-        # load pyjs8call settings from file and initialize in app settings
+        # configure modem setting update functions
+        from . import settings
+        settings.default_settings['callsign']['update'] = app.config['MODEM'].update_callsign
+        settings.default_settings['speed']['update'] = app.config['MODEM'].update_speed
+        settings.default_settings['groups']['update'] = app.config['MODEM'].update_groups
+        settings.default_settings['freq']['update'] = app.config['MODEM'].update_freq
+        settings.default_settings['grid']['update'] = app.config['MODEM'].update_grid
+        settings.default_settings['heartbeat']['update'] = app.config['MODEM'].update_heartbeat
+        settings.default_settings['inbox']['update'] = app.config['MODEM'].update_inbox
+    
         loaded_settings = {}
         if pyjs8call_settings_path is not None:
+            # load pyjs8call settings from file and initialize app settings
             app.config['MODEM'].js8call.settings.load(pyjs8call_settings_path)
-            
-            for setting in ['callsign', 'speed', 'grid', 'freq']:
-                if setting in app.config['MODEM'].js8call.settings.loaded_settings['station']:
-                    loaded_settings[setting] = app.config['MODEM'].js8call.settings.loaded_settings['station'][setting]
+            pyjs8call_loaded_settings = app.config['MODEM'].js8call.settings.loaded_settings
 
-            if 'enable' in app.config['MODEM'].js8call.settings.loaded_settings['heartbeat']:
-                loaded_settings['heartbeat'] = 'enable' if app.config['MODEM'].js8call.settings.loaded_settings['heartbeat']['enable'].lower() in ['true', 'yes'] else 'disable'
+            if 'station' in pyjs8call_loaded_settings and 'callsign' in pyjs8call_loaded_settings['station']:
+                loaded_settings['callsign'] = pyjs8call_loaded_settings['station']['callsign']
+            if 'station' in pyjs8call_loaded_settings and 'speed' in pyjs8call_loaded_settings['station']:
+                loaded_settings['speed'] = pyjs8call_loaded_settings['station']['speed']
+            if 'station' in pyjs8call_loaded_settings and 'grid' in pyjs8call_loaded_settings['station']:
+                loaded_settings['grid'] = pyjs8call_loaded_settings['station']['grid']
+            if 'station' in pyjs8call_loaded_settings and 'freq' in pyjs8call_loaded_settings['station']:
+                loaded_settings['freq'] = pyjs8call_loaded_settings['station']['freq']
+            if 'general' in pyjs8call_loaded_settings and 'groups' in pyjs8call_loaded_settings['general']:
+                loaded_settings['groups'] = pyjs8call_loaded_settings['general']['groups']
+            if 'heartbeat' in pyjs8call_loaded_settings and 'enable' in pyjs8call_loaded_settings['heartbeat']:
+                loaded_settings['heartbeat'] = 'enable' if pyjs8call_loaded_settings['heartbeat']['enable'].lower() in ('true', 'yes') else 'disable'
 
-            from . import settings
             updated_settings = settings.update_settings(loaded_settings)
             updated_settings_errors = [updated_settings[setting]['error'] for setting in updated_settings if updated_settings[setting]['error'] is not None]
-
+            
             if len(updated_settings_errors) > 0:
                 raise ValueError(', '.join(updated_settings_error))
 
-        # initialize pyjs8call config before start (see pyjs8call.settings docs)
+        # set js8call config file settings before starting the modem
+        # loaded settings take priority
         if 'callsign' not in loaded_settings:
             callsign = db.get_setting_value('callsign')
-            if callsign not in [None, '']:
-                app.config['MODEM'].update_callsign(callsign)
+            if callsign not in (None, ''):
+                #app.config['MODEM'].update_callsign(callsign)
+                settings.default_setting['callsign']['update'](callsign)
         if 'speed' not in loaded_settings:
-            app.config['MODEM'].update_speed(db.get_setting_value('speed'))
+            #app.config['MODEM'].update_speed(db.get_setting_value('speed'))
+            settings.default_setting['speed']['update'](db.get_setting_value('speed'))
+        if 'groups' not in loaded_settings:
+            #app.config['MODEM'].update_speed(db.get_setting_value('speed'))
+            settings.default_setting['groups']['update'](db.get_setting_value('groups'))
 
         # start pyjs8call modem
         print('Starting JS8Call modem via pyjs8call...')
@@ -66,13 +88,18 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
         print('JS8Call started')
 
         # initialize running modem application settings
-        app.config['MODEM'].update_freq(db.get_setting_value('freq'))
-        app.config['MODEM'].update_grid(db.get_setting_value('grid'))
-        app.config['MODEM'].update_heartbeat(db.get_setting_value('heartbeat'))
-        app.config['MODEM'].update_inbox(db.get_setting_value('inbox'))
+        #app.config['MODEM'].update_freq(db.get_setting_value('freq'))
+        settings.default_setting['freq']['update'](db.get_setting_value('freq'))
+        #app.config['MODEM'].update_grid(db.get_setting_value('grid'))
+        settings.default_setting['grid']['update'](db.get_setting_value('grid'))
+        #app.config['MODEM'].update_heartbeat(db.get_setting_value('heartbeat'))
+        settings.default_setting['heartbeat']['update'](db.get_setting_value('heartbeat'))
+        #app.config['MODEM'].update_inbox(db.get_setting_value('inbox'))
+        settings.default_setting['inbox']['update'](db.get_setting_value('inbox'))
 
         app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
+    
     def app_context_aware(func):
         def _wrapped_function(*args, **kwargs):
             with app.app_context():
@@ -84,15 +111,6 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
     app.config['MODEM'].incoming = app_context_aware(callbacks.incoming_message)
     app.config['MODEM'].spots = app_context_aware(callbacks.new_spots)
     app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
-    
-    # configure modem setting update functions
-    from .settings import default_settings
-    default_settings['callsign']['update'] = app.config['MODEM'].update_callsign
-    default_settings['freq']['update'] = app.config['MODEM'].update_freq
-    default_settings['grid']['update'] = app.config['MODEM'].update_grid
-    default_settings['speed']['update'] = app.config['MODEM'].update_speed
-    default_settings['heartbeat']['update'] = app.config['MODEM'].update_heartbeat
-    default_settings['inbox']['update'] = app.config['MODEM'].update_inbox
     
     from . import websockets
     websockets.socketio.init_app(app)
