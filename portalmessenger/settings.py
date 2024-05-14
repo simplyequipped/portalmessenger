@@ -6,6 +6,7 @@ from portalmessenger import db
 # lambda references to dict elements will not be updated after dict creation, even if dict changes (which it should not)
 # 'display' indicates whether the setting should be displayed in the Settings view (may still be displayed elsewhere)
 # 'validate' and 'update' are not stored in the db, only referenced from default_settings
+# 'update' is set to a function from the modem object in __init__.create_app
 # 'js8call-api' indicates whether a setting requires js8call to be running to change the setting
 default_settings = {
     'modem': {
@@ -167,9 +168,6 @@ default_settings = {
     }
 }
 
-def validate(setting, value):
-    return default_settings[setting]['validate'](value)
-
 # form_settings = flask.request.form from post request
 def update_settings(form_settings):
     restart = False
@@ -205,7 +203,7 @@ def update_settings(form_settings):
         # update modem settings
         default_settings[setting]['update'](value)
 
-        # indicate modem restart to update setting
+        # indicate modem restart required to update setting
         db_settings[setting]['restart'] = default_settings[setting]['restart']
         
     return db_settings
