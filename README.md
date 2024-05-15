@@ -10,7 +10,7 @@ HF radio messaging web app using pyjs8call.
 This software is currently in a beta state. This means that the software will likely change in the future, and that there will be bugs. You can provide feedback in the [Discussions](https://github.com/simplyequipped/portalmessenger/discussions) section of the repository.
 
 ### Responsibility
-It is the station operator's reponsibility to ensure compliance with local laws.
+It is the station operator's responsibility to ensure compliance with local laws.
 
 It is the user's responsibility to manage their local network and implement good security practices (ex. using a firewall). Portal Messenger uses the Flask development server for simplicity and should only be used on a local network. Do not make Portal Messenger available on the internet.
 
@@ -94,7 +94,7 @@ There are two tabs in the *Activity* view: *Activity* and *Messages*. The *Defau
 
 Select a station to send a message or see stored message history (see the *Conversation* view section for more information). Use the add icon ( <img src="portalmessenger/static/icons/add-solid.svg" alt="add icon" width="25" height="25"/> ) near the bottom of the view to start a new conversation with a station. After pressing the add icon, you will enter the station callsign or group designator and then press *Add*. You will be redirected to the conversation for that station or group.
 
-The *Activity* view is dynamic and will update automatically as stations are heard and messages are received. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list.
+The *Activity* view is dynamic and will update automatically as stations are heard and messages are received. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after being heard a station will be displayed in the list.
 
 When the *Messages* tab is selected, the menu will include an additonal *Delete Messages...* option. After selecting this menu option, a delete icon ( <img src="portalmessenger/static/icons/delete-hollow.svg" alt="trash can icon" width="25" height="25"/> ) will be displayed on each station message. Selecting the delete icon will remove all stored messages associated with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons.
 
@@ -122,7 +122,7 @@ The *Network* view displays detailed information about each heard station:
 - **Hearing**: Other stations hearing the station
 - **Heard By**: Other stations heard by the station
 
-The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after begin heard a station will be displayed in the list. In order to provide more network information, *Hearing* and *Heard By* activity with an age of 10 times the *Aging (minutes)* setting are included for each station.
+The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after being heard a station will be displayed in the list. In order to provide more network information, *Hearing* and *Heard By* activity with an age of 10 times the *Aging (minutes)* setting are included for each station.
 
 ### Propagation Map
 
@@ -140,7 +140,7 @@ The *Settings* view displays a list of application settings:
 - **Frequency (Hz)**: Radio frequency setting for JS8Call and the controlled radio
 - **Grid Square**: Grid square of the local station
 - **JS8Call Speed**: Speed setting of the JS8Call modem (changing this setting requires JS8Call to restart)
-- **Aging (minutes)**: How long after begin heard a station will be displayed in activity lists
+- **Aging (minutes)**: How long after being heard a station will be displayed in activity lists
 - **Heartbeat Net**: Whether the pyjs8call heartbeat function is enabled or disabled
 - **Inbox Monitor**: Whether the pyjs8call inbox monitor function is enabled, enabled with periodic query to @ALLCALL, or disabled
 - **Default Tab**: Which tab to display when navigating to the *Activity* view
