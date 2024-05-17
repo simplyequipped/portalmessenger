@@ -6,10 +6,10 @@ function newStation(station) {
 	stationElement.find('.chat-name').html(station.username);
 	stationElement.click(stationClick);
 	stationElement.removeClass('original-hidden');
-	stationElement.appendTo('.content');
 	setLastHeard(station.username, station.time);
     stationElement.find('.icon-delete').hide();
     stationElement.find('.icon-delete').click(stationDeleteClick);
+	stationElement.appendTo('.content');
 }
 
 // create or update spot stations sent from the server
@@ -35,15 +35,17 @@ function handleConversation(station) {
 		newStation(station);
 		stationElement = findStation(station.username);
 		stationElement.addClass('conversation');
+	    setLastMsgHeard(station.username, station.time);
 
 		if ( selectedTab() != 'conversations' ) {
 			stationElement.hide();
 		}
 	}
 	else {
-		setLastHeard(station.username, station.time);
+		setLastMsgHeard(station.username, station.time);
 		findStation(station.username).addClass('conversation');
 	}
+
 
 	if ( station.unread ) {
 		markUnread(station.username);
@@ -75,6 +77,11 @@ function getPresence(username) {
 	}
 }
 
+// determine and set presence based on minutes since last heard
+function updatePresence(username, last_heard_minutes) {
+	setPresence(username, presenceText(last_heard_minutes));
+}
+
 // set station to given presence based on given username
 function setPresence(username, presence) {
 	station = findStation(username);
@@ -85,11 +92,6 @@ function setPresence(username, presence) {
 		presenceElement.removeClass("presence-" + currentPresence);
 	}
 	presenceElement.addClass("presence-" + presence);
-}
-
-// determine and set presence based on minutes since last heard
-function updatePresence(username, last_heard_minutes) {
-	setPresence(username, presenceText(last_heard_minutes));
 }
 
 // update station last heard time and presence based on given
@@ -107,6 +109,43 @@ function setLastHeard(username, lastHeard) {
 	stationLastHeard.attr('data-last-heard', Math.floor(lastHeard));
 	stationLastHeard.html(lastHeardText(lastHeardMinutes));
 	updatePresence(username, lastHeardMinutes);
+}
+
+// display station last heard time
+function showLastHeard(station) {
+	lastHeard = station.find('.last-heard').attr('data-last-heard');
+    
+	if ( lastHeard == null ) {
+		lastHeard = 0;
+	}
+
+	now = new Date();
+	then = new Date(lastHeard * 1000);
+	lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
+
+	station.find('.last-heard').html(lastHeardText(lastHeardMinutes));
+}
+
+// update station last msg time based on given
+// username and minutes since last msg'd
+function setLastMsgHeard(username, lastMsg) {
+	stationLastHeard = findStation(username).find('.last-heard');
+	stationLastHeard.attr('data-last-msg', Math.floor(lastMsg));
+}
+
+// display station last heard msg time
+function showLastMsgHeard(station) {
+	lastMsg = station.find('.last-heard').attr('data-last-msg');
+    
+	if ( lastMsg == null ) {
+		lastMsg = 0;
+	}
+
+	now = new Date();
+	then = new Date(lastMsg * 1000);
+	lastMsgMinutes = Math.floor( ((now - then) / 1000) / 60 );
+
+	station.find('.last-heard').html(lastHeardText(lastMsgMinutes));
 }
 
 // mark station as read based on username
