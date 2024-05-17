@@ -27,12 +27,12 @@ def tx_msg(data):
     
 @socketio.on('heard-user')
 def heard_user(data):
-    db_last_heard = db.get_user_last_heard_timestamp(data['user'])
+    db_last_msg = db.get_last_user_msg_timestamp(data['user'])
     spot_last_heard = current_app.config['MODEM'].get_spots(origin=data['user'], count=1)
 
-    db_last_heard = db_last_heard if db_last_heard is not None else 0
+    db_last_msg = db_last_msg if db_last_msg is not None else 0
     spot_last_heard = spot_last_heard[0].timestamp if len(spot_last_heard) > 0 else 0
-    last_heard = max(db_last_heard, spot_last_heard)
+    last_heard = max(db_last_msg, spot_last_heard)
 
     socketio.emit('heard-user', last_heard)
 
@@ -52,14 +52,14 @@ def init_spots():
 def init_conversations():
     conversations = db.get_user_conversations( db.get_setting_value('callsign') )
 
-    for i in range(len(conversations)):
-        spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
+    #for i in range(len(conversations)):
+    #    spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
 
         # use latest station spot timestamp if more recent
-        if conversations[i]['time'] is not None and len(spots) > 0 and spots[0].timestamp > conversations[i]['time']:
-             conversations[i]['time'] = spots[0].timestamp
-        elif conversations[i]['time'] is None and len(spots) > 0:
-             conversations[i]['time'] = spots[0].timestamp
+        #if conversations[i]['time'] is not None and len(spots) > 0 and spots[0].timestamp > conversations[i]['time_heard']:
+        #     conversations[i]['time'] = spots[0].timestamp
+        #elif conversations[i]['time'] is None and len(spots) > 0:
+        #     conversations[i]['time'] = spots[0].timestamp
     
     socketio.emit('conversation', conversations)
 
