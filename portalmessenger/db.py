@@ -113,11 +113,11 @@ def get_user_conversations(username):
 
     for user in unique_users:
         unread = get_user_unread_message_count(user)
-        last_heard = get_user_last_heard_timestamp(user)
+        last_msg = get_last_user_msg_timestamp(user)
 
         conversation = {
             'username': user,
-            'time': last_heard,
+            'time': last_msg,
             'unread': bool(unread)
         }
 
@@ -153,7 +153,7 @@ def update_outgoing_message_status(msg):
     get_db().execute('UPDATE messages SET status=? WHERE id=?', (msg.status, msg.id) )
     get_db().commit() 
 
-def get_user_last_heard_timestamp(username):
+def get_last_user_msg_timestamp(username):
     timestamp = get_db().execute('SELECT MAX(time) FROM messages WHERE origin=?', (username,) ).fetchone()
 
     if timestamp[0] is None:
