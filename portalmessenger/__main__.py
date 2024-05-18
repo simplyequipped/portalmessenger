@@ -30,9 +30,10 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', help='Web server port, defaults to 5000', default=5000, type=int)
     parser.add_argument('-j', '--headless', help='Run JS8Call app headless (Linux only)', action='store_true')
     parser.add_argument('-s', '--settings', help='Path to pyjs8call settings file')
-    parser.add_argument('-d', '--debug', help='Enable pyjs8call debug output', action='store_true')
+    parser.add_argument('-v', '--debug', help='Enable pyjs8call debug output', action='store_true')
     parser.add_argument('-b', '--browser', help='Open a browser window to 127.0.0.1 after starting server', action='store_true')
     parser.add_argument('-c', '--shortcut', help='Create a desktop shortcut to launch the application, then exit', action='store_true')
+    parser.add_argument('-d', '--database', help='Path to portalmessenger database, defaults to ./.portal.sqlite')
     #parser.add_argument('-s', '--redirect', help='Redirect hostname.local requests from port 80 to the web server port', action='store_true')
     args = parser.parse_args()
 
@@ -66,7 +67,7 @@ if __name__ == '__main__':
 #        thread.daemon = True
 #        thread.start()
     
-    app, websockets = create_app(headless=args.headless, debugging=args.debug, pyjs8call_settings_path=args.settings)
+    app, websockets = create_app(headless=args.headless, debugging=args.debug, pyjs8call_settings_path=args.settings, database_path=args.database)
 
     if args.browser:
         def delay_opening_browser():

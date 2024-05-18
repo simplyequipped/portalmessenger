@@ -6,7 +6,7 @@ import configparser
 from flask import Flask
 
 # app factory
-def create_app(test_config=None, headless=True, debugging=False, pyjs8call_settings_path=None):
+def create_app(test_config=None, headless=True, debugging=False, pyjs8call_settings_path=None, database_path=None):
     # create and configure the app
     app = Flask(__name__)
     app.config['SECRET_KEY'] = secrets.token_hex()
@@ -17,6 +17,14 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
     if test_config is not None:
         # load the test config if passed in
         app.config.from_mapping(test_config)
+
+    if database_path is not None and os.path.exists(database_path):
+        if os.path.isdir(database_path):
+            database_path = os.path.join(database_path, '.portal.sqlite')
+
+        database_path = os.path.expanduser(database_path)
+        database_path = os.path.abspath(database_path)
+        app.config['DATABASE'] = database_path
 
     from . import views
     app.register_blueprint(views.bp)
@@ -89,13 +97,13 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
 
         # initialize running modem application settings
         #app.config['MODEM'].update_freq(db.get_setting_value('freq'))
-        settings.default_setting['freq']['update'](db.get_setting_value('freq'))
+        settings.default_settings['freq']['update'](db.get_setting_value('freq'))
         #app.config['MODEM'].update_grid(db.get_setting_value('grid'))
-        settings.default_setting['grid']['update'](db.get_setting_value('grid'))
+        settings.default_settings['grid']['update'](db.get_setting_value('grid'))
         #app.config['MODEM'].update_heartbeat(db.get_setting_value('heartbeat'))
-        settings.default_setting['heartbeat']['update'](db.get_setting_value('heartbeat'))
+        settings.default_settings['heartbeat']['update'](db.get_setting_value('heartbeat'))
         #app.config['MODEM'].update_inbox(db.get_setting_value('inbox'))
-        settings.default_setting['inbox']['update'](db.get_setting_value('inbox'))
+        settings.default_settings['inbox']['update'](db.get_setting_value('inbox'))
 
         app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
