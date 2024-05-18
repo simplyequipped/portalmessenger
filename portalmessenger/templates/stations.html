@@ -89,7 +89,7 @@
             $('.conversation').hide();
             $('.spot').show();
             // show time since last heard
-            $('.spot').forEach(function ( station ) {
+            $('.spot').each(function ( index, station ) {
             	showLastHeard(station)
             });
         }
@@ -106,7 +106,7 @@
             $('.spot').hide();
             $('.conversation').show();
             // show time since last message heard
-            $('.conversation').forEach(function ( station ) {
+            $('.conversation').each(function ( index, station ) {
             	showLastMsgHeard(station)
             });
         }
@@ -232,8 +232,8 @@
 			});
 
 			// request station data from the server
-			socket.emit('spot');
 			socket.emit('conversation');
+			socket.emit('spot');
 
             // click selected tab to force event handling
             // return to previously selected tab if returning from another page
