@@ -131,9 +131,9 @@ default_settings = {
         'js8call-api': False
     },
     'theme': {
-        'value': 'light', 
+        'value': 'dark', 
         'label': 'App Theme',
-        'default': 'light',
+        'default': 'dark',
         'required': False,
         'options': ['light', 'dark'],
         'display': True,
