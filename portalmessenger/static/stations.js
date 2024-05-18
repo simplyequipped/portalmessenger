@@ -18,6 +18,7 @@ function handleSpot(station) {
 		newStation(station);
 		stationElement = findStation(station.username);
 		stationElement.addClass('spot');
+		setLastHeard(station.username, station.time);
 
 		if ( selectedTab() != 'activity' ) {
 			stationElement.hide();
@@ -113,7 +114,7 @@ function setLastHeard(username, lastHeard) {
 
 // display station last heard time
 function showLastHeard(station) {
-	lastHeard = station.find('.last-heard').attr('data-last-heard');
+	lastHeard = $(station).find('.last-heard').attr('data-last-heard');
     
 	if ( lastHeard == null ) {
 		lastHeard = 0;
@@ -123,7 +124,7 @@ function showLastHeard(station) {
 	then = new Date(lastHeard * 1000);
 	lastHeardMinutes = Math.floor( ((now - then) / 1000) / 60 );
 
-	station.find('.last-heard').html(lastHeardText(lastHeardMinutes));
+	$(station).find('.last-heard').html(lastHeardText(lastHeardMinutes));
 }
 
 // update station last msg time based on given
@@ -135,7 +136,7 @@ function setLastMsgHeard(username, lastMsg) {
 
 // display station last heard msg time
 function showLastMsgHeard(station) {
-	lastMsg = station.find('.last-heard').attr('data-last-msg');
+	lastMsg = $(station).find('.last-heard').attr('data-last-msg');
     
 	if ( lastMsg == null ) {
 		lastMsg = 0;
@@ -145,7 +146,7 @@ function showLastMsgHeard(station) {
 	then = new Date(lastMsg * 1000);
 	lastMsgMinutes = Math.floor( ((now - then) / 1000) / 60 );
 
-	station.find('.last-heard').html(lastHeardText(lastMsgMinutes));
+	$(station).find('.last-heard').html(lastHeardText(lastMsgMinutes));
 }
 
 // mark station as read based on username
