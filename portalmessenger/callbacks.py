@@ -11,14 +11,23 @@ from portalmessenger.websockets import socketio
 def incoming_message(msg):
     msg = message.process_message(msg)
 
-    if msg['origin'] == current_app.config['ACTIVE_CHAT_USER']:
+    if msg['destination'].startswith('@') and msg['destination'] == current_app.config['ACTIVE_CHAT_USER']:
+        # pass messages for active chat to client side
+        socketio.emit('msg', [msg])
+        socketio.emit('heard-user', msg['time'])
+    elif msg['origin'] == current_app.config['ACTIVE_CHAT_USER']:
         # pass messages for active chat to client side
         socketio.emit('msg', [msg])
 
-    unread = bool( db.get_user_unread_message_count(msg['origin']) )
+    if msg['destination'].startswith('@'):
+        username = msg['destination']
+    else:
+        username = msg['origin']
+
+    unread = bool( db.get_user_unread_message_count(username) )
 
     conversation = {
-        'username': msg['origin'], 
+        'username': username, 
         'time': msg['time'],
         'unread': unread
     }

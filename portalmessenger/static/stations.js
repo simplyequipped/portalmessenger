@@ -36,6 +36,7 @@ function handleConversation(station) {
 		newStation(station);
 		stationElement = findStation(station.username);
 		stationElement.addClass('conversation');
+		setLastHeard(station.username, station.time);
 	    setLastMsgHeard(station.username, station.time);
 
 		if ( selectedTab() != 'conversations' ) {

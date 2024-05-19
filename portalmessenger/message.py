@@ -27,7 +27,9 @@ def process_message(msg):
     }
 
     if msg['type'] == 'rx':
-        if msg['origin'] != current_app.config['ACTIVE_CHAT_USER']:
+        if msg['destination'].startswith('@') and msg['destination'] != current_app.config['ACTIVE_CHAT_USER']:
+            msg['unread'] = True
+        elif msg['origin'] != current_app.config['ACTIVE_CHAT_USER']:
             msg['unread'] = True
 
         if len(msg['destination']) > 0 and msg['destination'][0] == '@':

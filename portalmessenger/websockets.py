@@ -52,6 +52,11 @@ def init_spots():
 def init_conversations():
     conversations = db.get_user_conversations( db.get_setting_value('callsign') )
 
+#TODO
+#    station_groups = [group.strip() for group in db.get_setting_value('groups')]
+#    for group in station_groups:
+#        conversations.extend(db.get_user_conversations( group ))
+
     #for i in range(len(conversations)):
     #    spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
 
