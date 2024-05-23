@@ -82,13 +82,13 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
             callsign = db.get_setting_value('callsign')
             if callsign not in (None, ''):
                 #app.config['MODEM'].update_callsign(callsign)
-                settings.default_setting['callsign']['update'](callsign)
+                settings.default_settings['callsign']['update'](callsign)
         if 'speed' not in loaded_settings:
             #app.config['MODEM'].update_speed(db.get_setting_value('speed'))
-            settings.default_setting['speed']['update'](db.get_setting_value('speed'))
+            settings.default_settings['speed']['update'](db.get_setting_value('speed'))
         if 'groups' not in loaded_settings:
             #app.config['MODEM'].update_speed(db.get_setting_value('speed'))
-            settings.default_setting['groups']['update'](db.get_setting_value('groups'))
+            settings.default_settings['groups']['update'](db.get_setting_value('groups'))
 
         # start pyjs8call modem
         print('Starting JS8Call modem via pyjs8call...')
