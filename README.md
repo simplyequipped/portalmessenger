@@ -140,6 +140,7 @@ The *Settings* view displays a list of application settings:
 - **Frequency (Hz)**: Radio frequency setting for JS8Call and the controlled radio
 - **Grid Square**: Grid square of the local station
 - **JS8Call Speed**: Speed setting of the JS8Call modem (changing this setting requires JS8Call to restart)
+- **Groups (@)**: JS8Call groups to participate in (changing this setting requires JS8Call to restart)
 - **Aging (minutes)**: How long after being heard a station will be displayed in activity lists
 - **Heartbeat Net**: Whether the pyjs8call heartbeat function is enabled or disabled
 - **Inbox Monitor**: Whether the pyjs8call inbox monitor function is enabled, enabled with periodic query to @ALLCALL, or disabled
@@ -147,7 +148,7 @@ The *Settings* view displays a list of application settings:
 - **App Theme**: Whether the app should use a light or dark color theme
 - **Font Size**: Whether the app should use a normal or large font size
 
-Press the *Save Settings* button near the bottom of the view after making changes.
+Press the *Save Settings* button near the bottom of the view after making changes. Some settings are set via the JS8Call configuration file, which requires the JS8Call application to be restarted for those settings to take effect. JS8Call will be restarted automatically as needed when settings changes are saved, which may take several seconds depending on the hardware platform.
 
-Other JS8Call settings can be configured using the *--settings* CLI option to specify a pyjs8call settings file. See *pyjs8call.settings.Settings.load* for more information, including pyjs8call settings file configuration options.
+Additional JS8Call settings can be configured using the *--settings* CLI option to specify a pyjs8call settings file. See *pyjs8call.settings.Settings.load* for more information, including pyjs8call settings file configuration options.
 
