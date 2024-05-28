@@ -35,15 +35,9 @@
 		</div>
 		<div class="viewport">
 			<div class="content">
-                <div class="setting-status setting-status-{{ status }}">
-                {% if status == 'success' %}
-                    Settings updated successfully
-                {% elif status == 'restart' %}
-                    JS8Call restarting... <img src="../static/loading-wheel.gif" class="loading-wheel">
-                {% elif status == 'error' %}
-                    Error in settings, see below...
-                {% endif %}
-                </div>
+                <div class="setting-status-success">Settings updated successfully</div>
+                <div class="setting-status-restart">JS8Call restarting... <span class="icon icon-loading">&nbsp;</span> </div>
+                <div class="setting-status-error">Error, see below...</div>
                 
 				<br/>
 			    <form id="settings-form" action="/settings" method="post" data-status="{{ status }}">
@@ -86,6 +80,22 @@
         $('.menu').hide();
 		var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+        socket.on('restart-status', function (js8call_status){
+            status = $('#settings-form').attr('data-status')
+            
+            if ( status != 'error' && js8call_status == true ){
+                // js8call restart complete, indicate success
+                $('.setting-status-restart').hide();
+                $('.setting-status-success').show();
+            }
+            else if ( status != 'error' && js8call_status = false ){
+                // request status update until js8call back online
+                setTimeout(function(){
+                    socket.emit('restart-status');
+                }, 500); // 500 ms
+            }
+        });
+
         $(window).on('load', function(){
             $('#save-button').click(function() {
                 event.preventDefault();
@@ -95,11 +105,26 @@
             $('.icon-hamburger').click(function(){
                 $('.menu').slideToggle();
             });
+
+            if ( $('#settings-form').attr('data-status') == 'success' ) {
+                $('.setting-status-success').show();
+            }
+            else if ( $('#settings-form').attr('data-status') == 'restart' ) {
+                $('.setting-status-restart').show();
+                
+                // request status update until js8call back online
+                setTimeout(function(){
+                    socket.emit('restart-status');
+                }, 500); // 500 ms
+            }
+            else if ( $('#settings-form').attr('data-status') == 'error' ) {
+                $('.setting-status-error').show();
+            }
         });
 		
         // hide menu when clicking off menu
         $(document).on('click', function(event) {
-            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item')){
+            if ( !$(event.target).hasClass('icon-hamburger') && !$(event.target).hasClass('menu')  && !$(event.target).hasClass('menu-item') ){
                 $('.menu').slideUp();
             }
         });
