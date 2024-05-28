@@ -114,30 +114,9 @@ def propagation_data(max_age=60):
     data = current_app.config['MODEM'].get_propagation_data(max_age = max_age)
     socketio.emit('propagation-data', data)
 
-@socketio.on('power-on')
-def power_on():
-    # wait for current transactions to finish
-    time.sleep(0.1)
-    if not current_app.config['MODEM'].online():
-        # returns once application is started
-        current_app.config['MODEM'].start()
-    socketio.emit('power-on')
-
-@socketio.on('power-off')
-def power_off():
-    # wait for current transactions to finish
-    time.sleep(0.1)
-    current_app.config['MODEM'].stop()
-    socketio.emit('power-off')
-
-@socketio.on('power-restart')
-def power_restart():
-    # wait for current transactions to finish
-    time.sleep(0.1)
-    socketio.emit('power-off')
-    # returns once application restarts
-    current_app.config['MODEM'].restart()
-    socketio.emit('power-on')
+@socketio.on('restart-status')
+def restart_status():
+    socketio.emit('restart-status', current_app.config['MODEM'].online())
 
 @socketio.on('close-portal')
 def close_portal():
