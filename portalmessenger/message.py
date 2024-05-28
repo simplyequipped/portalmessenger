@@ -32,7 +32,7 @@ def process_message(msg):
         elif msg['origin'] != current_app.config['ACTIVE_CHAT_USER']:
             msg['unread'] = True
 
-        if len(msg['destination']) > 0 and msg['destination'][0] == '@':
+        if msg['destination'].startswith('@'):
             # msg to group, prepend origin to msg text
             msg['text'] = '{}: {}'.format(msg['origin'], msg['text'])
 
