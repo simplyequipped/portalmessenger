@@ -28,6 +28,11 @@ def process_message(msg):
 
     if msg['type'] == 'rx':
         if msg['destination'].startswith('@') and msg['destination'] != current_app.config['ACTIVE_CHAT_USER']:
+
+            #TODO test code, quotes to check for leading/trailing spaces
+            print('\'' + msg['destination'] + '\'')
+            print('\'' + current_app.config['ACTIVE_CHAT_USER'] + '\'')
+            
             msg['unread'] = True
         elif msg['origin'] != current_app.config['ACTIVE_CHAT_USER']:
             msg['unread'] = True
