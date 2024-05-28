@@ -135,6 +135,18 @@ body {
 	-webkit-mask-image: url('icons/lock-small.svg');
 }
 
+.settings-status-success {
+    display: none;
+}
+
+.settings-status-restart {
+    display: none;
+}
+
+.settings-status-error {
+    display: none;
+}
+
 .menu-container {
 	position: relative;
 }
