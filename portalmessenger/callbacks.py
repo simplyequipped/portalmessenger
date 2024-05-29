@@ -51,4 +51,9 @@ def outgoing_status(msg):
     time.sleep(0.001)
     db.update_outgoing_message_status(msg)
     socketio.emit('update-tx-status', {'id': msg.id, 'status': msg.status})
-    
+
+def restart_complete():
+    socketio.emit('restart-complete')
+    # make sure non-config settings are updated after restart
+    current_app.config['MODEM'].update_freq(db.get_setting_value('freq'))
+    current_app.config['MODEM'].update_grid(db.get_setting_value('grid'))
