@@ -12,6 +12,7 @@ class JS8CallModem(BaseModem):
         self.js8call.callback.register_spots(self.spots_callback)
         self.js8call.callback.outgoing = self.outgoing_callback
         self.js8call.callback.inbox = self.inbox_callback
+        self.js8call.callback.restart_complete = self.restart_complete_callback
 
         if 'Portal' not in self.js8call.settings.get_profile_list():
             # copy new profile from default profile
@@ -30,6 +31,9 @@ class JS8CallModem(BaseModem):
 
     def restart(self):
         self.js8call.restart()
+
+    def restart_async(self):
+        self.js8call.restart_when_inactive()
 
     def online(self):
         return self.js8call.online
@@ -105,6 +109,10 @@ class JS8CallModem(BaseModem):
     # msgs arg to be type list
     def inbox_callback(self, msgs):
         super().inbox_callback(msgs)
+
+    # set as modem application restart complete callback function
+    def restart_complete_callback(self):
+        super().restart_complete_callback()
         
     # update modem application setting
     # return True if modem restart required
