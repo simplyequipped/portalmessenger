@@ -11,6 +11,7 @@ class BaseModem:
         self.outgoing = None
         self.spots = None
         self.inbox = None
+        self.restart_complete = None
         
         # encryption variables
         #self.encryption = False
@@ -76,26 +77,31 @@ class BaseModem:
     # set as modem application incoming message callback function
     # msg arg to be type pyjs8call.Message
     def incoming_callback(self, msg):
-        if self.incoming is not None:
+        if callable(self.incoming):
             self.incoming(msg)
 
     # set as modem application outgoing message status callback function
     # msg arg to be type pyjs8call.Message
     def outgoing_callback(self, msg):
-        if self.outgoing is not None:
+        if callable(self.outgoing):
             self.outgoing(msg)
 
     # set as modem application station activity callback function
     # spots arg to be type list
     def spots_callback(self, spots):
-        if self.spots is not None:
+        if callable(self.spots):
             self.spots(spots)
 
     # set as modem application inbox activity callback function
     # msgs arg to be type list
     def inbox_callback(self, msgs):
-        if self.inbox is not None:
+        if callable(self.inbox):
             self.inbox(msgs)
+
+    # set as modem application restart complete callback function
+    def restart_complete_callback(self):
+        if callable(self.restart_complete):
+            self.restart_complete()
         
     # update modem application setting
     # return True if modem restart required
