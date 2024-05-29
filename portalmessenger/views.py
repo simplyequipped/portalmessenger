@@ -64,18 +64,14 @@ def settings_route():
         if status != 'error' and any([updated_settings[setting]['restart'] for setting in updated_settings]):
             status = 'restart'
             
-            # restart js8call app in thread
-            def restart_js8call(updated_settings):
-                # blocking until js8call restart completed
-                current_app.config['MODEM'].restart()
-                # make sure non-config settings are updated after restart
-                current_app.config['MODEM'].update_freq(updated_settings['freq']['value'])
-                current_app.config['MODEM'].update_grid(updated_settings['grid']['value'])
+            # restart js8call non-blocking-ly
+            #TODO add function to modem class
+            current_app.config['MODEM'].js8call.restart_when_inactive()
+            # make sure non-config settings are updated after restart
+            #TODO how to handle non-config settings after restart?
+            #current_app.config['MODEM'].update_freq(updated_settings['freq']['value'])
+            #current_app.config['MODEM'].update_grid(updated_settings['grid']['value'])
                 
-            thread = threading.Thread(target=restart_js8call, args=(updated_settings,))
-            thread.daemon = True
-            thread.start()
-
         return render_template('settings.html', settings = updated_settings, ip = current_app.config['LOCAL_IP'], status=status)
         
     return render_template('settings.html', settings = db.get_settings(), ip = current_app.config['LOCAL_IP'], status='view')

@@ -35,9 +35,9 @@
 		</div>
 		<div class="viewport">
 			<div class="content">
-                <div class="setting-status-success">Settings updated successfully</div>
-                <div class="setting-status-restart">JS8Call restarting... <span class="icon icon-loading">&nbsp;</span> </div>
-                <div class="setting-status-error">Error, see below...</div>
+                <div class="settings-status-success">Settings updated successfully</div>
+                <div class="settings-status-restart">JS8Call restarting... <span class="icon icon-loading">&nbsp;</span> </div>
+                <div class="settings-status-error">Error, see details below...</div>
                 
 				<br/>
 			    <form id="settings-form" action="/settings" method="post" data-status="{{ status }}">
@@ -85,10 +85,13 @@
             
             if ( status != 'error' && js8call_status == true ){
                 // js8call restart complete, indicate success
-                $('.setting-status-restart').hide();
-                $('.setting-status-success').show();
+                $('.settings-status-restart').hide();
+                $('.settings-status-success').show();
+                setTimeout(function(){
+                    $('.settings-status-success').hide();
+                }, 1000 * 10);
             }
-            else if ( status != 'error' && js8call_status = false ){
+            else if ( status != 'error' && js8call_status == false ){
                 // request status update until js8call back online
                 setTimeout(function(){
                     socket.emit('restart-status');
@@ -107,10 +110,13 @@
             });
 
             if ( $('#settings-form').attr('data-status') == 'success' ) {
-                $('.setting-status-success').show();
+                $('.settings-status-success').show();
+                setTimeout(function(){
+                    $('.settings-status-success').hide();
+                }, 1000 * 10);
             }
             else if ( $('#settings-form').attr('data-status') == 'restart' ) {
-                $('.setting-status-restart').show();
+                $('.settings-status-restart').show();
                 
                 // request status update until js8call back online
                 setTimeout(function(){
@@ -118,7 +124,7 @@
                 }, 500); // 500 ms
             }
             else if ( $('#settings-form').attr('data-status') == 'error' ) {
-                $('.setting-status-error').show();
+                $('.settings-status-error').show();
             }
         });
 		

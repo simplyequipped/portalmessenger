@@ -113,6 +113,8 @@ body {
 	height: 45px;
 	width: 45px;
 	cursor: none;
+	background: var(--primary-color);
+    vertical-align: middle;
 	-webkit-mask-image: url('icons/loading.svg');
     -webkit-animation: rotation 1s infinite linear;
 }
@@ -137,14 +139,26 @@ body {
 
 .settings-status-success {
     display: none;
+    font-size: var(--large-font-size);
+    padding-top: 10px;
+    text-align: center;
+    color: black;
 }
 
 .settings-status-restart {
     display: none;
+    font-size: var(--large-font-size);
+    padding-top: 10px;
+    text-align: center;
+    color: black;
 }
 
 .settings-status-error {
     display: none;
+    font-size: var(--large-font-size);
+    padding-top: 10px;
+    text-align: center;
+    color: #b0120a;
 }
 
 .menu-container {
