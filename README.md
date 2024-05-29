@@ -148,7 +148,7 @@ The *Settings* view displays a list of application settings:
 - **App Theme**: Whether the app should use a light or dark color theme
 - **Font Size**: Whether the app should use a normal or large font size
 
-Press the *Save Settings* button near the bottom of the view after making changes. Some settings are set via the JS8Call configuration file, which requires the JS8Call application to be restarted for those settings to take effect. JS8Call will be restarted automatically as needed when settings changes are saved, which may take several seconds depending on the hardware platform.
+Press the *Save Settings* button near the bottom of the view after making changes. Some settings are set via the JS8Call configuration file, which requires the JS8Call application to be restarted for those settings to take effect. JS8Call will be restarted automatically as needed while saving settings, which may take several seconds depending on the hardware platform. A message is displayed indicating that JS8Call is restarting. A success message is displayed once all changes have been saved and implemented. If an error occurs during setting validation, an error message is displayed below the setting field containing the error.
 
 Additional JS8Call settings can be configured using the *--settings* CLI option to specify a pyjs8call settings file. See *pyjs8call.settings.Settings.load* for more information, including pyjs8call settings file configuration options.
 
