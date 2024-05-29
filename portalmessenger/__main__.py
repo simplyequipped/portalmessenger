@@ -78,5 +78,5 @@ if __name__ == '__main__':
         thread.daemon = True
         thread.start()
 
-    websockets.run(app, host=args.host, port=args.port, debug=args.debug, allow_unsafe_werkzeug=True)
+    websockets.run(app, host=args.host, port=args.port, debug=False, allow_unsafe_werkzeug=True)
     
