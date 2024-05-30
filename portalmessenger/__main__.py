@@ -42,13 +42,16 @@ if __name__ == '__main__':
         _os = pyshortcuts.uname # win, linux, or darwin
 
         if _os == 'win':
-            icon_file = '/static/icons/portalmessenger.ico'
+            icon_file = 'static/icons/portalmessenger.ico'
         elif _os == 'linux':
-            icon_file = '/static/icons/portalmessenger.png'
+            icon_file = 'static/icons/portalmessenger.png'
         elif _os == 'darwin':
-            icon_file = '/static/icons/portalmessenger.icns'
+            icon_file = 'static/icons/portalmessenger.icns'
             
         icon_path = os.path.join( os.path.dirname( os.path.abspath(__file__) ), icon_file)
+
+        #TODO
+        print(icon_path)
         
         # include specified args in pyshortcuts command, removing shortcut args
         sys_args = [arg for arg in sys.argv[1:] if arg.strip() not in ('--shortcut', '-c')]
