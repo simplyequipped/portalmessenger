@@ -4,15 +4,7 @@ from portalmessenger import db
 
 
 # msg = pyjs8call.Message object
-def process_message(msg):
-    if msg.type[0:2].lower() == 'tx':
-        #TODO moved to pyjs8call.client.clean_rx_message_text, remove after testing
-        # handle command messages, rebuild text if needed
-        #if msg.text is None and msg.cmd is not None:
-        #    msg.text = msg.cmd
-        #elif msg.text is not None and msg.cmd is not None:
-        #    msg.text = '{} {}'.format(msg.cmd, msg.text)
-        
+def process_message(msg):        
     msg = {
         'id': msg.id,
         'origin': msg.origin,
