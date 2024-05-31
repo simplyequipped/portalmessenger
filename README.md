@@ -137,9 +137,9 @@ The *Propagation Map* view displays a map centered on the local station's grid s
 The *Settings* view displays a list of application settings:
 
 - **Callsign**: Callsign of the local station (changing this setting requires JS8Call to restart)
-- **Frequency (Hz)**: Radio frequency setting for JS8Call and the controlled radio
 - **Grid Square**: Grid square of the local station
 - **JS8Call Speed**: Speed setting of the JS8Call modem (changing this setting requires JS8Call to restart)
+- **Frequency (Hz)**: Radio frequency setting for JS8Call and the controlled radio
 - **Groups (@)**: JS8Call groups to participate in (changing this setting requires JS8Call to restart)
 - **Aging (minutes)**: How long after being heard a station will be displayed in activity lists
 - **Heartbeat Net**: Whether the pyjs8call heartbeat function is enabled or disabled
