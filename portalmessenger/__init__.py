@@ -105,9 +105,9 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
         #app.config['MODEM'].update_inbox(db.get_setting_value('inbox'))
         settings.default_settings['inbox']['update'](db.get_setting_value('inbox'))
 
+        # support for-loops in html templates
         app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
-    
     def app_context_aware(func):
         def _wrapped_function(*args, **kwargs):
             with app.app_context():
@@ -119,6 +119,7 @@ def create_app(test_config=None, headless=True, debugging=False, pyjs8call_setti
     app.config['MODEM'].incoming = app_context_aware(callbacks.incoming_message)
     app.config['MODEM'].spots = app_context_aware(callbacks.new_spots)
     app.config['MODEM'].outgoing = app_context_aware(callbacks.outgoing_status)
+    app.config['MODEM'].restart_complete = app_context_aware(callbacks.restart_complete)
     
     from . import websockets
     websockets.socketio.init_app(app)

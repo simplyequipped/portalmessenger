@@ -51,21 +51,6 @@ def init_spots():
 @socketio.on('conversation')
 def init_conversations():
     conversations = db.get_user_conversations( db.get_setting_value('callsign') )
-
-#TODO
-#    station_groups = [group.strip() for group in db.get_setting_value('groups')]
-#    for group in station_groups:
-#        conversations.extend(db.get_user_conversations( group ))
-
-    #for i in range(len(conversations)):
-    #    spots = current_app.config['MODEM'].get_spots(origin = conversations[i]['username'], count = 1)
-
-        # use latest station spot timestamp if more recent
-        #if conversations[i]['time'] is not None and len(spots) > 0 and spots[0].timestamp > conversations[i]['time_heard']:
-        #     conversations[i]['time'] = spots[0].timestamp
-        #elif conversations[i]['time'] is None and len(spots) > 0:
-        #     conversations[i]['time'] = spots[0].timestamp
-    
     socketio.emit('conversation', conversations)
 
 # remove stored chat conversations for specified user

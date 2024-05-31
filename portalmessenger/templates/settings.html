@@ -80,23 +80,14 @@
         $('.menu').hide();
 		var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        socket.on('restart-status', function (js8call_status){
-            status = $('#settings-form').attr('data-status')
-            
-            if ( status != 'error' && js8call_status == true ){
-                // js8call restart complete, indicate success
-                $('.settings-status-restart').hide();
-                $('.settings-status-success').show();
-                setTimeout(function(){
-                    $('.settings-status-success').hide();
-                }, 1000 * 10);
-            }
-            else if ( status != 'error' && js8call_status == false ){
-                // request status update until js8call back online
-                setTimeout(function(){
-                    socket.emit('restart-status');
-                }, 500); // 500 ms
-            }
+        socket.on('restart-complete', function (){
+            // js8call restart complete, indicate success
+            $('.settings-status-restart').hide();
+            $('.settings-status-success').show();
+            // hide success message after 10 seconds
+            setTimeout(function(){
+                $('.settings-status-success').hide();
+            }, 1000 * 10);
         });
 
         $(window).on('load', function(){
@@ -109,23 +100,21 @@
                 $('.menu').slideToggle();
             });
 
-            if ( $('#settings-form').attr('data-status') == 'success' ) {
+            var settings_status = $('#settings-form').attr('data-status')
+            if ( settings_status == 'success' ) {
                 $('.settings-status-success').show();
+                // hide success message after 10 seconds
                 setTimeout(function(){
                     $('.settings-status-success').hide();
                 }, 1000 * 10);
             }
-            else if ( $('#settings-form').attr('data-status') == 'restart' ) {
+            else if ( settings_status == 'restart' ) {
                 $('.settings-status-restart').show();
-                
-                // request status update until js8call back online
-                setTimeout(function(){
-                    socket.emit('restart-status');
-                }, 500); // 500 ms
             }
-            else if ( $('#settings-form').attr('data-status') == 'error' ) {
+            else if ( settings_status == 'error' ) {
                 $('.settings-status-error').show();
             }
+            // if settings_status == 'view' do nothing
         });
 		
         // hide menu when clicking off menu
