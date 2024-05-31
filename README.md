@@ -122,6 +122,8 @@ The *Network* view displays detailed information about each heard station:
 - **Hearing**: Other stations hearing the station
 - **Heard By**: Other stations heard by the station
 
+Select a station to send a message or see stored message history (see the *Conversation* view section for more information).
+
 The *Network* view is dynamic and will update automatically as stations are heard. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after being heard a station will be displayed in the list. In order to provide more network information, *Hearing* and *Heard By* activity with an age of 10 times the *Aging (minutes)* setting are included for each station.
 
 ### Propagation Map
