@@ -210,7 +210,7 @@ function selectedTab() {
 function stationClick() {
 	var username = $(this).attr('name');
 	$.post('/stations', {user: username}, function() {
-		window.location = '/chat?' + $('.tab.selected').attr('id');
+		window.location = '/chat?from=' + encodeURIComponent('/stations?' + $('.tab.selected').attr('id'));
 	});
 }
 
