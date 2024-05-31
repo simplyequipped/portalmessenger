@@ -1,9 +1,9 @@
 // construct new station element based on given station data
 function newStation(station) {
 	stationElement = $('.station.original-hidden').clone();
-	stationElement.attr('name', station.username)
+	stationElement.attr('name', station.username);
 	stationElement.find('.chat-name').html(station.username);
-	//stationElement.click(stationClick)
+	stationElement.click(stationClick);
 	stationElement.removeClass('original-hidden');
 	stationElement.appendTo('.content');
 	setLastHeard(station.username, station.time);
@@ -56,7 +56,11 @@ function setLastHeard(username, lastHeard) {
 
 // on click event handler for stations div
 function stationClick() {
-	$(this).find('.station-details').toggle();
+	//$(this).find('.station-details').toggle();
+	var username = $(this).attr('name');
+	$.post('/stations', {user: username}, function() {
+		window.location = '/chat?from=' + encodeURIComponent('/network');
+	});
 }
 
 // sort stations in ascending order by last heard time
