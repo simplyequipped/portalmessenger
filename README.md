@@ -78,7 +78,7 @@ OPTIONS:
 ## Views
 
 ### Menu Items
-Selecting the menu icon ( <img src="portalmessenger/static/icons/hamburger.svg" alt="hamburger icon" width="25" height="25"/> ) displays the main application menu. The available menu items are the same in most views, with a few exceptions noted in the relevant sections below.
+Selecting the menu icon ( <img src="https://github.com/simplyequipped/portalmessenger/blob/main/portalmessenger/static/icons/hamburger.svg" alt="hamburger icon" width="25" height="25"/> ) displays the main application menu. The available menu items are the same in most views, with a few exceptions noted in the relevant sections below.
 
 - **Activity**: Navigate to the station activity view
 - **Network**: Navigate to the network activity view
@@ -88,30 +88,30 @@ Selecting the menu icon ( <img src="portalmessenger/static/icons/hamburger.svg" 
 
 ### Activity
 
-![Activity view screenshot](docs/screenshot_activity.png)
+![Activity view screenshot](https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/docs/screenshot_activity.png)
 
 There are two tabs in the *Activity* view: *Activity* and *Messages*. The *Default Tab* setting is used to select which of these two tabs is displayed when navigating to the *Activity* view (see the *Settings* section for more information). The *Activity* tab displays each heard station's presence indicator, callsign, and time since last heard. The *Messages* tab displays a station's presence indicator, callsign, and time since last heard when there are stored messages (incoming and/or outgoing) associated with that station. The *Messages* tab will indicate the number of unread messages (when greater than zero), and stations with unread messages will have a bold callsign.
 
-Select a station to send a message or see stored message history (see the *Conversation* view section for more information). Use the add icon ( <img src="portalmessenger/static/icons/add-solid.svg" alt="add icon" width="25" height="25"/> ) near the bottom of the view to start a new conversation with a station. After pressing the add icon, you will enter the station callsign or group designator and then press *Add*. You will be redirected to the conversation for that station or group.
+Select a station to send a message or see stored message history (see the *Conversation* view section for more information). Use the add icon ( <img src="https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/portalmessenger/static/icons/add-solid.svg" alt="add icon" width="25" height="25"/> ) near the bottom of the view to start a new conversation with a station. After pressing the add icon, you will enter the station callsign or group designator and then press *Add*. You will be redirected to the conversation for that station or group.
 
 The *Activity* view is dynamic and will update automatically as stations are heard and messages are received. Stations are shown in order of time since last heard. The *Aging (minutes)* setting is used to set how long after being heard a station will be displayed in the list.
 
-When the *Messages* tab is selected, the menu will include an additonal *Delete Messages...* option. After selecting this menu option, a delete icon ( <img src="portalmessenger/static/icons/delete-hollow.svg" alt="trash can icon" width="25" height="25"/> ) will be displayed on each station message. Selecting the delete icon will remove all stored messages associated with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons.
+When the *Messages* tab is selected, the menu will include an additonal *Delete Messages...* option. After selecting this menu option, a delete icon ( <img src="https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/portalmessenger/static/icons/delete-hollow.svg" alt="trash can icon" width="25" height="25"/> ) will be displayed on each station message. Selecting the delete icon will remove all stored messages associated with that station and remove the station from the list. Select anywhere on the view (other than a delete icon) to hide the delete icons.
 
 ### Conversation
 
-![Conversation view screenshot](docs/screenshot_conversation.png)
-![Conversation context menu screenshot](docs/screenshot_conversation_context_menu.png)
+![Conversation view screenshot](https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/docs/screenshot_conversation.png)
+![Conversation context menu screenshot](https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/docs/screenshot_conversation_context_menu.png)
 
 When a station is selected, the user will navigate to the *Conversation* view. This view displays the station's presence indicator, callsign, and time since last heard. An outgoing message can be entered in the text field near the bottom of the view. Press *Enter* or select the *Send* button to send the message. Outgoing messages are queued for transmit and will be sent in order. Outgoing message status is indicated immediately below the outgoing message. Outgoing message status may be: *Queued, Sending, Sent, or Failed*. Once the outgoing message is sent, the *Sent* status will be displayed for 10 seconds before being hidden. Navigating away from the *Conversation* view will not affect the outgoing message.
 
-Selecting the *Conversation* context menu icon ( <img src="portalmessenger/static/icons/vertical-ellipsis.svg" alt="vertical ellipsis icon" width="25" height="25"/> ) in the upper right corner of the view displays a list of pre-formatted JS8Call command messages. Selecting a command from the list will insert the pre-formatted command text in the outgoing message field. Text in square brackets (including the brackets) should be replaced with applicable information. For example, the following text is inserted in the outgoing message field when the command *Query Callsign* is selected: ` QUERY CALL [callsign]` where [callsign] should be replaced with the callsign to be queried, resulting in an outgoing message field like ` QUERY CALL OH8STN`. On displays with a small vertical height (ex. Raspberry Pi 7-inch display) scrolling may be required within the context menu to see all command message options.
+Selecting the *Conversation* context menu icon ( <img src="https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/portalmessenger/static/icons/vertical-ellipsis.svg" alt="vertical ellipsis icon" width="25" height="25"/> ) in the upper right corner of the view displays a list of pre-formatted JS8Call command messages. Selecting a command from the list will insert the pre-formatted command text in the outgoing message field. Text in square brackets (including the brackets) should be replaced with applicable information. For example, the following text is inserted in the outgoing message field when the command *Query Callsign* is selected: ` QUERY CALL [callsign]` where [callsign] should be replaced with the callsign to be queried, resulting in an outgoing message field like ` QUERY CALL OH8STN`. On displays with a small vertical height (ex. Raspberry Pi 7-inch display) scrolling may be required within the context menu to see all command message options.
 
-Selecting the back icon ( <img src="portalmessenger/static/icons/arrow-left.svg" alt="back icon" width="25" height="25"/> ) in the upper right corner of the view navigates back to the *Activity* view.
+Selecting the back icon ( <img src="https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/portalmessenger/static/icons/arrow-left.svg" alt="back icon" width="25" height="25"/> ) in the upper right corner of the view navigates back to the *Activity* view.
 
 ### Network
 
-![Network view screenshot](docs/screenshot_network.png)
+![Network view screenshot](https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/docs/screenshot_network.png)
 
 The *Network* view displays detailed information about each heard station:
 
@@ -128,13 +128,13 @@ The *Network* view is dynamic and will update automatically as stations are hear
 
 ### Propagation Map
 
-![Propagation Map view screenshot](docs/screenshot_propagation_map.png)
+![Propagation Map view screenshot](https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/docs/screenshot_propagation_map.png)
 
 The *Propagation Map* view displays a map centered on the local station's grid square (or Washington D.C. USA if no grid square is configured). Heard station data is analyzed to determine the median SNR for each "heard" grid square over a 60 minute period. This data is displayed as a heat map to indicate an approximation of current propagation conditions relative to the local station. The heat map is updated with the latest heard station data each time the view is loaded, or every 5 minutes while the view is active.
 
 ### Settings
 
-![Settings view screenshot](docs/screenshot_settings.png)
+![Settings view screenshot](https://raw.githubusercontent.com/simplyequipped/portalmessenger/main/docs/screenshot_settings.png)
 
 The *Settings* view displays a list of application settings:
 
