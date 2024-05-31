@@ -62,7 +62,7 @@
 	<script>
         $('.menu').hide();
         
-        const urlparams = new URLSearchParams(window.location.href);
+        const urlparams = new URLSearchParams(window.location.search);
         if ( urlparams.get('from') != null ) {
             from_url = decodeURIComponent(urlparams.get('from'));
         }
