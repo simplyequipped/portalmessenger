@@ -44,6 +44,7 @@ function handleConversation(station) {
 		}
 	}
 	else {
+		setLastHeard(station.username, station.time);
 		setLastMsgHeard(station.username, station.time);
 		findStation(station.username).addClass('conversation');
 	}
