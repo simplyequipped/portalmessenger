@@ -61,12 +61,21 @@
     </body>
 	<script>
         $('.menu').hide();
-        $('span.icon-back').parent().attr('href', '/stations' + window.location.search.substring(0))
+        
+        const urlparams = new URLSearchParams(window.location.href);
+        if ( urlparams.get('from') != null ) {
+            from_url = decodeURIComponent(urlparams.get('from'));
+        }
+        else {
+            from_url = '/stations';
+        }
+        $('span.icon-back').parent().attr('href', from_url);
+        
         var socket = io.connect('http://' + document.domain + ':' + location.port);
 
         socket.on('msg', function( msgs ) {
 			msgs.forEach(function ( msg ) {
-				newChatMessage(msg)
+				newChatMessage(msg);
 			});
 
 			// sort first loading msgs
