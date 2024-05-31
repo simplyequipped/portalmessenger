@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.1.0",
     author="Simply Equipped LLC",
     author_email="howard@simplyequipped.com",
-    description="Messaging web app using pyjs8call",
+    description="HF radio messaging web app using pyjs8call",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/simplyequipped/portalmessenger",
