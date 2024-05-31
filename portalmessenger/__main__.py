@@ -42,7 +42,7 @@ if __name__ == '__main__':
         _os = pyshortcuts.uname # win, linux, or darwin
 
         if _os == 'win':
-            icon_file = 'static\icons\portalmessenger.ico'
+            icon_file = 'static\\icons\\portalmessenger.ico'
         elif _os == 'linux':
             icon_file = 'static/icons/portalmessenger.png'
         elif _os == 'darwin':
