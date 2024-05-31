@@ -274,6 +274,7 @@ body {
 	padding-top: 5px;
 }
 
+/* show border and cursor on network station hover
 .station-network {
 	cursor: default;
 }
@@ -281,6 +282,7 @@ body {
 .station-network:hover, .station-network:focus {
 	border-color: var(--tertiary-color);
 }
+*/
 
 .selected {
 	font-weight: bold;
