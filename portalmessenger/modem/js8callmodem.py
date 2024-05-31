@@ -151,7 +151,7 @@ class JS8CallModem(BaseModem):
     def update_inbox(self, inbox):
         if inbox == 'enable':
             self.js8call.inbox.enable()
-        if inbox == 'query allcall':
+        if inbox == 'query @ALLCALL':
             self.js8call.inbox.enable(query=True)
         else:
             self.js8call.inbox.disable()
