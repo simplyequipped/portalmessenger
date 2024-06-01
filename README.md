@@ -24,7 +24,6 @@ It is the user's responsibility to manage their local network and implement good
 ## Getting Started
 
 ### Installation
-**Note:** the latest Portal Messenger version has not been released to PyPi yet, coming soon :)
 
 Refer to the [pyjs8call documentation](https://simplyequipped.github.io/pyjs8call/) for information on installing JS8Call. The radio interface and audio devices should be configured directly in the JS8Call application settings before running Portal Messenger.
 
