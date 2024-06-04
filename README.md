@@ -27,52 +27,16 @@ It is the user's responsibility to manage their local network and implement good
 
 Refer to the [pyjs8call documentation](https://simplyequipped.github.io/pyjs8call/) for information on installing JS8Call. The radio interface and audio devices should be configured directly in the JS8Call application settings before running Portal Messenger.
 
-1. Pip install the application: `pip install portalmessenger` (use pip3 if python3 is not the default on your system)
-2. Create a desktop shortcut to run JS8Call and open Portal Messenger in the default web browser:
-   ```
-   python -m portalmessenger --shortcut --browser
-   ```
+Perform the following steps from the command line:
 
-   or
-   
-   Create a desktop shortcut to run JS8Call headless (Linux only) and access Portal Messenger from another device:
-   ```
-   python -m portalmessenger --shortcut --headless
-   ```
+1. Install the application: `pip install portalmessenger`
+2. Create a desktop shortcut: `python -m portalmessenger --shortcut`
 
-   or
+### Launch
 
-   Start Portal Messenger directly from the command line:
-   ```
-   python -m portalmessenger --settings ~/.config/pyjs8call.ini --browser
-   ```
-Use the IP address and port printed to the command line at startup (ex. 192.168.0.20:5000) to access Portal Messenger from another device.
-
-### Command Line Interface (CLI)
-
-A command line interface is available for the *portalmessenger* module as of version 0.1.0. CLI usage is as follows:
-
-```
-USAGE: python -m portalmessenger [OPTIONS]
-
-OPTIONS:
-    -a, --host
-        Accept requests from this host address, defaults to 0.0.0.0 (all hosts)
-    -p, --port
-        Web server port, defaults to 5000
-    -j, --headless
-        Run the JS8Call application headless (Linux only)
-    -s, --settings
-        Path to pyjs8call settings file (NOT JS8CALL CONFIG FILE), see pyjs8call.settings.Settings.load
-    -d, --debug
-        Enable pyjs8call debug output
-    -b, --browser
-        Open a browser window to 127.0.0.1 after starting the application server
-    -c, --shortcut
-        Create a desktop shortcut to launch the application, then exit (*)
-
-(*) Additional arguments will be included in the desktop shortcut command
-```
+1. Double-click the Portal Messenger icon on the desktop, which will open a command line window
+2. Wait while JS8Call and Portal Messenger are started
+3. Once the information in the command line window indicates that the application has started, enter the IP address and port as displayed (ex. 192.168.0.20:5000) into the web browser on a device connected to the same WiFi network
 
 ## Views
 
@@ -153,3 +117,47 @@ Press the *Save Settings* button near the bottom of the view after making change
 
 Additional JS8Call settings can be configured using the *--settings* CLI option to specify a pyjs8call settings file. See *pyjs8call.settings.Settings.load* for more information, including pyjs8call settings file configuration options.
 
+### Command Line Interface (CLI)
+
+A command line interface is available for the *portalmessenger* module as of version 0.1.0. CLI usage is as follows:
+
+```
+USAGE: python -m portalmessenger [OPTIONS]
+
+OPTIONS:
+    -a, --host
+        Accept requests from this host address, defaults to 0.0.0.0 (all hosts)
+    -p, --port
+        Web server port, defaults to 5000
+    -j, --headless
+        Run the JS8Call application headless (Linux only)
+    -s, --settings
+        Path to pyjs8call settings file (NOT JS8CALL CONFIG FILE), see pyjs8call.settings.Settings.load
+    -d, --debug
+        Enable pyjs8call debug output
+    -b, --browser
+        Open a browser window to 127.0.0.1 after starting the application server
+    -c, --shortcut
+        Create a desktop shortcut to launch the application, then exit (*)
+
+(*) Additional arguments will be included in the desktop shortcut command
+```
+
+Create a desktop shortcut to run JS8Call and open Portal Messenger in the default browser:
+   ```
+   python -m portalmessenger --shortcut --browser
+   ```
+
+   or
+
+Create a desktop shortcut to run JS8Call headless (X11 Linux only) and access Portal Messenger from another device:
+   ```
+   python -m portalmessenger --shortcut --headless
+   ```
+
+   or
+
+   Start Portal Messenger directly from the command line using a *pyjs8call* settings file and open the web app in the default web browser:
+   ```
+   python -m portalmessenger --settings ~/.config/pyjs8call.ini --browser
+   ```
