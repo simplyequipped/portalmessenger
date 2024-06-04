@@ -117,7 +117,7 @@ Press the *Save Settings* button near the bottom of the view after making change
 
 Additional JS8Call settings can be configured using the *--settings* CLI option to specify a pyjs8call settings file. See *pyjs8call.settings.Settings.load* for more information, including pyjs8call settings file configuration options.
 
-### Command Line Interface (CLI)
+## Command Line Interface (CLI)
 
 A command line interface is available for the *portalmessenger* module as of version 0.1.0. CLI usage is as follows:
 
