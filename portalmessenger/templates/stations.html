@@ -88,9 +88,10 @@
             // show spots, including conversations/messages that are also spots
             $('.conversation').hide();
             // show time since last heard
-            $('.spot').each(function ( index, station ) {
+            $('.spot').each(function(index, station) {
             	showLastHeard(station)
             });
+			sortStations();
             $('.spot').show();
         }
 
@@ -105,9 +106,10 @@
             // show conversations, including spots that are also conversations/messages
             $('.spot').hide();
             // show time since last message heard
-            $('.conversation').each(function ( index, station ) {
+            $('.conversation').each(function(index, station) {
             	showLastMsgHeard(station)
             });
+			sortStations();
             $('.conversation').show();
         }
 
@@ -124,7 +126,6 @@
 			data.forEach(function( station ) {
 				handleSpot(station);
 			});
-			sortStations();
             updateTabContent();
 		});
 
@@ -132,7 +133,6 @@
 			data.forEach(function( station ) {
 				handleConversation(station);
 			});
-			sortStations();
             updateTabContent();
 		});
 

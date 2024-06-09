@@ -226,15 +226,29 @@ function stationDeleteClick(event) {
 function sortStations() {
 	var stations = $('.station').not('.original-hidden');
 
+    if ( selectedTab() == 'activity') {
+        timestamp_attr = 'data-last-heard';
+    }
+    else if ( selectedTab() == 'conversations' ) {
+        timestamp_attr = 'data-last-msg';
+    }
+
 	stations.sort(function(stationA, stationB) {
-		stationALastHeard = parseInt( $(stationA).find('.last-heard').attr('data-last-heard') );
-		stationBLastHeard = parseInt( $(stationB).find('.last-heard').attr('data-last-heard') );
+		stationALastHeard = parseInt( $(stationA).find('.last-heard').attr(timestamp_attr) );
+		stationBLastHeard = parseInt( $(stationB).find('.last-heard').attr(timestamp_attr) );
+
+        if ( stationALastHeard == null ) {
+            stationALastHeard = 0;
+        }
+
+        if ( stationBLastHeard == null ) {
+            stationBLastHeard = 0;
+        }
+
 		return stationBLastHeard - stationALastHeard;
 	});
 
 	$('.station').not('.original-hidden').detach();
 	stations.appendTo('.content');
 }
-
-
-
+    
