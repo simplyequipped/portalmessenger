@@ -225,17 +225,31 @@ function stationDeleteClick(event) {
 // sort stations in ascending order by last heard time
 function sortStations() {
 	var stations = $('.station').not('.original-hidden');
+    // sort activity by last heard timestamp
+    var timestamp_attr = 'data-last-heard';
 
-    if ( selectedTab() == 'activity') {
-        timestamp_attr = 'data-last-heard';
-    }
-    else if ( selectedTab() == 'conversations' ) {
+    // sort conversations by last msg timestamp
+    if ( selectedTab() == 'conversations' ) {
         timestamp_attr = 'data-last-msg';
     }
 
 	stations.sort(function(stationA, stationB) {
-		stationALastHeard = parseInt( $(stationA).find('.last-heard').attr(timestamp_attr) );
-		stationBLastHeard = parseInt( $(stationB).find('.last-heard').attr(timestamp_attr) );
+        if ( selectedTab() == 'conversations' ) {
+            // list unread conversations first on conversations tab
+            // stations with same unread status sorted by timestamp
+            var aUnread = stationA.find('.chat-name').hasClass('unread');
+            var bUnread = stationB.find('.chat-name').hasClass('unread');
+    
+            if (aUnread && !bUnread) {
+                return -1; // a before b
+            }
+            if (!aUnread && bUnread) {
+                return 1; // b before a
+            }
+        }
+
+		var stationALastHeard = parseInt( $(stationA).find('.last-heard').attr(timestamp_attr) );
+		var stationBLastHeard = parseInt( $(stationB).find('.last-heard').attr(timestamp_attr) );
 
         if ( stationALastHeard == null ) {
             stationALastHeard = 0;
