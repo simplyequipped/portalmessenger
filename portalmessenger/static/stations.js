@@ -237,8 +237,8 @@ function sortStations() {
         if ( selectedTab() == 'conversations' ) {
             // list unread conversations first on conversations tab
             // stations with same unread status sorted by timestamp
-            var aUnread = stationA.find('.chat-name').hasClass('unread');
-            var bUnread = stationB.find('.chat-name').hasClass('unread');
+            var aUnread = $(stationA).find('.chat-name').hasClass('unread');
+            var bUnread = $(stationB).find('.chat-name').hasClass('unread');
     
             if (aUnread && !bUnread) {
                 return -1; // a before b
