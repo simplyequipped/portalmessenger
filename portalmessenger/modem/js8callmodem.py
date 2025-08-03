@@ -50,7 +50,7 @@ class JS8CallModem(BaseModem):
         for spot in all_spots:
             if spot.origin not in spots:
                 spots[spot.origin] = spot
-            elif spot.age() > spots[spot.origin].age():
+            elif spot.age() < spots[spot.origin].age():
                 spots[spot.origin] = spot
 
         spots = list(spots.values())
