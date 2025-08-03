@@ -161,3 +161,38 @@ Create a desktop shortcut to run JS8Call headless (X11 Linux only) and access Po
    ```
    python -m portalmessenger --settings ~/.config/pyjs8call.ini --browser
    ```
+
+## Local Domain / Hostname Setup
+
+To avoid having to find your device's IP address each time, you can access Portal Messenger using a local hostname instead.
+
+### Set a Custom Hostname
+
+On your Linux device running Portal Messenger:
+
+```bash
+# check current hostname
+hostname
+
+# set custom hostname (requires reboot)
+# replace 'portalmessenger' in the following command with whatever hostname you chose
+sudo hostnamectl set-hostname portalmessenger
+sudo reboot
+```
+
+### Access via Local Domain
+
+After setting the hostname, you can access Portal Messenger from any device on your local network using:
+
+```
+http://portalmessenger.local:5000
+```
+
+This works automatically on:
+- macOS and iOS devices
+- Windows 10 and newer
+- Most Android devices
+- Linux devices with avahi-daemon installed
+
+**Note:** The `.local` domain only works in your local network
+
