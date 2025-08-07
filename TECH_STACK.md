@@ -24,10 +24,10 @@ Portal Messenger v2 uses a modern, cross-platform web application architecture t
 ### Frontend
 - **Svelte** - Modern reactive framework (simpler than React)
 - **Tailwind CSS** - Utility-first CSS framework
-- **Vite** - Build tool and dev server (development only)
+- **SvelteKit** - Build tool and dev server (development only)
 
 ### Development Tools
-- **Vite** - Frontend build system, bundling, and hot reload
+- **SvelteKit** - Frontend build system, bundling, and hot reload
 - **npm/Node.js** - Frontend package management (development only)
 
 ## Key Benefits
@@ -93,7 +93,7 @@ python setup.py sdist bdist_wheel
 ### For Developers
 - Source code includes both frontend source and Python backend
 - Requires Node.js for frontend development
-- Uses Vite for hot reload and modern development experience
+- Uses SvelteKit/Vite for hot reload and modern development experience
 
 ### For End Users
 - **Installation**: `pip install portalmessenger`
@@ -137,7 +137,7 @@ portalmessenger-2.0.0/
 | Backend | Flask + Flask-SocketIO | Starlette + uvicorn |
 | Frontend | jQuery + vanilla JS | Svelte + Tailwind |
 | Database | SQLite | TinyDB (JSON) |
-| Build | None | Vite (dev only) |
+| Build | None | SvelteKit (dev only) |
 | Installation | `pip install` | `pip install` (same) |
 | Dependencies | Runtime JS dependencies | Pre-compiled assets |
 
