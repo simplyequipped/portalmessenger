@@ -20,6 +20,8 @@ default_settings = {
         'options': ['JS8Call'],
         'display': False,
         'restart': False,
+        'order': 0,
+        'advanced': False,
         'validate': lambda option: option in default_settings['modem']['options']
     },
     'pyjs8call-api-host': {
@@ -30,6 +32,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
+        'order': 100,
+        'advanced': True,
         'validate': lambda host: len(host.strip()) > 0
     },
     'pyjs8call-api-port': {
@@ -40,6 +44,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
+        'order': 101,
+        'advanced': True,
         'validate': lambda port: port.isnumeric() and 1 <= int(port) <= 65535
     },
     'callsign': {
@@ -50,6 +56,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': True,
+        'order': 1,
+        'advanced': False,
         'validate': lambda callsign: any([char.isdigit() for char in callsign]) and len(callsign) <= 9 and len(callsign) > 0
     },
     'grid': {
@@ -60,6 +68,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
+        'order': 2,
+        'advanced': False,
         'validate': lambda grid: len(grid) == 0 or (len(grid) >= 4 and grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit())
     },
     'speed': {
@@ -70,6 +80,8 @@ default_settings = {
         'options': ['slow', 'normal', 'fast', 'turbo'],
         'display': True,
         'restart': True,
+        'order': 4,
+        'advanced': False,
         'validate': lambda option: option in default_settings['speed']['options']
     },
     'freq': {
@@ -80,6 +92,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
+        'order': 3,
+        'advanced': False,
         'validate': lambda freq: freq.isnumeric()
     },
     'groups': {
@@ -90,6 +104,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': True,
+        'order': 5,
+        'advanced': False,
         'validate': lambda groups: len(groups) == 0 or all([bool(group.strip().startswith('@') and len(group.strip()) <= 9) for group in groups.split(',')])
     },
     'aging': {
@@ -100,6 +116,8 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
+        'order': 102,
+        'advanced': True,
         'validate': lambda aging: aging.isnumeric()
     },
     'heartbeat': {
@@ -110,6 +128,8 @@ default_settings = {
         'options': ['enable', 'disable'],
         'display': True,
         'restart': False,
+        'order': 103,
+        'advanced': True,
         'validate': lambda option: option in default_settings['heartbeat']['options']
     },
     'inbox': {
@@ -120,6 +140,8 @@ default_settings = {
         'options': ['enable', 'disable', 'query @ALLCALL'],
         'display': True,
         'restart': False,
+        'order': 104,
+        'advanced': True,
         'validate': lambda option: option in default_settings['inbox']['options']
     },
     'tab': {
@@ -130,16 +152,20 @@ default_settings = {
         'options': ['activity', 'messages'],
         'display': True,
         'restart': False,
+        'order': 105,
+        'advanced': True,
         'validate': lambda option: option in default_settings['tab']['options']
     },
     'theme': {
-        'value': 'dark',
+        'value': 'auto',
         'label': 'App Theme',
-        'default': 'dark',
+        'default': 'auto',
         'required': False,
-        'options': ['light', 'dark'],
+        'options': ['auto', 'light', 'dark'],
         'display': True,
         'restart': False,
+        'order': 106,
+        'advanced': True,
         'validate': lambda option: option in default_settings['theme']['options']
     },
     'size': {
@@ -150,6 +176,8 @@ default_settings = {
         'options': ['normal', 'large'],
         'display': True,
         'restart': False,
+        'order': 7,
+        'advanced': False,
         'validate': lambda option: option in default_settings['size']['options']
     },
     'propagation': {
@@ -160,6 +188,8 @@ default_settings = {
         'options': ['30', '60', '120'],
         'display': False,
         'restart': False,
+        'order': 106,
+        'advanced': True,
         'validate': lambda option: option in default_settings['propagation']['options']
     }
 }
@@ -180,13 +210,12 @@ class PortalDatabase:
         self.messages = self.db.table('messages')
         self.settings = self.db.table('settings')
         
-        # initialize default settings if empty
-        if len(self.settings) == 0:
-            self._initialize_default_settings()
+        # initialize/update settings with defaults
+        self._initialize_default_settings()
     
     def _initialize_default_settings(self):
         '''Initialize default app settings by flattening global default_settings dict'''
-        settings_list = []
+        Setting = Query()
         
         for setting_name, setting_config in default_settings.items():
             # flatten settings
@@ -196,9 +225,21 @@ class PortalDatabase:
                 if key not in ('validate'):
                     flattened_setting[key] = value
             
-            settings_list.append(flattened_setting)
-        
-        self.settings.insert_multiple(settings_list)
+            # Check if setting already exists
+            existing = self.settings.search(Setting.setting == setting_name)
+            
+            if existing:
+                # Update existing setting with new properties from defaults
+                # but preserve the current value
+                existing_setting = existing[0]
+                current_value = existing_setting.get('value', setting_config['value'])
+                
+                # Merge new properties from defaults, keeping current value
+                updated_setting = {**flattened_setting, 'value': current_value}
+                self.settings.update(updated_setting, Setting.setting == setting_name)
+            else:
+                # Insert new setting
+                self.settings.insert(flattened_setting)
     
     # settings methods
     def get_setting(self, setting_name: str) -> Optional[Dict[str, Any]]:

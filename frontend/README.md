@@ -1,38 +1,75 @@
-# sv
+# Portal Messenger Frontend
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Svelte frontend for Portal Messenger - HF radio messaging web application using pyjs8call.
 
-## Creating a project
+## Architecture
 
-If you're seeing this, you've probably already done this step. Congrats!
+This frontend is built with SvelteKit and TypeScript, providing a modern messaging interface that integrates with:
+- **Portal Messenger Backend**: REST API for message/conversation persistence and settings storage
+- **pyjs8call API**: WebSocket + REST API for real-time JS8Call integration
 
-```sh
-# create a new project in the current directory
-npx sv create
+### Key Components
 
-# create a new project in my-app
-npx sv create my-app
+- **ConversationList**: Sidebar showing conversations with unread indicators
+- **MessageView**: Chat interface for sending/receiving messages with JS8Call command templates
+- **Settings**: Form for configuring both Portal Messenger and pyjs8call settings
+- **Header**: Navigation and connection status indicators
+
+### Data Flow
+
+1. **Incoming Messages**: pyjs8call WebSocket → Store in backend → Update UI
+2. **Outgoing Messages**: User input → Send via pyjs8call API → Store in backend → Update UI
+3. **Settings**: UI changes → Save to backend → Apply to pyjs8call (if applicable)
+
+## Development
+
+Install dependencies:
+```bash
+npm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+Start development server:
+```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
+
+The frontend expects:
+- Portal Messenger Backend running on `localhost:8080` (configurable via settings)
+- pyjs8call API running on `localhost:8080` (configurable via settings)
 
 ## Building
 
-To create a production version of your app:
-
-```sh
+Create production build:
+```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+Preview production build:
+```bash
+npm run preview
+```
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Configuration
+
+The frontend reads pyjs8call API connection settings from the backend:
+- `pyjs8call-api-host`: Default 'localhost'
+- `pyjs8call-api-port`: Default 8080
+
+These can be changed in the Settings page.
+
+## Features
+
+- Real-time messaging via WebSocket
+- Message persistence and conversation management  
+- JS8Call command templates in message composer
+- Connection status monitoring for all services
+- Responsive design for desktop and mobile
+- Dark/light theme support
+- Settings validation and JS8Call restart management
+
+## Browser Support
+
+Modern browsers with WebSocket support:
+- Chrome/Edge 88+
+- Firefox 86+
+- Safari 14+

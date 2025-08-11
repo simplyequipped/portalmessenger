@@ -5,12 +5,25 @@ from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse, JSONResponse
 from starlette.exceptions import HTTPException
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 from .api import api_routes
 
 
 def create_app():
     '''Create and configure the Starlette application'''
+    # cors middleware
+    middleware = [
+        Middleware(
+            CORSMiddleware,
+            allow_origins=['*'],
+            allow_credentials=True,
+            allow_methods=['*'],
+            allow_headers=['*'],
+        )
+    ]
+    
     # server api routes during development and production
     routes = [
         Mount('/api', routes=api_routes),
@@ -24,7 +37,11 @@ def create_app():
             Route('/{path:path}', serve_spa),  # SPA fallback routing
         ])
     
-    return Starlette(routes=routes, exception_handlers={HTTPException: http_error_handler})
+    return Starlette(
+        routes=routes, 
+        middleware=middleware,
+        exception_handlers={HTTPException: http_error_handler}
+    )
 
 async def serve_spa(request):
     '''Serve the single page application'''

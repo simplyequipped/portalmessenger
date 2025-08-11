@@ -45,6 +45,52 @@ async def get_conversation(request):
     return JSONResponse(messages)
 
 
+async def get_conversations(request):
+    '''Get all conversations (callsigns/groups with messages)'''
+    db = get_database()
+    local_setting = db.get_setting('callsign')
+    
+    if not local_setting:
+        raise HTTPException(status_code=500, detail='Local callsign not configured')
+    
+    local_callsign = local_setting['value']
+    all_messages = db.get_all_messages()
+    
+    conversations_map = {}
+    
+    for message in all_messages:
+        if message['destination'].startswith('@'):
+            # group conversation
+            conversation_with = message['destination']
+        elif message['origin'] == local_callsign:
+            # outgoing message - conversation is with destination
+            conversation_with = message['destination']
+        else:
+            # incoming message - conversation is with origin
+            conversation_with = message['origin']
+        
+        if conversation_with not in conversations_map:
+            conversations_map[conversation_with] = {
+                'callsign': conversation_with,
+                'lastMessageTime': message['time'],
+                'unreadCount': 0,
+                'isOnline': False  # used by front end
+            }
+        else:
+            # keep most recent message time
+            if message['time'] > conversations_map[conversation_with]['lastMessageTime']:
+                conversations_map[conversation_with]['lastMessageTime'] = message['time']
+            
+        if message.get('unread', False):
+            conversations_map[conversation_with]['unreadCount'] += 1
+    
+    # sort by last message time
+    conversations_list = list(conversations_map.values())
+    conversations_list.sort(key=lambda c: c['lastMessageTime'], reverse=True)
+    
+    return JSONResponse(conversations_list)
+
+
 async def get_conversation_unread_count(request):
     '''Get count of conversations with unread messages'''
     db = get_database()
@@ -271,6 +317,7 @@ async def get_status(request):
 
 # route definitions
 api_routes = [
+    Route('/conversations', get_conversations, methods=['GET']),
     Route('/conversation/{callsign}', get_conversation, methods=['GET']),
     Route('/conversation/unread', get_conversation_unread_count, methods=['GET']),
     Route('/conversation/unread/{callsign}', get_conversation_unread_status, methods=['GET']),
