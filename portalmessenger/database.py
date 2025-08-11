@@ -22,6 +22,26 @@ default_settings = {
         'restart': False,
         'validate': lambda option: option in default_settings['modem']['options']
     },
+    'pyjs8call-api-host': {
+        'value': 'localhost',
+        'label': 'pyjs8call API IP/Host',
+        'default': 'localhost',
+        'required': True,
+        'options': None,
+        'display': True,
+        'restart': False,
+        'validate': lambda host: len(host.strip()) > 0
+    },
+    'pyjs8call-api-port': {
+        'value': 8080,
+        'label': 'pyjs8call API Port',
+        'default': 8080,
+        'required': True,
+        'options': None,
+        'display': True,
+        'restart': False,
+        'validate': lambda port: port.isnumeric() and 1 <= int(port) <= 65535
+    },
     'callsign': {
         'value': '',
         'label': 'Callsign',
