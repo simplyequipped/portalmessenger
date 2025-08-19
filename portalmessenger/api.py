@@ -6,6 +6,7 @@ Provides REST API for messages, conversations, and settings
 
 from datetime import datetime
 import json
+from urllib.parse import unquote
 
 from starlette.routing import Route
 from starlette.responses import JSONResponse
@@ -17,7 +18,7 @@ from .database import get_database
 
 async def get_conversation(request):
     '''Get conversation with specified callsign'''
-    callsign = request.path_params['callsign']
+    callsign = unquote(request.path_params['callsign'])
     
     # get query parameters
     limit = int(request.query_params.get('limit', 50))
@@ -118,7 +119,7 @@ async def get_conversation_unread_count(request):
 
 async def get_conversation_unread_status(request):
     '''Get true/false if conversation has unread messages'''
-    callsign = request.path_params['callsign']
+    callsign = unquote(request.path_params['callsign'])
     
     db = get_database()
     local_setting = db.get_setting('callsign')
@@ -135,7 +136,7 @@ async def get_conversation_unread_status(request):
 
 async def mark_conversation_read(request):
     '''Mark all messages in conversation as read'''
-    callsign = request.path_params['callsign']
+    callsign = unquote(request.path_params['callsign'])
     
     db = get_database()
     local_setting = db.get_setting('callsign')
@@ -157,7 +158,7 @@ async def mark_conversation_read(request):
 
 async def delete_conversation(request):
     '''Delete all messages to/from specified callsign'''
-    callsign = request.path_params['callsign']
+    callsign = unquote(request.path_params['callsign'])
     
     db = get_database()
     local_setting = db.get_setting('callsign')
@@ -200,7 +201,9 @@ async def create_message(request):
     message_data = {field: body.get(field, None) for field in message_fields}
     message_data['time'] = datetime.fromtimestamp(body['timestamp']).isoformat()
     # simplify pyjs8call message types (ex. 'RX.DIRECTED' -> 'rx', 'TX.SEND_MESSAGE' -> 'tx')
-    message_data['type'] = message_data['type'][:2].lower()
+    # Only convert if not already normalized (safety check)
+    if message_data['type'] not in ('rx', 'tx'):
+        message_data['type'] = message_data['type'][:2].lower()
     
     db = get_database()
     message_id = db.create_message(message_data)
@@ -318,11 +321,11 @@ async def get_status(request):
 # route definitions
 api_routes = [
     Route('/conversations', get_conversations, methods=['GET']),
-    Route('/conversation/{callsign}', get_conversation, methods=['GET']),
     Route('/conversation/unread', get_conversation_unread_count, methods=['GET']),
-    Route('/conversation/unread/{callsign}', get_conversation_unread_status, methods=['GET']),
-    Route('/conversation/read/{callsign}', mark_conversation_read, methods=['PATCH']),
-    Route('/conversation/{callsign}', delete_conversation, methods=['DELETE']),
+    Route('/conversation/unread/{callsign:path}', get_conversation_unread_status, methods=['GET']),
+    Route('/conversation/read/{callsign:path}', mark_conversation_read, methods=['PATCH']),
+    Route('/conversation/{callsign:path}', get_conversation, methods=['GET']),
+    Route('/conversation/{callsign:path}', delete_conversation, methods=['DELETE']),
     
     Route('/messages/{id}', get_message, methods=['GET']),
     Route('/messages', create_message, methods=['POST']),

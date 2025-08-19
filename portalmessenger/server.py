@@ -24,18 +24,20 @@ def create_app():
         )
     ]
     
-    # server api routes during development and production
-    routes = [
-        Mount('/api', routes=api_routes),
-    ]
-    
-    # mount static files and serve spa route if static directory exists (production)
-    if os.path.exists('static'):
-        routes.extend([
-            Mount('/static', StaticFiles(directory='static'), name='static'),
+    # mount static files and serve spa route if static directory exists (production)  
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    if os.path.exists(static_dir):
+        routes = [
+            Mount('/api', routes=api_routes),
+            Mount('/_app', StaticFiles(directory=os.path.join(static_dir, '_app')), name='app'),
             Route('/', serve_spa),
             Route('/{path:path}', serve_spa),  # SPA fallback routing
-        ])
+        ]
+    else:
+        # development mode - only API routes
+        routes = [
+            Mount('/api', routes=api_routes),
+        ]
     
     return Starlette(
         routes=routes, 
@@ -45,14 +47,16 @@ def create_app():
 
 async def serve_spa(request):
     '''Serve the single page application'''
-    return FileResponse('static/index.html')
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    return FileResponse(os.path.join(static_dir, 'index.html'))
 
 async def http_error_handler(request, exc):
     '''Handle HTTP exceptions'''
     return JSONResponse({'error': str(exc.detail)}, status_code=exc.status_code)
 
-def run_server(host='0.0.0.0', port=8080, **kwargs):
+def run_server(host='0.0.0.0', port=8080, debug=False, **kwargs):
     '''Run the uvicorn server'''
-    uvicorn.run(app, host=host, port=port, **kwargs)
+    log_level = 'debug' if debug else 'error'
+    uvicorn.run(app, host=host, port=port, log_level=log_level, **kwargs)
 
 app = create_app()

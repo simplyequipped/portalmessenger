@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ConversationList from '$lib/components/ConversationList.svelte';
-	import MessageView from '$lib/components/MessageView.svelte';
-	import { selectedCallsign } from '$lib/stores/stations.js';
+	import StationList from '$lib/components/StationList.svelte';
+	import StationView from '$lib/components/StationView.svelte';
+	import { selectedStation } from '$lib/stores/stations.js';
 	import { drawerOpen, closeDrawer, toggleDrawer } from '$lib/stores/drawer.js';
 	
 	// Close drawer on mobile when backdrop is clicked
@@ -10,27 +10,27 @@
 	}
 </script>
 
-<div class="messaging-view">
+<div class="activity-view">
 	<!-- Mobile backdrop -->
 	{#if $drawerOpen}
 		<div class="drawer-backdrop" on:click={handleBackdropClick}></div>
 	{/if}
 	
 	<div class="sidebar" class:drawer-open={$drawerOpen}>
-		<ConversationList />
+		<StationList />
 	</div>
 	
 	<div class="main-content">
-		{#if $selectedCallsign}
-			<MessageView callsign={$selectedCallsign} />
+		{#if $selectedStation}
+			<StationView callsign={$selectedStation} />
 		{:else}
-			<div class="no-conversation-view">
-				<div class="no-conversation-header">
+			<div class="no-station-view">
+				<div class="no-station-header">
 					<div class="header-left">
 						<button 
 							class="drawer-toggle-btn"
 							on:click={toggleDrawer}
-							title="Toggle conversations"
+							title="Toggle stations"
 						>
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="3" y1="6" x2="21" y2="6"></line>
@@ -47,8 +47,8 @@
 						</svg>
 					</button>
 				</div>
-				<div class="no-conversation-content">
-					<p>Select a conversation or start a new one</p>
+				<div class="no-station-content">
+					<p>Select a station to view activity details</p>
 				</div>
 			</div>
 		{/if}
@@ -56,7 +56,7 @@
 </div>
 
 <style>
-	.messaging-view {
+	.activity-view {
 		display: flex;
 		height: 100%;
 		overflow: hidden;
@@ -78,16 +78,16 @@
 		overflow: hidden;
 	}
 
-	.no-conversation-view {
+	.no-station-view {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 	}
 
-	.no-conversation-header {
+	.no-station-header {
 		display: flex;
 		align-items: center;
-		justify-content: flex-start;
+		justify-content: space-between;
 		padding: 1rem 1.5rem;
 		border-bottom: 1px solid var(--border-color, #e5e7eb);
 		background: var(--header-bg, #f9fafb);
@@ -115,13 +115,6 @@
 		color: var(--text-primary, #111827);
 	}
 
-	.no-conversation-title {
-		margin: 0;
-		font-size: 1.125rem;
-		font-weight: 600;
-		color: var(--text-primary, #111827);
-	}
-
 	.placeholder-btn {
 		background: transparent;
 		border: 1px solid transparent;
@@ -132,7 +125,7 @@
 		color: transparent;
 	}
 
-	.no-conversation-content {
+	.no-station-content {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -145,7 +138,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.messaging-view {
+		.activity-view {
 			flex-direction: row; /* Keep side-by-side for drawer */
 		}
 		
@@ -153,7 +146,7 @@
 			display: block;
 		}
 
-		.no-conversation-header {
+		.no-station-header {
 			padding: 0.75rem 1rem; /* Match message header mobile padding */
 		}
 		

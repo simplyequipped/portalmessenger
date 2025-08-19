@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/simplyequipped/portalmessenger",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=['pyjs8call>=0.3.0', 'starlette>=0.27.0', 'uvicorn>=0.22.0', 'tinydb>=4.8.0', 'pyshortcuts>=1.9.0'],
+    install_requires=['starlette>=0.27.0', 'uvicorn>=0.22.0', 'tinydb>=4.8.0', 'pyshortcuts>=1.9.0'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

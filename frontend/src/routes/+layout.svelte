@@ -3,6 +3,7 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/Header.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import { websocketService } from '$lib/services/websocket.ts';
 	import { settings, loadSettings } from '$lib/stores/settings.js';
 
@@ -74,6 +75,7 @@
 	<main>
 		{@render children?.()}
 	</main>
+	<Toast />
 </div>
 
 <style>
@@ -81,7 +83,13 @@
 		display: flex;
 		flex-direction: column;
 		height: 100vh;
+		height: 100dvh; /* Use dynamic viewport height for mobile */
 		overflow: hidden;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 	}
 
 	main {

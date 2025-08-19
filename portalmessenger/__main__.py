@@ -16,10 +16,11 @@ def main():
     )
     
     parser.add_argument('-a', '--host', help='Accept requests from this host address, defaults to 0.0.0.0 (all hosts)', default='0.0.0.0')
-    parser.add_argument('-p', '--port', help='Web server port, defaults to 5001', default=5001, type=int)
+    parser.add_argument('-p', '--port', help='Web server port, defaults to 5000', default=5000, type=int)
     parser.add_argument('-b', '--browser', help='Open a browser window to localhost after starting server', action='store_true')
     parser.add_argument('-c', '--shortcut', help='Create a desktop shortcut to launch the application, then exit', action='store_true')
     parser.add_argument('-d', '--database', help='Path to portalmessenger database, defaults to ./portalmessenger.json', default='portalmessenger.json')
+    parser.add_argument('--debug', help='Enable debug logging for server and networking', action='store_true')
     args = parser.parse_args()
 
     if args.shortcut:
@@ -44,7 +45,7 @@ def main():
     print(f'Starting Portal Messenger on {args.host}:{args.port}')
     
     try:
-        run_server(host=args.host, port=args.port)
+        run_server(host=args.host, port=args.port, debug=args.debug)
     except KeyboardInterrupt:
         print('\nShutting down...')
     finally:
