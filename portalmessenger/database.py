@@ -24,30 +24,6 @@ default_settings = {
         'advanced': False,
         'validate': lambda option: option in default_settings['modem']['options']
     },
-    'pyjs8call-api-host': {
-        'value': 'localhost',
-        'label': 'pyjs8call API IP/Host',
-        'default': 'localhost',
-        'required': True,
-        'options': None,
-        'display': True,
-        'restart': False,
-        'order': 100,
-        'advanced': True,
-        'validate': lambda host: len(host.strip()) > 0
-    },
-    'pyjs8call-api-port': {
-        'value': 8080,
-        'label': 'pyjs8call API Port',
-        'default': 8080,
-        'required': True,
-        'options': None,
-        'display': True,
-        'restart': False,
-        'order': 101,
-        'advanced': True,
-        'validate': lambda port: port.isnumeric() and 1 <= int(port) <= 65535
-    },
     'callsign': {
         'value': '',
         'label': 'Callsign',
@@ -72,18 +48,6 @@ default_settings = {
         'advanced': False,
         'validate': lambda grid: len(grid) == 0 or (len(grid) >= 4 and grid[0].isalpha() and grid[1].isalpha() and grid[2].isdigit() and grid[3].isdigit())
     },
-    'speed': {
-        'value': 'normal',
-        'label': 'JS8Call Speed',
-        'default': 'normal',
-        'required': False,
-        'options': ['slow', 'normal', 'fast', 'turbo'],
-        'display': True,
-        'restart': True,
-        'order': 4,
-        'advanced': False,
-        'validate': lambda option: option in default_settings['speed']['options']
-    },
     'freq': {
         'value': '7078000',
         'label': 'Frequency (Hz)',
@@ -104,9 +68,57 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': True,
-        'order': 5,
+        'order': 4,
         'advanced': False,
         'validate': lambda groups: len(groups) == 0 or all([bool(group.strip().startswith('@') and len(group.strip()) <= 9) for group in groups.split(',')])
+    },
+    'size': {
+        'value': 'normal',
+        'label': 'Font Size',
+        'default': 'normal',
+        'required': False,
+        'options': ['normal', 'large'],
+        'display': True,
+        'restart': False,
+        'order': 5,
+        'advanced': False,
+        'validate': lambda option: option in default_settings['size']['options']
+    },
+    'pyjs8call-api-host': {
+        'value': 'localhost',
+        'label': 'pyjs8call API IP/Host',
+        'default': 'localhost',
+        'required': True,
+        'options': None,
+        'display': True,
+        'restart': False,
+        'order': 100,
+        'advanced': True,
+        'validate': lambda host: len(host.strip()) > 0
+    },
+    'pyjs8call-api-port': {
+        'value': 8080,
+        'label': 'pyjs8call API Port',
+        'default': 8080,
+        'required': True,
+        'options': None,
+        'display': True,
+        'restart': False,
+        'order': 101,
+        'advanced': True,
+        'validate': lambda port: port.isnumeric() and 1 <= int(port) <= 65535
+    },
+    'speed': {
+        'value': 'normal',
+        'label': 'JS8Call Speed',
+        'default': 'normal',
+        'required': False,
+        'options': ['slow', 'normal', 'fast', 'turbo'],
+        'display': True,
+        'restart': True,
+        'order': 102,
+        'advanced': True,
+        'validate': lambda option: option in default_settings['speed']['options']
     },
     'aging': {
         'value': '15',
@@ -116,7 +128,7 @@ default_settings = {
         'options': None,
         'display': True,
         'restart': False,
-        'order': 102,
+        'order': 103,
         'advanced': True,
         'validate': lambda aging: aging.isnumeric()
     },
@@ -128,7 +140,7 @@ default_settings = {
         'options': ['enable', 'disable'],
         'display': True,
         'restart': False,
-        'order': 103,
+        'order': 104,
         'advanced': True,
         'validate': lambda option: option in default_settings['heartbeat']['options']
     },
@@ -140,7 +152,7 @@ default_settings = {
         'options': ['enable', 'disable', 'query @ALLCALL'],
         'display': True,
         'restart': False,
-        'order': 104,
+        'order': 105,
         'advanced': True,
         'validate': lambda option: option in default_settings['inbox']['options']
     },
@@ -152,7 +164,7 @@ default_settings = {
         'options': ['activity', 'messages'],
         'display': True,
         'restart': False,
-        'order': 105,
+        'order': 106,
         'advanced': True,
         'validate': lambda option: option in default_settings['tab']['options']
     },
@@ -164,21 +176,9 @@ default_settings = {
         'options': ['auto', 'light', 'dark'],
         'display': True,
         'restart': False,
-        'order': 106,
+        'order': 107,
         'advanced': True,
         'validate': lambda option: option in default_settings['theme']['options']
-    },
-    'size': {
-        'value': 'normal',
-        'label': 'Font Size',
-        'default': 'normal',
-        'required': False,
-        'options': ['normal', 'large'],
-        'display': True,
-        'restart': False,
-        'order': 7,
-        'advanced': False,
-        'validate': lambda option: option in default_settings['size']['options']
     },
     'propagation': {
         'value': '60',
@@ -188,9 +188,21 @@ default_settings = {
         'options': ['30', '60', '120'],
         'display': False,
         'restart': False,
-        'order': 106,
+        'order': 108,
         'advanced': True,
         'validate': lambda option: option in default_settings['propagation']['options']
+    },
+    'activity-sort': {
+        'value': 'recent',
+        'label': 'Activity Sort',
+        'default': 'recent',
+        'required': False,
+        'options': ['recent', 'nearest', 'furthest', 'hearing most', 'most heard'],
+        'display': True,
+        'restart': False,
+        'order': 109,
+        'advanced': True,
+        'validate': lambda option: option in default_settings['activity-sort']['options']
     }
 }
 
