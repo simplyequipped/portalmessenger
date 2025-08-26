@@ -1,7 +1,9 @@
 CLAUDE.md
 FRONTEND_PLAN.md
 portalmessenger/old/
+portalmessenger/static/
 portalmessenger.json
+build-run
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -19,7 +21,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
